@@ -83,6 +83,32 @@ No production Perfect crate should depend on `perfect-qualification`.
 
 ---
 
+## Requirements-to-evidence traceability
+
+Qualification should be traceable back to the contract being qualified.
+
+For applicable release claims, the desired chain is:
+
+**Requirement → ADR / design → Implementation → Verification evidence → Qualification gate**
+
+This means a qualification result should be able to identify:
+
+- the stable requirement ID being demonstrated;
+- the architecture decision/design defining the intended behavior;
+- the implementation revision/configuration under test;
+- the retained test/reference/benchmark evidence;
+- the qualification gate and outcome.
+
+A passing test without a known requirement can still discover defects, but it is weaker release evidence than a traceable test tied to the public/semantic contract.
+
+Family rules:
+
+- [Architecture Decision Record Standard](https://github.com/Perfect-Foundations/perfect-family/blob/main/docs/ADR-STANDARD.md)
+- [Requirements & Traceability Standard](https://github.com/Perfect-Foundations/perfect-family/blob/main/docs/REQUIREMENTS-TRACEABILITY.md)
+- [Glossary & Terminology](https://github.com/Perfect-Foundations/perfect-family/blob/main/docs/GLOSSARY.md)
+
+---
+
 ## Qualification gates
 
 | Gate | Name | Purpose |
