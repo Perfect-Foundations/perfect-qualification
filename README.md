@@ -28,16 +28,9 @@ No production Perfect crate should depend on `perfect-qualification`.
 
 ## Qualification model
 
-```mermaid
-flowchart LR
-  C1[Crate-specific tests] --> I[Integration combinations]
-  C2[Independent references] --> I
-  C3[Target / feature matrices] --> I
-  C4[Determinism checks] --> I
-  C5[Fuzzing / mutation / sanitizers] --> I
-  I --> E[Qualification evidence]
-  E --> R[Release confidence]
-```
+| Inputs to qualification |  | Integration |  | Evidence |  | Outcome |
+|---|:---:|---|:---:|---|:---:|---|
+| Crate-specific tests · Independent references · Target/feature matrices · Determinism checks · Fuzzing/mutation/sanitizers | → | **Supported crate combinations** | → | **Qualification evidence** | → | **Release confidence** |
 
 ---
 
