@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/assets/brand/logo.svg" width="128" alt="Perfect qualification logo">
+
 # Perfect Qualification
 
 ### Cross-family verification, compatibility, determinism, and release assurance for Perfect Foundations.
