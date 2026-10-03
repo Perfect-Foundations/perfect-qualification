@@ -170,8 +170,9 @@ The family should be designed so that:
 
 ## Retained qualification reports
 
-- [Perfect Numeric — Q0-Q5 at `ef85b646`](reports/perfect-numeric/ef85b646-q0-q5.md) — hosted matrix passed; Q6 remains explicitly open.
-- [Perfect Numeric — Q6 blocker report at `84043a2`](reports/perfect-numeric/84043a2-q6-open.md) — exact hosted Q6 candidate rejected for three unresolved release prerequisites.
+- [Perfect Numeric — Q0-Q6 at `19b6747`](reports/perfect-numeric/19b6747-q0-q6.md) — retained/private candidate fully qualified; public-release gates remain explicitly deferred.
+- [Perfect Numeric — Q0-Q5 at `ef85b646`](reports/perfect-numeric/ef85b646-q0-q5.md) — independent semantic qualification baseline.
+- [Perfect Numeric — superseded Q6 blocker report at `84043a2`](reports/perfect-numeric/84043a2-q6-open.md) — historical evidence from the earlier over-strict Q6 gate definition.
 
 ---
 
