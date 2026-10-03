@@ -1,0 +1,215 @@
+name: Qualify Perfect Numeric
+
+on:
+  push:
+    paths:
+      - "qualification/perfect-numeric/**"
+      - ".github/workflows/perfect-numeric.yml"
+  pull_request:
+    paths:
+      - "qualification/perfect-numeric/**"
+      - ".github/workflows/perfect-numeric.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+  PERFECT_NUMERIC_REV: ef85b646fc299f5c0b275c1bc29062e047771932
+  QUAL_MANIFEST: qualification/perfect-numeric/Cargo.toml
+
+jobs:
+  q0-q5:
+    name: Q0-Q5 / integrity-reference
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout qualification revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@ef85b646fc299f5c0b275c1bc29062e047771932
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Redirect pinned dependency to qualified source
+        shell: bash
+        env:
+          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
+        run: |
+          set -euo pipefail
+          expected='perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "'"$PERFECT_NUMERIC_REV"'", version = "=0.1.0", default-features = false }'
+          grep -F -- "$expected" "$QUAL_MANIFEST" >/dev/null
+          sed -i.bak \
+            "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|" \
+            "$QUAL_MANIFEST"
+          rm "$QUAL_MANIFEST.bak"
+
+      - name: Install MSRV and stable
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
+          rustup toolchain install stable --profile minimal
+          rustup default 1.99.0
+          rustc --version
+          cargo --version
+          rustc +stable --version
+
+      - name: Q0 repository integrity
+        shell: bash
+        env:
+          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
+        run: |
+          set -euo pipefail
+          test ! -e "$PERFECT_NUMERIC_PATH/build.rs"
+          grep -F -- 'name = "perfect-numeric"' "$PERFECT_NUMERIC_PATH/Cargo.toml" >/dev/null
+          grep -F -- 'version = "0.1.0"' "$PERFECT_NUMERIC_PATH/Cargo.toml" >/dev/null
+          grep -F -- 'rust-version = "1.99"' "$PERFECT_NUMERIC_PATH/Cargo.toml" >/dev/null
+          grep -F -- "uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@$PERFECT_NUMERIC_REV" .github/workflows/perfect-numeric.yml >/dev/null
+
+          cargo metadata --manifest-path "$QUAL_MANIFEST" --format-version 1 | jq -e --arg manifest "$PERFECT_NUMERIC_PATH/Cargo.toml" '
+            any(.packages[];
+              .name == "perfect-numeric"
+              and .version == "0.1.0"
+              and .source == null
+              and .manifest_path == $manifest
+              and (.dependencies | length) == 0
+            )
+          ' >/dev/null
+
+          direct="$(cargo metadata --manifest-path "$QUAL_MANIFEST" --format-version 1 --no-deps | jq -r '.packages[] | select(.name == "qualify-perfect-numeric") | .dependencies[].name')"
+          test "$direct" = "perfect-numeric"
+
+      - name: Q5 independent oracle
+        run: python3 qualification/perfect-numeric/scripts/verify_oracle.py
+
+      - name: Format
+        run: cargo fmt --manifest-path "$QUAL_MANIFEST" -- --check
+
+      - name: Q1-Q4 MSRV consumer verification
+        shell: bash
+        run: |
+          cargo check --manifest-path "$QUAL_MANIFEST" --all-targets --all-features
+          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
+          cargo clippy --manifest-path "$QUAL_MANIFEST" --all-targets --all-features -- -D warnings
+          cargo clippy --manifest-path "$QUAL_MANIFEST" --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo doc --manifest-path "$QUAL_MANIFEST" --no-deps --all-features
+
+      - name: Q1 current-stable compatibility
+        shell: bash
+        run: |
+          cargo +stable test --manifest-path "$QUAL_MANIFEST" --all-features
+          cargo +stable test --manifest-path "$QUAL_MANIFEST" --no-default-features
+
+  class-a:
+    name: Q1-Q3 / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - windows-2025
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout qualification revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@ef85b646fc299f5c0b275c1bc29062e047771932
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Redirect pinned dependency to qualified source
+        shell: bash
+        env:
+          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
+        run: |
+          set -euo pipefail
+          sed -i.bak \
+            "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|" \
+            "$QUAL_MANIFEST"
+          rm "$QUAL_MANIFEST.bak"
+
+      - name: Install Rust 1.99.0
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+          rustc --version
+
+      - name: Q1-Q2 consumer tests
+        shell: bash
+        run: |
+          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
+
+      - name: Q3 retained semantic fingerprint
+        shell: bash
+        run: |
+          expected="$(tr -d '\r\n' < qualification/perfect-numeric/semantic-fingerprint.txt)"
+          first="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
+          second="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
+          no_std="$(cargo run --manifest-path "$QUAL_MANIFEST" --no-default-features --example fingerprint --quiet)"
+          test "$first" = "$expected"
+          test "$second" = "$expected"
+          test "$no_std" = "$expected"
+          echo "qualification fingerprint: $expected"
+
+  class-b:
+    name: Q1 / no_std / ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - wasm32v1-none
+          - thumbv7em-none-eabihf
+          - riscv64imac-unknown-none-elf
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout qualification revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@ef85b646fc299f5c0b275c1bc29062e047771932
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Redirect pinned dependency to qualified source
+        shell: bash
+        env:
+          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
+        run: |
+          set -euo pipefail
+          sed -i.bak \
+            "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|" \
+            "$QUAL_MANIFEST"
+          rm "$QUAL_MANIFEST.bak"
+
+      - name: Install Rust 1.99.0 and target
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+          rustup target add "${{ matrix.target }}"
+
+      - name: Q1 no_std target build
+        run: cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --target "${{ matrix.target }}"

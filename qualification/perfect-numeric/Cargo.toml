@@ -1,0 +1,13 @@
+[package]
+name = "qualify-perfect-numeric"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+
+[features]
+default = ["std"]
+std = ["perfect-numeric/std"]
+
+[dependencies]
+perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "ef85b646fc299f5c0b275c1bc29062e047771932", version = "=0.1.0", default-features = false }
