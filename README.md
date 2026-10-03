@@ -168,6 +168,12 @@ The family should be designed so that:
 
 ---
 
+## Retained qualification reports
+
+- [Perfect Numeric — Q0-Q5 at `ef85b646`](reports/perfect-numeric/ef85b646-q0-q5.md) — hosted matrix passed; Q6 remains explicitly open.
+
+---
+
 ## Related
 
 - 🗺️ [Perfect Family architecture](https://github.com/Perfect-Foundations/perfect-family)
