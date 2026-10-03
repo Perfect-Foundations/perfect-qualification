@@ -1,0 +1,106 @@
+name: Qualify Perfect Numeric Q6 Release Candidate
+
+on:
+  workflow_call:
+    inputs:
+      source_ref:
+        description: Exact Perfect Numeric release-candidate revision.
+        required: true
+        type: string
+      qualification_ref:
+        description: Exact Perfect Qualification revision containing this Q6 harness.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+  QUAL_ROOT: .qualification-suite/qualification/perfect-numeric
+  Q6_CHECK: .qualification-suite/qualification/perfect-numeric/scripts/check_q6.py
+
+jobs:
+  q6-release-candidate:
+    name: Q6 / release-candidate
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact Perfect Numeric candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "${{ inputs.source_ref }}"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+
+      - name: Install Rust 1.99.0
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+          rustc --version
+          cargo --version
+
+      - name: Q6 metadata and security prerequisites
+        run: python3 "$Q6_CHECK" .qualified-source
+
+      - name: Q6 clean package inspection
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          cargo package --list > ../package-list.txt
+          cargo package
+
+          test -s ../package-list.txt
+          grep -Fx 'Cargo.toml' ../package-list.txt >/dev/null
+          grep -Fx 'README.md' ../package-list.txt >/dev/null
+          grep -Fx 'SECURITY.md' ../package-list.txt >/dev/null
+
+          if grep -E '(^|/)(target|\.git|\.github/workflows)/' ../package-list.txt; then
+            echo "Q6 FAIL: package contains build/VCS/workflow internals"
+            exit 1
+          fi
+
+      - name: Q6 packaged offline build
+        shell: bash
+        run: |
+          set -euo pipefail
+          package_manifest=".qualified-source/target/package/perfect-numeric-0.1.0/Cargo.toml"
+          test -f "$package_manifest"
+          CARGO_NET_OFFLINE=true cargo check --manifest-path "$package_manifest" --all-features
+          CARGO_NET_OFFLINE=true cargo check --manifest-path "$package_manifest" --no-default-features
+
+      - name: Q6 release-quality docs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features
+          cargo test --all-features
+          cargo test --no-default-features
+
+      - name: Q6 retained evidence summary
+        shell: bash
+        run: |
+          echo "source_ref=${{ inputs.source_ref }}"
+          echo "qualification_ref=${{ inputs.qualification_ref }}"
+          echo "Q6 release-candidate mechanical gate passed."
