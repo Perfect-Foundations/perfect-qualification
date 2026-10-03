@@ -1,15 +1,16 @@
 name: Qualify Perfect Numeric
 
 on:
-  push:
-    paths:
-      - "qualification/perfect-numeric/**"
-      - ".github/workflows/perfect-numeric.yml"
-  pull_request:
-    paths:
-      - "qualification/perfect-numeric/**"
-      - ".github/workflows/perfect-numeric.yml"
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      source_ref:
+        description: Exact Perfect Numeric revision to qualify.
+        required: true
+        type: string
+      qualification_ref:
+        description: Exact Perfect Qualification revision containing this harness.
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -18,36 +19,56 @@ env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: "1"
   PERFECT_NUMERIC_REV: ef85b646fc299f5c0b275c1bc29062e047771932
-  QUAL_MANIFEST: qualification/perfect-numeric/Cargo.toml
+  QUAL_ROOT: .qualification-suite/qualification/perfect-numeric
+  QUAL_MANIFEST: .qualification-suite/qualification/perfect-numeric/Cargo.toml
 
 jobs:
   q0-q5:
     name: Q0-Q5 / integrity-reference
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout qualification revision
+      - name: Validate requested qualified revision
+        shell: bash
+        run: test "${{ inputs.source_ref }}" = "$PERFECT_NUMERIC_REV"
+
+      - name: Checkout exact Perfect Numeric source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.sha }}
+          repository: ${{ github.repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Materialize exact Perfect Numeric source
-        id: numeric-source
-        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@ef85b646fc299f5c0b275c1bc29062e047771932
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          destination: ${{ runner.temp }}/perfect-numeric
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
 
-      - name: Redirect pinned dependency to qualified source
+      - name: Resolve source path and redirect pinned dependency
+        id: source
         shell: bash
-        env:
-          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
         run: |
           set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "$PERFECT_NUMERIC_REV"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+
+          source_shell="$(cd .qualified-source && pwd)"
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            source_cargo="$(cygpath -m "$source_shell")"
+          else
+            source_cargo="$source_shell"
+          fi
+          echo "cargo-path=$source_cargo" >> "$GITHUB_OUTPUT"
+
           expected='perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "'"$PERFECT_NUMERIC_REV"'", version = "=0.1.0", default-features = false }'
           grep -F -- "$expected" "$QUAL_MANIFEST" >/dev/null
           sed -i.bak \
-            "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|" \
+            "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$source_cargo\", version = \"=0.1.0\", default-features = false }|" \
             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
 
@@ -64,14 +85,13 @@ jobs:
       - name: Q0 repository integrity
         shell: bash
         env:
-          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
+          PERFECT_NUMERIC_PATH: ${{ steps.source.outputs.cargo-path }}
         run: |
           set -euo pipefail
           test ! -e "$PERFECT_NUMERIC_PATH/build.rs"
           grep -F -- 'name = "perfect-numeric"' "$PERFECT_NUMERIC_PATH/Cargo.toml" >/dev/null
           grep -F -- 'version = "0.1.0"' "$PERFECT_NUMERIC_PATH/Cargo.toml" >/dev/null
           grep -F -- 'rust-version = "1.99"' "$PERFECT_NUMERIC_PATH/Cargo.toml" >/dev/null
-          grep -F -- "uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@$PERFECT_NUMERIC_REV" .github/workflows/perfect-numeric.yml >/dev/null
 
           cargo metadata --manifest-path "$QUAL_MANIFEST" --format-version 1 | jq -e --arg manifest "$PERFECT_NUMERIC_PATH/Cargo.toml" '
             any(.packages[];
@@ -86,8 +106,13 @@ jobs:
           direct="$(cargo metadata --manifest-path "$QUAL_MANIFEST" --format-version 1 --no-deps | jq -r '.packages[] | select(.name == "qualify-perfect-numeric") | .dependencies[].name')"
           test "$direct" = "perfect-numeric"
 
+          if grep -R -nE 'unsafe[[:space:]]+(fn|impl|trait)|unsafe[[:space:]]*\{|extern[[:space:]]+"(C|system)"|extern[[:space:]]+crate[[:space:]]+alloc|alloc::|std::net|TcpStream|UdpSocket|reqwest|curl|wget|telemetry|auto.?update|Command::new' "$PERFECT_NUMERIC_PATH/src"; then
+            echo "forbidden production boundary indicator detected"
+            exit 1
+          fi
+
       - name: Q5 independent oracle
-        run: python3 qualification/perfect-numeric/scripts/verify_oracle.py
+        run: python3 "$QUAL_ROOT/scripts/verify_oracle.py"
 
       - name: Format
         run: cargo fmt --manifest-path "$QUAL_MANIFEST" -- --check
@@ -120,27 +145,38 @@ jobs:
           - windows-2025
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout qualification revision
+      - name: Validate requested qualified revision
+        shell: bash
+        run: test "${{ inputs.source_ref }}" = "$PERFECT_NUMERIC_REV"
+
+      - name: Checkout exact Perfect Numeric source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.sha }}
+          repository: ${{ github.repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Materialize exact Perfect Numeric source
-        id: numeric-source
-        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@ef85b646fc299f5c0b275c1bc29062e047771932
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          destination: ${{ runner.temp }}/perfect-numeric
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
 
-      - name: Redirect pinned dependency to qualified source
+      - name: Resolve source path and redirect pinned dependency
         shell: bash
-        env:
-          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
         run: |
           set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "$PERFECT_NUMERIC_REV"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+          source_shell="$(cd .qualified-source && pwd)"
+          if [ "$RUNNER_OS" = "Windows" ]; then source_cargo="$(cygpath -m "$source_shell")"; else source_cargo="$source_shell"; fi
           sed -i.bak \
-            "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|" \
+            "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$source_cargo\", version = \"=0.1.0\", default-features = false }|" \
             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
 
@@ -160,7 +196,7 @@ jobs:
       - name: Q3 retained semantic fingerprint
         shell: bash
         run: |
-          expected="$(tr -d '\r\n' < qualification/perfect-numeric/semantic-fingerprint.txt)"
+          expected="$(tr -d '\r\n' < "$QUAL_ROOT/semantic-fingerprint.txt")"
           first="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
           second="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
           no_std="$(cargo run --manifest-path "$QUAL_MANIFEST" --no-default-features --example fingerprint --quiet)"
@@ -180,27 +216,38 @@ jobs:
           - riscv64imac-unknown-none-elf
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout qualification revision
+      - name: Validate requested qualified revision
+        shell: bash
+        run: test "${{ inputs.source_ref }}" = "$PERFECT_NUMERIC_REV"
+
+      - name: Checkout exact Perfect Numeric source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.sha }}
+          repository: ${{ github.repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Materialize exact Perfect Numeric source
-        id: numeric-source
-        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@ef85b646fc299f5c0b275c1bc29062e047771932
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          destination: ${{ runner.temp }}/perfect-numeric
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
 
-      - name: Redirect pinned dependency to qualified source
+      - name: Resolve source path and redirect pinned dependency
         shell: bash
-        env:
-          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
         run: |
           set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "$PERFECT_NUMERIC_REV"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+          source_shell="$(cd .qualified-source && pwd)"
+          source_cargo="$source_shell"
           sed -i.bak \
-            "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|" \
+            "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$source_cargo\", version = \"=0.1.0\", default-features = false }|" \
             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
 
