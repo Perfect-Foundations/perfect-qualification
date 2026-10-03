@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Fail-closed Q6 release-candidate metadata/security checker for Perfect Numeric."""
+"""Fail-closed private Q6 release-candidate checker for Perfect Numeric.
+
+Q6 qualifies a retained private candidate. Public opening, licensing, package
+publication, and a public-facing vulnerability-reporting channel are separate
+open-release gates and may remain intentionally deferred.
+"""
 
 from __future__ import annotations
 
@@ -23,12 +28,13 @@ def main() -> int:
     def require_file(relative: str) -> Path | None:
         path = root / relative
         if not path.is_file():
-            problem(f"required release file missing: {relative}")
+            problem(f"required release-candidate file missing: {relative}")
             return None
         return path
 
     manifest_path = require_file("Cargo.toml")
-    if manifest_path is None:
+    status_path = require_file("project-status.toml")
+    if manifest_path is None or status_path is None:
         for message in problems:
             print(f"Q6 BLOCKER: {message}", file=sys.stderr)
         return 1
@@ -36,9 +42,12 @@ def main() -> int:
     try:
         with manifest_path.open("rb") as handle:
             manifest = tomllib.load(handle)
+        with status_path.open("rb") as handle:
+            status = tomllib.load(handle)
     except (OSError, tomllib.TOMLDecodeError) as error:
-        problem(f"Cargo.toml cannot be parsed: {error}")
+        problem(f"release-candidate metadata cannot be parsed: {error}")
         manifest = {}
+        status = {}
 
     package = manifest.get("package")
     if not isinstance(package, dict):
@@ -50,26 +59,11 @@ def main() -> int:
 
     for key in ("version", "rust-version", "description", "repository", "documentation", "readme"):
         value = package.get(key)
-        if not isinstance(value, str) or not value.strip() or value.strip().upper() == "TBD":
-            problem(f"package metadata {key!r} is missing or unresolved")
+        if not isinstance(value, str) or not value.strip():
+            problem(f"package metadata {key!r} is missing")
 
-    if package.get("publish") is False:
-        problem("publish = false still blocks release-candidate publication")
-
-    license_expr = package.get("license")
-    license_file = package.get("license-file")
-    if license_expr and license_file:
-        problem("set either package.license or package.license-file, not both")
-    elif isinstance(license_expr, str):
-        if not license_expr.strip() or license_expr.strip().upper() == "TBD":
-            problem("package license expression is unresolved")
-    elif isinstance(license_file, str):
-        if not license_file.strip():
-            problem("package license-file is empty")
-        elif not (root / license_file).is_file():
-            problem(f"license-file does not exist: {license_file}")
-    else:
-        problem("project license is unresolved; set package.license or package.license-file")
+    if package.get("publish") is not False:
+        problem("private Q6 candidate must retain publish = false until explicit open-release authorization")
 
     keywords = package.get("keywords")
     categories = package.get("categories")
@@ -77,6 +71,15 @@ def main() -> int:
         problem("package keywords are missing")
     if not isinstance(categories, list) or not categories:
         problem("package categories are missing")
+
+    release = status.get("release")
+    if not isinstance(release, dict):
+        problem("project-status.toml has no [release] table")
+        release = {}
+    if release.get("release_status") != "unreleased":
+        problem("private Q6 candidate must remain unreleased")
+    if release.get("last_release") not in ("", None):
+        problem("private Q6 candidate unexpectedly records a prior release")
 
     for relative in (
         "README.md",
@@ -86,31 +89,63 @@ def main() -> int:
         "docs/STABILITY.md",
         "docs/PACKAGING.md",
         "docs/SUPPLY-CHAIN-REVIEW.md",
+        "docs/PERFORMANCE.md",
+        "docs/verification/M6-PRERELEASE-REVIEW.md",
+        "verification/host-benchmark-2026-10-03.json",
+        "verification/semantic-fingerprint.txt",
     ):
         require_file(relative)
 
     security_path = root / "SECURITY.md"
     if security_path.is_file():
-        security = security_path.read_text(encoding="utf-8").lower()
-        normalized_security = re.sub(r"[^a-z0-9]+", " ", security)
-        unresolved_security_phrases = (
-            "not yet been verified",
-            "has not yet been verified",
-            "not yet verified",
-            "public facing private vulnerability reporting channel has not",
+        normalized = re.sub(
+            r"[^a-z0-9]+",
+            " ",
+            security_path.read_text(encoding="utf-8").lower(),
         )
-        if any(phrase in normalized_security for phrase in unresolved_security_phrases):
-            problem("SECURITY.md still records the vulnerability-reporting channel as unverified")
-        if "report" not in normalized_security or "vulnerab" not in normalized_security:
-            problem("SECURITY.md does not contain concrete vulnerability-reporting instructions")
+        unresolved = any(
+            phrase in normalized
+            for phrase in (
+                "not yet been verified",
+                "has not yet been verified",
+                "not yet verified",
+                "public facing private vulnerability reporting channel has not",
+            )
+        )
+        if unresolved:
+            if "before perfect numeric or its package is made public" not in normalized:
+                problem(
+                    "deferred vulnerability reporting is not explicitly tied to the public-release gate"
+                )
+        elif "report" not in normalized or "vulnerab" not in normalized:
+            problem("SECURITY.md lacks concrete vulnerability-reporting instructions")
+
+    review_path = root / "docs/verification/M6-PRERELEASE-REVIEW.md"
+    if review_path.is_file():
+        review = re.sub(
+            r"[^a-z0-9]+",
+            " ",
+            review_path.read_text(encoding="utf-8").lower(),
+        )
+        for phrase in (
+            "project s own license remains tbd",
+            "security handling open",
+            "docs rs crates io release quality open",
+        ):
+            if phrase not in review:
+                problem(f"M6 review does not retain deferred open-release gate: {phrase}")
 
     if problems:
         for message in problems:
             print(f"Q6 BLOCKER: {message}", file=sys.stderr)
-        print(f"Q6 FAIL: {len(problems)} release-candidate prerequisite(s) unresolved", file=sys.stderr)
+        print(f"Q6 FAIL: {len(problems)} private release-candidate prerequisite(s) unresolved", file=sys.stderr)
         return 1
 
-    print("Q6 PASS: release-candidate metadata/security document prerequisites are resolved")
+    license_value = release.get("license", "TBD")
+    print(f"Q6 INFO: project license remains {license_value!r}; public licensing is deferred")
+    print("Q6 INFO: publication remains disabled by design")
+    print("Q6 INFO: public vulnerability-reporting verification remains an open-release gate")
+    print("Q6 PASS: private release-candidate documentation/retention prerequisites are satisfied")
     return 0
 
 

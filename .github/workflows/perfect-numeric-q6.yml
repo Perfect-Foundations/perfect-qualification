@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       source_ref:
-        description: Exact Perfect Numeric release-candidate revision.
+        description: Exact Perfect Numeric private release-candidate revision.
         required: true
         type: string
       qualification_ref:
@@ -18,12 +18,11 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: "1"
-  QUAL_ROOT: .qualification-suite/qualification/perfect-numeric
   Q6_CHECK: .qualification-suite/qualification/perfect-numeric/scripts/check_q6.py
 
 jobs:
-  q6-release-candidate:
-    name: Q6 / release-candidate
+  quality:
+    name: Q6 / Quality / MSRV
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout exact Perfect Numeric candidate
@@ -51,16 +50,63 @@ jobs:
           test "$(git -C .qualified-source rev-parse HEAD)" = "${{ inputs.source_ref }}"
           test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
 
-      - name: Install Rust 1.99.0
+      - name: Install MSRV and stable
         shell: bash
         run: |
-          rustup toolchain install 1.99.0 --profile minimal
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
+          rustup toolchain install stable --profile minimal
           rustup default 1.99.0
           rustc --version
           cargo --version
+          rustc +stable --version
 
-      - name: Q6 metadata and security prerequisites
+      - name: Q6 private-candidate prerequisites
         run: python3 "$Q6_CHECK" .qualified-source
+
+      - name: Q6 production-boundary review
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          test ! -e build.rs
+          test "$(cargo metadata --no-deps --format-version 1 | jq '.packages[0].dependencies | length')" -eq 0
+          if grep -R -nE 'unsafe[[:space:]]+(fn|impl|trait)|unsafe[[:space:]]*\{|extern[[:space:]]+"(C|system)"|std::net|TcpStream|UdpSocket|reqwest|curl|wget|telemetry|auto.?update|Command::new' src; then
+            echo "Q6 FAIL: forbidden production boundary indicator detected"
+            exit 1
+          fi
+
+      - name: Q6 format, build, test, clippy, docs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          cargo fmt -- --check
+          cargo check --all-targets --all-features
+          cargo check --no-default-features
+          cargo test --all-features
+          cargo test --no-default-features
+          cargo +stable test --all-features
+          cargo +stable test --no-default-features
+          cargo clippy --all-targets --all-features -- -D warnings
+          cargo clippy --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features
+
+      - name: Q6 independent reference and mutation evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          python3 scripts/verify_reference.py
+          python3 scripts/mutation_smoke.py
+
+      - name: Q6 performance regression review
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          test -f verification/host-benchmark-2026-10-03.json
+          grep -F 'No production optimization is justified' docs/PERFORMANCE.md >/dev/null
+          python3 scripts/measure_host_timing.py --runs 2 --iterations 100000
 
       - name: Q6 clean package inspection
         shell: bash
@@ -69,14 +115,12 @@ jobs:
           cd .qualified-source
           cargo package --list > ../package-list.txt
           cargo package
-
           test -s ../package-list.txt
           grep -Fx 'Cargo.toml' ../package-list.txt >/dev/null
           grep -Fx 'README.md' ../package-list.txt >/dev/null
           grep -Fx 'SECURITY.md' ../package-list.txt >/dev/null
-
-          if grep -E '(^|/)(target|\.git|\.github/workflows)/' ../package-list.txt; then
-            echo "Q6 FAIL: package contains build/VCS/workflow internals"
+          if grep -E '(^|/)(target|\.git)/' ../package-list.txt; then
+            echo "Q6 FAIL: package contains build/VCS internals"
             exit 1
           fi
 
@@ -89,18 +133,86 @@ jobs:
           CARGO_NET_OFFLINE=true cargo check --manifest-path "$package_manifest" --all-features
           CARGO_NET_OFFLINE=true cargo check --manifest-path "$package_manifest" --no-default-features
 
-      - name: Q6 release-quality docs
+  class-a:
+    name: Q6 / Class A / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - windows-2025
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout exact Perfect Numeric candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact source revision
+        shell: bash
+        run: test "$(git -C .qualified-source rev-parse HEAD)" = "${{ inputs.source_ref }}"
+
+      - name: Install Rust 1.99.0
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+          rustc --version
+
+      - name: Q6 Class-A tests and semantic reproducibility
         shell: bash
         run: |
           set -euo pipefail
           cd .qualified-source
-          RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features
           cargo test --all-features
           cargo test --no-default-features
+          expected="$(tr -d '\r\n' < verification/semantic-fingerprint.txt)"
+          first="$(cargo run --example semantic_fingerprint --quiet)"
+          second="$(cargo run --example semantic_fingerprint --quiet)"
+          no_std="$(cargo run --no-default-features --example semantic_fingerprint --quiet)"
+          test "$first" = "$expected"
+          test "$second" = "$expected"
+          test "$no_std" = "$expected"
+          echo "Q6 semantic fingerprint: $expected"
 
-      - name: Q6 retained evidence summary
+  class-b:
+    name: Q6 / Class B / ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - wasm32v1-none
+          - thumbv7em-none-eabihf
+          - riscv64imac-unknown-none-elf
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact Perfect Numeric candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact source revision
+        shell: bash
+        run: test "$(git -C .qualified-source rev-parse HEAD)" = "${{ inputs.source_ref }}"
+
+      - name: Install Rust 1.99.0 and target
         shell: bash
         run: |
-          echo "source_ref=${{ inputs.source_ref }}"
-          echo "qualification_ref=${{ inputs.qualification_ref }}"
-          echo "Q6 release-candidate mechanical gate passed."
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+          rustup target add "${{ matrix.target }}"
+
+      - name: Q6 Class-B no_std build
+        shell: bash
+        run: |
+          cd .qualified-source
+          cargo check --no-default-features --target "${{ matrix.target }}"
