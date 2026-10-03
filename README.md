@@ -147,22 +147,6 @@ The family should be designed so that:
 
 ---
 
-## Design dossier
-
-The README is the front door. The detailed implementation starting point is the **[Project Blueprint](docs/PROJECT-BLUEPRINT.md)**.
-
-That blueprint records the project's expected core abstractions, functional requirements, algorithm families, semantic/error model, API principles, feature and dependency strategy, platform targets, Linux distribution/offline-build requirements, supply-chain policy, verification oracles, benchmark plan, key risks, milestones, and the evidence required before this crate can be considered **default-grade infrastructure**.
-
-Family-wide requirements also apply:
-
-- [Adoption Standard](https://github.com/Perfect-Foundations/perfect-family/blob/main/docs/ADOPTION-STANDARD.md)
-- [Linux Distribution Readiness](https://github.com/Perfect-Foundations/perfect-family/blob/main/docs/DISTRO-READINESS.md)
-- [API & Semantic Stability](https://github.com/Perfect-Foundations/perfect-family/blob/main/docs/API-STABILITY.md)
-- [Release Quality Gates](https://github.com/Perfect-Foundations/perfect-family/blob/main/docs/RELEASE-QUALITY-GATES.md)
-- [Supply-Chain & Build Security](https://github.com/Perfect-Foundations/perfect-family/blob/main/docs/SUPPLY-CHAIN-SECURITY.md)
-
-> **Adoption ambition:** become a credible default foundational choice for Rust applications and Linux distribution packaging. This is a quality target to earn through evidence, not a claim of current endorsement by the Rust project or any Linux distribution.
-
 ## Related
 
 - 🗺️ [Perfect Family architecture](https://github.com/Perfect-Foundations/perfect-family)
