@@ -77,7 +77,7 @@ jobs:
 
           arithmetic_numeric='perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "'"$PERFECT_NUMERIC_REV"'", version = "=0.1.0", default-features = false }'
           grep -F -- "$arithmetic_numeric" "$arithmetic_path/Cargo.toml" >/dev/null
-          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_path\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
+          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
           rm "$arithmetic_path/Cargo.toml.bak"
 
           qual_arithmetic='perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "'"$PERFECT_ARITHMETIC_REV"'", version = "=0.1.0", default-features = false }'
@@ -299,7 +299,7 @@ jobs:
           numeric_shell="${{ steps.numeric-source.outputs.shell-path }}"
           numeric_cargo="${{ steps.numeric-source.outputs.cargo-path }}"
           test -f "$numeric_shell/Cargo.toml"
-          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_path\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
+          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
           rm "$arithmetic_path/Cargo.toml.bak"
           sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
