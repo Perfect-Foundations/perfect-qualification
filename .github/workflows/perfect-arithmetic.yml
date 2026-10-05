@@ -45,14 +45,11 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Checkout exact Perfect Numeric dependency
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
         with:
-          repository: Perfect-Foundations/perfect-numeric
-          ref: ${{ env.PERFECT_NUMERIC_REV }}
-          path: .numeric-source
-          fetch-depth: 1
-          persist-credentials: false
+          destination: ${{ runner.temp }}/perfect-numeric
 
       - name: Checkout exact qualification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -69,13 +66,14 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git -C .qualified-source rev-parse HEAD)" = "$PERFECT_ARITHMETIC_REV"
-          test "$(git -C .numeric-source rev-parse HEAD)" = "$PERFECT_NUMERIC_REV"
           test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
 
           arithmetic_path="$(cd .qualified-source && pwd)"
-          numeric_path="$(cd .numeric-source && pwd)"
+          numeric_shell="${{ steps.numeric-source.outputs.shell-path }}"
+          numeric_cargo="${{ steps.numeric-source.outputs.cargo-path }}"
+          test -f "$numeric_shell/Cargo.toml"
           echo "arithmetic-path=$arithmetic_path" >> "$GITHUB_OUTPUT"
-          echo "numeric-path=$numeric_path" >> "$GITHUB_OUTPUT"
+          echo "numeric-path=$numeric_shell" >> "$GITHUB_OUTPUT"
 
           arithmetic_numeric='perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "'"$PERFECT_NUMERIC_REV"'", version = "=0.1.0", default-features = false }'
           grep -F -- "$arithmetic_numeric" "$arithmetic_path/Cargo.toml" >/dev/null
@@ -184,14 +182,11 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Checkout exact Perfect Numeric dependency
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
         with:
-          repository: Perfect-Foundations/perfect-numeric
-          ref: ${{ env.PERFECT_NUMERIC_REV }}
-          path: .numeric-source
-          fetch-depth: 1
-          persist-credentials: false
+          destination: ${{ runner.temp }}/perfect-numeric
 
       - name: Checkout exact qualification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -207,17 +202,16 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git -C .qualified-source rev-parse HEAD)" = "$PERFECT_ARITHMETIC_REV"
-          test "$(git -C .numeric-source rev-parse HEAD)" = "$PERFECT_NUMERIC_REV"
           test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
 
           arithmetic_shell="$(cd .qualified-source && pwd)"
-          numeric_shell="$(cd .numeric-source && pwd)"
+          numeric_shell="${{ steps.numeric-source.outputs.shell-path }}"
+          numeric_cargo="${{ steps.numeric-source.outputs.cargo-path }}"
+          test -f "$numeric_shell/Cargo.toml"
           if [ "$RUNNER_OS" = "Windows" ]; then
             arithmetic_cargo="$(cygpath -m "$arithmetic_shell")"
-            numeric_cargo="$(cygpath -m "$numeric_shell")"
           else
             arithmetic_cargo="$arithmetic_shell"
-            numeric_cargo="$numeric_shell"
           fi
 
           sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_shell/Cargo.toml"
@@ -279,14 +273,11 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Checkout exact Perfect Numeric dependency
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
         with:
-          repository: Perfect-Foundations/perfect-numeric
-          ref: ${{ env.PERFECT_NUMERIC_REV }}
-          path: .numeric-source
-          fetch-depth: 1
-          persist-credentials: false
+          destination: ${{ runner.temp }}/perfect-numeric
 
       - name: Checkout exact qualification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -302,11 +293,12 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git -C .qualified-source rev-parse HEAD)" = "$PERFECT_ARITHMETIC_REV"
-          test "$(git -C .numeric-source rev-parse HEAD)" = "$PERFECT_NUMERIC_REV"
           test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
 
           arithmetic_path="$(cd .qualified-source && pwd)"
-          numeric_path="$(cd .numeric-source && pwd)"
+          numeric_shell="${{ steps.numeric-source.outputs.shell-path }}"
+          numeric_cargo="${{ steps.numeric-source.outputs.cargo-path }}"
+          test -f "$numeric_shell/Cargo.toml"
           sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_path\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
           rm "$arithmetic_path/Cargo.toml.bak"
           sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
