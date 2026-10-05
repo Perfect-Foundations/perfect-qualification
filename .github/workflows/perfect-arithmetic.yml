@@ -1,0 +1,318 @@
+name: Qualify Perfect Arithmetic
+
+on:
+  workflow_call:
+    inputs:
+      source_repository:
+        description: Perfect Arithmetic repository in owner/name form.
+        required: true
+        type: string
+      source_ref:
+        description: Exact Perfect Arithmetic revision to qualify.
+        required: true
+        type: string
+      qualification_ref:
+        description: Exact Perfect Qualification revision containing this harness.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+  PERFECT_ARITHMETIC_REV: 9ec660f9abfd7fe93e441e77dbb1158c371603f5
+  PERFECT_NUMERIC_REV: 19b6747cd852a47a694a020b97ba70b6b3ef259b
+  QUAL_ROOT: .qualification-suite/qualification/perfect-arithmetic
+  QUAL_MANIFEST: .qualification-suite/qualification/perfect-arithmetic/Cargo.toml
+
+jobs:
+  q0-q5:
+    name: Q0-Q5 / integrity-reference
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Validate requested qualified revision
+        shell: bash
+        run: test "${{ inputs.source_ref }}" = "$PERFECT_ARITHMETIC_REV"
+
+      - name: Checkout exact Perfect Arithmetic source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.source_repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Resolve exact sources and redirect private dependency pins
+        id: sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "$PERFECT_ARITHMETIC_REV"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+
+          arithmetic_path="$(cd .qualified-source && pwd)"
+          numeric_shell="${{ steps.numeric-source.outputs.shell-path }}"
+          numeric_cargo="${{ steps.numeric-source.outputs.cargo-path }}"
+          test -f "$numeric_shell/Cargo.toml"
+          echo "arithmetic-path=$arithmetic_path" >> "$GITHUB_OUTPUT"
+          echo "numeric-path=$numeric_shell" >> "$GITHUB_OUTPUT"
+
+          arithmetic_numeric='perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "'"$PERFECT_NUMERIC_REV"'", version = "=0.1.0", default-features = false }'
+          grep -F -- "$arithmetic_numeric" "$arithmetic_path/Cargo.toml" >/dev/null
+          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
+          rm "$arithmetic_path/Cargo.toml.bak"
+
+          qual_arithmetic='perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "'"$PERFECT_ARITHMETIC_REV"'", version = "=0.1.0", default-features = false }'
+          grep -F -- "$qual_arithmetic" "$QUAL_MANIFEST" >/dev/null
+          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
+          rm "$QUAL_MANIFEST.bak"
+
+      - name: Install MSRV and stable
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
+          rustup toolchain install stable --profile minimal
+          rustup default 1.99.0
+          rustc --version
+          cargo --version
+          rustc +stable --version
+
+      - name: Q0 repository integrity and dependency inventory
+        shell: bash
+        env:
+          PERFECT_ARITHMETIC_PATH: ${{ steps.sources.outputs.arithmetic-path }}
+          PERFECT_NUMERIC_PATH: ${{ steps.sources.outputs.numeric-path }}
+        run: |
+          set -euo pipefail
+          test ! -e "$PERFECT_ARITHMETIC_PATH/build.rs"
+          grep -F -- 'name = "perfect-arithmetic"' "$PERFECT_ARITHMETIC_PATH/Cargo.toml" >/dev/null
+          grep -F -- 'version = "0.1.0"' "$PERFECT_ARITHMETIC_PATH/Cargo.toml" >/dev/null
+          grep -F -- 'rust-version = "1.99"' "$PERFECT_ARITHMETIC_PATH/Cargo.toml" >/dev/null
+          grep -F -- 'publish = false' "$PERFECT_ARITHMETIC_PATH/Cargo.toml" >/dev/null
+
+          metadata="$(cargo metadata --manifest-path "$QUAL_MANIFEST" --format-version 1)"
+          printf '%s' "$metadata" | jq -e --arg manifest "$PERFECT_ARITHMETIC_PATH/Cargo.toml" '
+            any(.packages[];
+              .name == "perfect-arithmetic"
+              and .version == "0.1.0"
+              and .source == null
+              and .manifest_path == $manifest
+              and ([.dependencies[].name] | sort) == ["dashu-int","num-bigint","num-integer","perfect-numeric"]
+            )
+          ' >/dev/null
+          printf '%s' "$metadata" | jq -e --arg manifest "$PERFECT_NUMERIC_PATH/Cargo.toml" '
+            any(.packages[];
+              .name == "perfect-numeric"
+              and .version == "0.1.0"
+              and .source == null
+              and .manifest_path == $manifest
+            )
+          ' >/dev/null
+
+          direct="$(cargo metadata --manifest-path "$QUAL_MANIFEST" --format-version 1 --no-deps | jq -r '.packages[] | select(.name == "qualify-perfect-arithmetic") | .dependencies[].name')"
+          test "$direct" = "perfect-arithmetic"
+
+          if grep -R -nE 'unsafe[[:space:]]+(fn|impl|trait)|unsafe[[:space:]]*\{|extern[[:space:]]+"(C|system)"|std::net|TcpStream|UdpSocket|reqwest|curl|wget|telemetry|auto.?update|Command::new' "$PERFECT_ARITHMETIC_PATH/src"; then
+            echo "forbidden production boundary indicator detected"
+            exit 1
+          fi
+
+      - name: Q5 independent Python big-integer oracle
+        run: python3 "$QUAL_ROOT/scripts/verify_oracle.py"
+
+      - name: Format qualification consumer
+        run: cargo fmt --manifest-path "$QUAL_MANIFEST" -- --check
+
+      - name: Q1-Q4 MSRV consumer verification
+        shell: bash
+        run: |
+          cargo check --manifest-path "$QUAL_MANIFEST" --all-targets --all-features
+          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
+          cargo clippy --manifest-path "$QUAL_MANIFEST" --all-targets --all-features -- -D warnings
+          cargo clippy --manifest-path "$QUAL_MANIFEST" --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo doc --manifest-path "$QUAL_MANIFEST" --no-deps --all-features
+
+      - name: Q1 current-stable compatibility
+        shell: bash
+        run: |
+          cargo +stable test --manifest-path "$QUAL_MANIFEST" --all-features
+          cargo +stable test --manifest-path "$QUAL_MANIFEST" --no-default-features
+
+  class-a:
+    name: Q1-Q3 / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - windows-2025
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Validate requested qualified revision
+        shell: bash
+        run: test "${{ inputs.source_ref }}" = "$PERFECT_ARITHMETIC_REV"
+
+      - name: Checkout exact Perfect Arithmetic source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.source_repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Resolve exact sources and redirect private dependency pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "$PERFECT_ARITHMETIC_REV"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+
+          arithmetic_shell="$(cd .qualified-source && pwd)"
+          numeric_shell="${{ steps.numeric-source.outputs.shell-path }}"
+          numeric_cargo="${{ steps.numeric-source.outputs.cargo-path }}"
+          test -f "$numeric_shell/Cargo.toml"
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            arithmetic_cargo="$(cygpath -m "$arithmetic_shell")"
+          else
+            arithmetic_cargo="$arithmetic_shell"
+          fi
+
+          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_shell/Cargo.toml"
+          rm "$arithmetic_shell/Cargo.toml.bak"
+
+          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_cargo\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
+          rm "$QUAL_MANIFEST.bak"
+
+      - name: Install Rust 1.99.0
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+          rustc --version
+
+      - name: Q1-Q2 independent consumer tests
+        shell: bash
+        run: |
+          cargo test --manifest-path "$QUAL_MANIFEST"
+          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
+
+      - name: Q3 retained semantic fingerprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(tr -d '\r\n' < "$QUAL_ROOT/semantic-fingerprint.txt")"
+          first="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
+          second="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
+          all_features="$(cargo run --manifest-path "$QUAL_MANIFEST" --all-features --example fingerprint --quiet)"
+          no_std="$(cargo run --manifest-path "$QUAL_MANIFEST" --no-default-features --example fingerprint --quiet)"
+          test "$first" = "$expected"
+          test "$second" = "$expected"
+          test "$all_features" = "$expected"
+          test "$no_std" = "$expected"
+          echo "qualification fingerprint: $expected"
+
+  class-b:
+    name: Q1 / no_std / ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - wasm32v1-none
+          - thumbv7em-none-eabihf
+          - riscv64imac-unknown-none-elf
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Validate requested qualified revision
+        shell: bash
+        run: test "${{ inputs.source_ref }}" = "$PERFECT_ARITHMETIC_REV"
+
+      - name: Checkout exact Perfect Arithmetic source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.source_repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Resolve exact sources and redirect private dependency pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "$PERFECT_ARITHMETIC_REV"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+
+          arithmetic_path="$(cd .qualified-source && pwd)"
+          numeric_shell="${{ steps.numeric-source.outputs.shell-path }}"
+          numeric_cargo="${{ steps.numeric-source.outputs.cargo-path }}"
+          test -f "$numeric_shell/Cargo.toml"
+          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
+          rm "$arithmetic_path/Cargo.toml.bak"
+          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
+          rm "$QUAL_MANIFEST.bak"
+
+      - name: Install Rust 1.99.0 and target
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+          rustup target add "${{ matrix.target }}"
+
+      - name: Q1 no_std target build
+        shell: bash
+        run: |
+          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --target "${{ matrix.target }}"
+          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --features high-throughput --target "${{ matrix.target }}"
