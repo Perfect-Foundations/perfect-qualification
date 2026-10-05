@@ -187,10 +187,12 @@ fn exhaustive_small_domains_match_independent_primitives() {
                 ),
             }
 
-            if right != 0 {
+            if let (Some(expected_q), Some(expected_r)) =
+                (left.checked_div(right), left.checked_rem(right))
+            {
                 let (q, r) = a.div_rem(&b).unwrap();
-                assert_eq!(q.try_to_u8().unwrap().into_value(), left / right);
-                assert_eq!(r.try_to_u8().unwrap().into_value(), left % right);
+                assert_eq!(q.try_to_u8().unwrap().into_value(), expected_q);
+                assert_eq!(r.try_to_u8().unwrap().into_value(), expected_r);
             }
         }
     }
@@ -215,10 +217,13 @@ fn signed_semantics_and_domain_failures_are_explicit() {
                 i16::from(left) * i16::from(right)
             );
 
-            if right != 0 {
+            let primitive_left = i16::from(left);
+            let primitive_right = i16::from(right);
+            if let (Some(expected_q), Some(expected_r)) = (
+                primitive_left.checked_div(primitive_right),
+                primitive_left.checked_rem(primitive_right),
+            ) {
                 let (q, r) = a.div_rem_trunc(&b).unwrap();
-                let expected_q = i16::from(left) / i16::from(right);
-                let expected_r = i16::from(left) % i16::from(right);
                 assert_eq!(q, Integer::from(expected_q));
                 assert_eq!(r, Integer::from(expected_r));
             } else {
