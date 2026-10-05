@@ -1,0 +1,21 @@
+name: Test Perfect Arithmetic Qualification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/perfect-arithmetic.yml"
+      - ".github/workflows/perfect-arithmetic-selftest.yml"
+      - "qualification/perfect-arithmetic/**"
+
+permissions:
+  contents: read
+
+jobs:
+  q0-q5:
+    uses: ./.github/workflows/perfect-arithmetic.yml
+    with:
+      source_repository: Perfect-Foundations/perfect-arithmetic
+      source_ref: 9ec660f9abfd7fe93e441e77dbb1158c371603f5
+      qualification_ref: ${{ github.event.pull_request.head.sha }}
+    permissions:
+      contents: read
