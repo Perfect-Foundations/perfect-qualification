@@ -6,9 +6,7 @@ use perfect_arithmetic::{Integer, Natural};
 
 fn mix_byte(hash: &mut u64, value: u8) {
     *hash ^= u64::from(value).wrapping_add(0x9e);
-    *hash = hash
-        .rotate_left(13)
-        .wrapping_mul(0x9e37_79b1_85eb_ca87);
+    *hash = hash.rotate_left(13).wrapping_mul(0x9e37_79b1_85eb_ca87);
 }
 
 fn mix_u64(hash: &mut u64, value: u64) {
