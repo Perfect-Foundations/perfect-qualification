@@ -25,7 +25,11 @@ fn qualification_vectors_match_public_natural_api() {
     let mut checked = 0_usize;
     for line in data_lines(NATURAL_VECTORS) {
         let fields: Vec<_> = line.split_whitespace().collect();
-        assert_eq!(fields.len(), 9, "malformed natural qualification vector: {line}");
+        assert_eq!(
+            fields.len(),
+            9,
+            "malformed natural qualification vector: {line}"
+        );
 
         let seed: u64 = fields[0].parse().unwrap();
         let mul: u64 = fields[1].parse().unwrap();
@@ -69,7 +73,11 @@ fn qualification_vectors_match_public_integer_api() {
     let mut checked = 0_usize;
     for line in data_lines(INTEGER_VECTORS) {
         let fields: Vec<_> = line.split_whitespace().collect();
-        assert_eq!(fields.len(), 9, "malformed integer qualification vector: {line}");
+        assert_eq!(
+            fields.len(),
+            9,
+            "malformed integer qualification vector: {line}"
+        );
 
         let seed: i64 = fields[0].parse().unwrap();
         let mul: i64 = fields[1].parse().unwrap();
@@ -113,7 +121,11 @@ fn qualification_vectors_match_public_gcd_api() {
     let mut checked = 0_usize;
     for line in data_lines(GCD_VECTORS) {
         let fields: Vec<_> = line.split_whitespace().collect();
-        assert_eq!(fields.len(), 7, "malformed GCD qualification vector: {line}");
+        assert_eq!(
+            fields.len(),
+            7,
+            "malformed GCD qualification vector: {line}"
+        );
 
         let seed: u64 = fields[0].parse().unwrap();
         let mul: u64 = fields[1].parse().unwrap();
