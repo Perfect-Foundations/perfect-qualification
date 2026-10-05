@@ -1,0 +1,270 @@
+name: Qualify Perfect Arithmetic Q6 Release Candidate
+
+on:
+  workflow_call:
+    inputs:
+      source_repository:
+        description: Perfect Arithmetic repository in owner/name form.
+        required: true
+        type: string
+      source_ref:
+        description: Exact Perfect Arithmetic private release-candidate revision.
+        required: true
+        type: string
+      qualification_ref:
+        description: Exact Perfect Qualification revision containing this Q6 harness.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+  PERFECT_NUMERIC_REV: 19b6747cd852a47a694a020b97ba70b6b3ef259b
+  Q6_CHECK: .qualification-suite/qualification/perfect-arithmetic/scripts/check_q6.py
+
+jobs:
+  quality:
+    name: Q6 / Quality / MSRV
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact Perfect Arithmetic candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.source_repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact revisions and redirect private Numeric dependency
+        shell: bash
+        env:
+          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
+        run: |
+          set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "${{ inputs.source_ref }}"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+          cd .qualified-source
+          expected='perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "'"$PERFECT_NUMERIC_REV"'", version = "=0.1.0", default-features = false }'
+          grep -F -- "$expected" Cargo.toml >/dev/null
+          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|"             Cargo.toml
+          rm Cargo.toml.bak
+
+      - name: Install MSRV and stable
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
+          rustup toolchain install stable --profile minimal
+          rustup default 1.99.0
+          rustc --version
+          cargo --version
+          rustc +stable --version
+
+      - name: Q6 non-package prerelease prerequisites
+        run: python3 "$Q6_CHECK" .qualified-source
+
+      - name: Q6 production-boundary and dependency review
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          test ! -e build.rs
+          direct="$(cargo metadata --format-version 1 --no-deps | jq -r '.packages[] | select(.name == "perfect-arithmetic") | .dependencies[].name' | sort)"
+          test "$direct" = $'dashu-int\nnum-bigint\nnum-integer\nperfect-numeric'
+          cargo metadata --format-version 1 | jq -e 'any(.packages[]; .name == "num-bigint" and .version == "0.5.1")' >/dev/null
+          cargo metadata --format-version 1 | jq -e 'any(.packages[]; .name == "num-integer" and .version == "0.1.47")' >/dev/null
+          cargo metadata --format-version 1 --all-features | jq -e 'any(.packages[]; .name == "dashu-int" and .version == "0.6.2")' >/dev/null
+          if grep -R -nE 'unsafe[[:space:]]+(fn|impl|trait)|unsafe[[:space:]]*\{|extern[[:space:]]+"(C|system)"|std::net|TcpStream|UdpSocket|reqwest|curl|wget|telemetry|auto.?update|Command::new' src; then
+            echo "Q6 FAIL: forbidden production boundary indicator detected"
+            exit 1
+          fi
+
+      - name: Q6 format, build, test, clippy, docs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          cargo fmt -- --check
+          cargo check --all-targets
+          cargo check --all-targets --all-features
+          cargo check --no-default-features
+          cargo check --no-default-features --features high-throughput
+          cargo test
+          cargo test --all-features
+          cargo test --no-default-features
+          cargo test --no-default-features --features high-throughput
+          cargo +stable test --all-features
+          cargo +stable test --no-default-features
+          cargo clippy --all-targets --all-features -- -D warnings
+          cargo clippy --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features
+
+      - name: Q6 independent reference and hardening retention
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          python3 scripts/reference_oracle.py
+          cargo test --test m5_hardening --all-features
+          expected="$(tr -d '\r\n' < verification/semantic-fingerprint.txt)"
+          actual="$(cargo run --example semantic_fingerprint --quiet --all-features)"
+          test "$actual" = "$expected"
+          grep -F '80 mutants generated/tested' docs/verification/M5-HARDENING.md >/dev/null
+          grep -F '50,000 ASan runs' docs/verification/M5-HARDENING.md >/dev/null
+
+      - name: Q6 retained performance/resource evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          test -f docs/evidence/M3-PERFORMANCE-ARCHITECTURE.md
+          grep -F 'M3' docs/evidence/M3-PERFORMANCE-ARCHITECTURE.md >/dev/null
+          test -d benchmarks/backend-comparison
+
+      - name: Q6 registry package and offline-build gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          if grep -F 'cargo_package = "blocked-by-upstream-registry-sequence"' project-status.toml >/dev/null; then
+            echo "Q6 BLOCKED: final cargo package/offline-build evidence requires the declared Perfect Numeric registry release"
+            exit 1
+          fi
+          cargo package --list > ../package-list.txt
+          cargo package
+          test -s ../package-list.txt
+          package_manifest="target/package/perfect-arithmetic-0.1.0/Cargo.toml"
+          test -f "$package_manifest"
+          CARGO_NET_OFFLINE=true cargo check --manifest-path "$package_manifest" --all-features
+          CARGO_NET_OFFLINE=true cargo check --manifest-path "$package_manifest" --no-default-features
+
+  class-a:
+    name: Q6 / Class A / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - windows-2025
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout exact Perfect Arithmetic candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.source_repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Verify source and redirect private Numeric dependency
+        shell: bash
+        env:
+          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
+        run: |
+          set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "${{ inputs.source_ref }}"
+          cd .qualified-source
+          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|"             Cargo.toml
+          rm Cargo.toml.bak
+
+      - name: Install Rust 1.99.0
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+
+      - name: Q6 Class-A tests and semantic reproducibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          cargo test
+          cargo test --all-features
+          cargo test --no-default-features
+          expected="$(tr -d '\r\n' < verification/semantic-fingerprint.txt)"
+          first="$(cargo run --example semantic_fingerprint --quiet)"
+          second="$(cargo run --example semantic_fingerprint --quiet)"
+          all_features="$(cargo run --example semantic_fingerprint --quiet --all-features)"
+          no_std="$(cargo run --example semantic_fingerprint --quiet --no-default-features)"
+          test "$first" = "$expected"
+          test "$second" = "$expected"
+          test "$all_features" = "$expected"
+          test "$no_std" = "$expected"
+          echo "Q6 semantic fingerprint: $expected"
+
+  class-b:
+    name: Q6 / Class B / ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - wasm32v1-none
+          - thumbv7em-none-eabihf
+          - riscv64imac-unknown-none-elf
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact Perfect Arithmetic candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.source_repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Verify source and redirect private Numeric dependency
+        shell: bash
+        env:
+          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
+        run: |
+          set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "${{ inputs.source_ref }}"
+          cd .qualified-source
+          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|"             Cargo.toml
+          rm Cargo.toml.bak
+
+      - name: Install Rust 1.99.0 and target
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+          rustup target add "${{ matrix.target }}"
+
+      - name: Q6 Class-B no_std build
+        shell: bash
+        run: |
+          cd .qualified-source
+          cargo check --no-default-features --target "${{ matrix.target }}"
+          cargo check --no-default-features --features high-throughput --target "${{ matrix.target }}"
