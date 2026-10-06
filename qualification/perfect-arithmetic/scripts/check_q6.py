@@ -68,6 +68,8 @@ def main() -> int:
 
     if package.get("name") != "perfect-arithmetic":
         problem("unexpected package name")
+    if package.get("rust-version") != "1.99":
+        problem("Q6 candidate must retain the verified Rust 1.99 MSRV declaration")
 
     for key in (
         "version",
