@@ -302,6 +302,9 @@ jobs:
           cargo run --release --manifest-path .qualified-source/benchmarks/backend-comparison/Cargo.toml --features alloc-count -- --quick > q6-default-alloc.csv
           cargo run --release --manifest-path .qualified-source/benchmarks/backend-comparison/Cargo.toml --features product-high-throughput -- --quick > q6-high-throughput-timing.csv
           cargo run --release --manifest-path .qualified-source/benchmarks/backend-comparison/Cargo.toml --features "alloc-count product-high-throughput" -- --quick > q6-high-throughput-alloc.csv
+          cargo run --release --manifest-path .qualified-source/benchmarks/backend-comparison/Cargo.toml --bin hash_alloc > q6-hash-alloc.csv
+          grep -F 'natural,131072,0.000,0.000,0.000' q6-hash-alloc.csv >/dev/null
+          grep -F 'integer,131072,0.000,0.000,0.000' q6-hash-alloc.csv >/dev/null
 
       - name: Enforce candidate-bound timing and resource gates
         run: |
