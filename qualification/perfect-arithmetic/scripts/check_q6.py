@@ -235,6 +235,8 @@ def main() -> int:
             "lmes github mirror reference",
             "destination binding",
             "destination content digest reviewed",
+            "digest algorithm",
+            "git ls tree r z full tree head",
             "backend independent canonical hashing",
             "does not close q6",
         ):
