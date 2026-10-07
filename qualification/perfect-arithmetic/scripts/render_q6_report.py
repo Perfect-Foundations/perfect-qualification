@@ -141,6 +141,28 @@ def parse_historical_reuse(
             "historical proven-reuse report has no requirement/ADR verification mapping"
         )
 
+    required_disposition_fields = (
+        "Source lesson",
+        "Disposition",
+        "Arithmetic consequence",
+    )
+    required_traceability_fields = (
+        "Reuse item",
+        "Affected requirement / ADR / gate",
+        "Independent verification / reference method",
+    )
+
+    for field in required_disposition_fields:
+        if dispositions and any(not row.get(field, "").strip() for row in dispositions):
+            blockers.append(
+                f"historical proven-reuse disposition table lacks nonempty field: {field}"
+            )
+    for field in required_traceability_fields:
+        if traceability and any(not row.get(field, "").strip() for row in traceability):
+            blockers.append(
+                f"historical proven-reuse traceability table lacks nonempty field: {field}"
+            )
+
     return {
         "destination_binding": sections["Destination binding"],
         "source_revisions": source_revisions,
@@ -204,6 +226,7 @@ def load_leg_states(
                 "label": label,
                 "job_id": job_id,
                 "qualification_state": "NOT-RUN",
+                "failure_present": False,
             }
             continue
 
@@ -215,6 +238,7 @@ def load_leg_states(
                 "label": label,
                 "job_id": job_id,
                 "qualification_state": "BLOCKED",
+                "failure_present": False,
             }
             continue
 
@@ -225,10 +249,18 @@ def load_leg_states(
             )
             state = "BLOCKED"
 
+        failure_present = payload.get("failure_present", False)
+        if not isinstance(failure_present, bool):
+            blockers.append(
+                f"Q6 job-state artifact {path} has invalid failure_present value"
+            )
+            failure_present = True
+
         states[key] = {
             "label": label,
             "job_id": job_id,
             "qualification_state": state,
+            "failure_present": failure_present,
         }
 
     return states
@@ -361,6 +393,7 @@ def main() -> int:
         data["label"]
         for data in leg_states.values()
         if data["qualification_state"] == "FAIL"
+        or data.get("failure_present", False)
     ]
     not_run = [
         data["label"]
@@ -587,7 +620,7 @@ def main() -> int:
             handle.write(report_text)
 
     print(f"Q6_REPORT_STATE={overall}")
-    return 0
+    return 0 if overall == "PASS" else 1
 
 
 if __name__ == "__main__":
