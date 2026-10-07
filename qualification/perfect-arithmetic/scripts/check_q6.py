@@ -57,7 +57,7 @@ def main() -> int:
             f"Q6 BLOCKED: {len(blockers)} required private release-candidate evidence item(s) unavailable",
             file=sys.stderr,
         )
-        return 1
+        return 75
 
     try:
         with manifest_path.open("rb") as handle:
@@ -177,6 +177,33 @@ def main() -> int:
                 problem(f"supply-chain review missing required topic: {phrase}")
         if NUMERIC_REV not in supply_chain.read_text(encoding="utf-8"):
             problem("supply-chain review does not retain the exact Perfect Numeric revision")
+
+        raw_supply = supply_chain.read_text(encoding="utf-8")
+        required_positive_dispositions = (
+            "Dependency license audit: **PASS**",
+            "Dependency advisory audit: **PASS**",
+            "Build-script / FFI audit: **PASS**",
+        )
+        for disposition in required_positive_dispositions:
+            if disposition not in raw_supply:
+                blocker(
+                    "supply-chain review lacks positive retained disposition: "
+                    f"{disposition}"
+                )
+
+        for dependency in (
+            "Perfect Numeric",
+            "num-bigint",
+            "num-integer",
+            "dashu-int",
+        ):
+            pattern = re.compile(
+                rf"(?mi)^\|\s*{re.escape(dependency)}\s*\|.*\|\s*PASS\s*\|\s*$"
+            )
+            if pattern.search(raw_supply) is None:
+                blocker(
+                    f"supply-chain review lacks PASS disposition row for {dependency}"
+                )
 
     security = root / "SECURITY.md"
     if security.is_file():
@@ -315,7 +342,7 @@ def main() -> int:
             f"Q6 BLOCKED: {len(blockers)} required private release-candidate evidence item(s) unavailable",
             file=sys.stderr,
         )
-        return 1
+        return 75
 
     if problems:
         for message in problems:
