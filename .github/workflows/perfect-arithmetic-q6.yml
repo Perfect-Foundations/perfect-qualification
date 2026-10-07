@@ -194,6 +194,12 @@ jobs:
           cargo metadata --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --format-version 1 >/dev/null
           git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/Cargo.lock
 
+      - name: Mark Q6 quality evidence phase
+        shell: bash
+        run: |
+          set -euo pipefail
+          touch .q6-evidence-started
+
       - name: Q6 non-package prerelease prerequisites
         shell: bash
         run: |
@@ -441,6 +447,8 @@ jobs:
           state=FAIL
           if [ -f .q6-blocked ]; then
             state=BLOCKED
+          elif [ ! -f .q6-evidence-started ]; then
+            state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
           fi
@@ -519,6 +527,12 @@ jobs:
           test -f "$QUAL_ROOT/performance/Cargo.lock"
           cargo metadata --manifest-path "$PERF_MANIFEST" --locked --all-features --format-version 1 >/dev/null
           git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/performance/Cargo.lock
+
+      - name: Mark Q6 performance evidence phase
+        shell: bash
+        run: |
+          set -euo pipefail
+          touch .q6-evidence-started
 
       - name: Record performance evidence identity
         shell: bash
@@ -613,6 +627,8 @@ jobs:
           state=FAIL
           if [ -f .q6-blocked ]; then
             state=BLOCKED
+          elif [ ! -f .q6-evidence-started ]; then
+            state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
           fi
@@ -691,6 +707,12 @@ jobs:
           cargo +nightly-2026-10-04 metadata --manifest-path "$QUAL_FUZZ_ROOT/Cargo.toml" --locked --all-features --format-version 1 >/dev/null
           git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/fuzz/Cargo.lock
 
+      - name: Mark Q6 fuzz evidence phase
+        shell: bash
+        run: |
+          set -euo pipefail
+          touch .q6-evidence-started
+
       - name: Run qualification-owned fuzz campaigns on exact Q6 candidate
         shell: bash
         run: |
@@ -715,6 +737,8 @@ jobs:
           mkdir -p q6-job-state
           state=FAIL
           if [ -f .q6-blocked ]; then
+            state=BLOCKED
+          elif [ ! -f .q6-evidence-started ]; then
             state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
@@ -781,6 +805,12 @@ jobs:
           rustup default 1.99.0
           cargo install cargo-mutants --version =27.1.0 --locked
 
+      - name: Mark Q6 mutation evidence phase
+        shell: bash
+        run: |
+          set -euo pipefail
+          touch .q6-evidence-started
+
       - name: Validate candidate mutation reachability
         working-directory: .qualified-source
         shell: bash
@@ -821,6 +851,8 @@ jobs:
           mkdir -p q6-job-state
           state=FAIL
           if [ -f .q6-blocked ]; then
+            state=BLOCKED
+          elif [ ! -f .q6-evidence-started ]; then
             state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
@@ -903,6 +935,12 @@ jobs:
           rustup toolchain install 1.99.0 --profile minimal
           rustup default 1.99.0
 
+      - name: Mark Q6 Class-A evidence phase
+        shell: bash
+        run: |
+          set -euo pipefail
+          touch .q6-evidence-started
+
       - name: Q6 Class-A tests and semantic reproducibility
         shell: bash
         run: |
@@ -953,6 +991,8 @@ jobs:
           mkdir -p q6-job-state
           state=FAIL
           if [ -f .q6-blocked ]; then
+            state=BLOCKED
+          elif [ ! -f .q6-evidence-started ]; then
             state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
@@ -1036,6 +1076,12 @@ jobs:
           rustup default 1.99.0
           rustup target add "${{ matrix.target }}"
 
+      - name: Mark Q6 Class-B evidence phase
+        shell: bash
+        run: |
+          set -euo pipefail
+          touch .q6-evidence-started
+
       - name: Q6 Class-B no_std build
         shell: bash
         run: |
@@ -1064,6 +1110,8 @@ jobs:
           mkdir -p q6-job-state
           state=FAIL
           if [ -f .q6-blocked ]; then
+            state=BLOCKED
+          elif [ ! -f .q6-evidence-started ]; then
             state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
