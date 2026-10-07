@@ -24,3 +24,10 @@ path = "fuzz_targets/integer_api.rs"
 test = false
 doc = false
 bench = false
+
+[[bin]]
+name = "deep_paths"
+path = "fuzz_targets/deep_paths.rs"
+test = false
+doc = false
+bench = false
