@@ -126,6 +126,7 @@ def main() -> int:
         "docs/STABILITY.md",
         "docs/PACKAGING.md",
         "docs/SUPPLY-CHAIN-REVIEW.md",
+        "docs/PROVEN-REUSE-REVIEW.md",
         "docs/verification/M5-HARDENING.md",
         "docs/verification/M6-PRERELEASE-REVIEW.md",
         "docs/evidence/M3-PERFORMANCE-ARCHITECTURE.md",
@@ -212,6 +213,33 @@ def main() -> int:
         ):
             if phrase not in text:
                 problem(f"packaging record missing blocker/sequence topic: {phrase}")
+
+    reuse_review = root / "docs/PROVEN-REUSE-REVIEW.md"
+    if reuse_review.is_file():
+        raw = reuse_review.read_text(encoding="utf-8")
+        text = normalized_text(reuse_review)
+        for phrase in (
+            "historical proven reuse review",
+            "m6 catch up",
+            "perfect main",
+            "perfect specialized runtime pr 13 reviewed head",
+            "lmes github mirror reference",
+            "reuse method only",
+            "evaluated rejected",
+            "documentation disposition catch up only",
+            "does not close q6",
+        ):
+            if phrase not in text:
+                problem(f"historical reuse review missing required topic: {phrase}")
+        for revision in (
+            "d95e1f7864bd12bf58f38951680126aedbf63412",
+            "bdf7baacc180ac8a245d67b5b81fc7861d40339b",
+            "95a6cb30cae8cf4a35ff33878e2f9348d1471db5",
+        ):
+            if revision not in raw:
+                problem(f"historical reuse review missing exact predecessor revision: {revision}")
+        if "DEFERRED_WITH_IMPACT" in raw:
+            problem("historical reuse review retains a release-blocking DEFERRED_WITH_IMPACT disposition")
 
     if problems:
         for message in problems:
