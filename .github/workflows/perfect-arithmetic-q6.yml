@@ -16,6 +16,7 @@ env:
   RUST_BACKTRACE: "1"
   PERFECT_ARITHMETIC_BASELINE_REV: 9ec660f9abfd7fe93e441e77dbb1158c371603f5
   PERFECT_NUMERIC_REV: 19b6747cd852a47a694a020b97ba70b6b3ef259b
+  STABLE_RUST_VERSION: 1.99.0
   QUAL_ROOT: .qualification-suite/qualification/perfect-arithmetic
   QUAL_MANIFEST: .qualification-suite/qualification/perfect-arithmetic/Cargo.toml
   CANDIDATE_LOCK: .qualification-suite/qualification/perfect-arithmetic/Candidate.lock
@@ -164,15 +165,15 @@ jobs:
           cp "$CANDIDATE_LOCK" "$arithmetic_path/Cargo.lock"
           cmp "$CANDIDATE_LOCK" "$arithmetic_path/Cargo.lock"
 
-      - name: Install MSRV and stable
+      - name: Install MSRV and pinned stable replay
         shell: bash
         run: |
           rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
-          rustup toolchain install stable --profile minimal
+          rustup toolchain install "$STABLE_RUST_VERSION" --profile minimal
           rustup default 1.99.0
           rustc --version
           cargo --version
-          rustc +stable --version
+          rustc +"$STABLE_RUST_VERSION" --version
 
       - name: Verify retained candidate dependency lock
         shell: bash
@@ -251,10 +252,57 @@ jobs:
             exit 1
           }
 
-          if grep -R -nE 'unsafe[[:space:]]+(fn|impl|trait)|unsafe[[:space:]]*\{|extern[[:space:]]+"(C|system)"|std::net|TcpStream|UdpSocket|reqwest|curl|wget|telemetry|auto.?update|Command::new' src; then
+          if grep -R -nE 'unsafe[[:space:]]+(fn|impl|trait)|unsafe[[:space:]]*\{|extern[[:space:]]+"(C|system)"|reqwest|curl|wget|telemetry|auto.?update' src; then
             echo "Q6 FAIL: forbidden production boundary indicator detected"
             exit 1
           fi
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          forbidden_identifiers = {
+              "net",
+              "process",
+              "TcpStream",
+              "TcpListener",
+              "UdpSocket",
+              "SocketAddr",
+              "SocketAddrV4",
+              "SocketAddrV6",
+              "IpAddr",
+              "Ipv4Addr",
+              "Ipv6Addr",
+              "ToSocketAddrs",
+              "Command",
+              "Stdio",
+              "Child",
+              "ExitStatus",
+              "Output",
+          }
+          std_alias = re.compile(
+              r"\b(?:use\s+(?:::)?std|extern\s+crate\s+std)\s+as\b"
+          )
+          identifier = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+
+          problems = []
+          for source in sorted(Path("src").rglob("*.rs")):
+              text = source.read_text(encoding="utf-8").replace("r#", "")
+              if std_alias.search(text):
+                  problems.append(f"{source}: aliases the std root")
+              found = sorted(forbidden_identifiers.intersection(identifier.findall(text)))
+              if found:
+                  problems.append(
+                      f"{source}: forbidden network/process identifier(s): {', '.join(found)}"
+                  )
+
+          if problems:
+              raise SystemExit(
+                  "Q6 FAIL: production network/process boundary violation:\n"
+                  + "\n".join(problems)
+              )
+          print("Q6_PRODUCTION_NETWORK_PROCESS_BOUNDARY_PASS")
+          PY
 
       - name: Q6 format, build, test, clippy, docs
         shell: bash
@@ -270,8 +318,8 @@ jobs:
           cargo test --locked --all-features
           cargo test --locked --no-default-features
           cargo test --locked --no-default-features --features high-throughput
-          cargo +stable test --locked --all-features
-          cargo +stable test --locked --no-default-features
+          cargo +"$STABLE_RUST_VERSION" test --locked --all-features
+          cargo +"$STABLE_RUST_VERSION" test --locked --no-default-features
           cargo clippy --locked --all-targets --all-features -- -D warnings
           cargo clippy --locked --all-targets --no-default-features -- -D warnings
           RUSTDOCFLAGS="-D warnings" cargo doc --locked --no-deps --all-features
@@ -299,8 +347,8 @@ jobs:
           cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
           cargo test --manifest-path "$QUAL_MANIFEST" --locked --all-features
           cargo test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
-          cargo +stable test --manifest-path "$QUAL_MANIFEST" --locked --all-features
-          cargo +stable test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo +"$STABLE_RUST_VERSION" test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo +"$STABLE_RUST_VERSION" test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
           cargo clippy --manifest-path "$QUAL_MANIFEST" --locked --all-targets --all-features -- -D warnings
           cargo clippy --manifest-path "$QUAL_MANIFEST" --locked --all-targets --no-default-features -- -D warnings
           RUSTDOCFLAGS="-D warnings" cargo doc --manifest-path "$QUAL_MANIFEST" --locked --no-deps --all-features
@@ -995,7 +1043,7 @@ jobs:
               "",
               "## Exact configuration",
               "",
-              "- MSRV: Rust 1.99.0; stable replay where configured.",
+              "- MSRV: Rust 1.99.0; pinned stable replay: Rust 1.99.0.",
               "- Fuzz toolchain: nightly-2026-10-04, cargo-fuzz 0.13.2.",
               "- Mutation tool: cargo-mutants 27.1.0 with candidate config suppression disabled.",
               "- Class A: ubuntu-24.04, ubuntu-24.04-arm, windows-2025.",
