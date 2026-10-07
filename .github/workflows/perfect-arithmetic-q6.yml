@@ -734,16 +734,53 @@ jobs:
 
       - name: Run qualification-owned fuzz campaigns on exact Q6 candidate
         shell: bash
+        env:
+          Q6_FUZZ_SEED: "424242"
         run: |
           set -euo pipefail
           qualification_root="$(cd .qualification-suite && pwd)"
           fuzz_root="$(cd "$QUAL_FUZZ_ROOT" && pwd)"
+          artifact_root="$GITHUB_WORKSPACE/q6-fuzz-artifacts"
+          mkdir -p \
+            "$artifact_root/natural_api" \
+            "$artifact_root/integer_api" \
+            "$artifact_root/deep_paths"
+          {
+            printf 'seed=%s\n' "$Q6_FUZZ_SEED"
+            printf 'toolchain=nightly-2026-10-04\n'
+            printf 'cargo_fuzz=0.13.2\n'
+            printf 'natural_api_runs=25000\n'
+            printf 'natural_api_max_len=128\n'
+            printf 'integer_api_runs=25000\n'
+            printf 'integer_api_max_len=128\n'
+            printf 'deep_paths_runs=5000\n'
+            printf 'deep_paths_max_len=64\n'
+            rustc +nightly-2026-10-04 -Vv
+            cargo fuzz --version
+          } > "$GITHUB_WORKSPACE/q6-fuzz-metadata.txt"
+
           cd "$fuzz_root"
-          cargo +nightly-2026-10-04 fuzz run natural_api --sanitizer address -- -runs=25000 -max_len=128
-          cargo +nightly-2026-10-04 fuzz run integer_api --sanitizer address -- -runs=25000 -max_len=128
-          cargo +nightly-2026-10-04 fuzz run deep_paths --sanitizer address -- -runs=5000 -max_len=64
+          cargo +nightly-2026-10-04 fuzz run natural_api --sanitizer address -- \
+            -runs=25000 -max_len=128 -seed="$Q6_FUZZ_SEED" \
+            -artifact_prefix="$artifact_root/natural_api/"
+          cargo +nightly-2026-10-04 fuzz run integer_api --sanitizer address -- \
+            -runs=25000 -max_len=128 -seed="$Q6_FUZZ_SEED" \
+            -artifact_prefix="$artifact_root/integer_api/"
+          cargo +nightly-2026-10-04 fuzz run deep_paths --sanitizer address -- \
+            -runs=5000 -max_len=64 -seed="$Q6_FUZZ_SEED" \
+            -artifact_prefix="$artifact_root/deep_paths/"
           git -C "$qualification_root" diff --exit-code -- qualification/perfect-arithmetic/fuzz/Cargo.lock
 
+      - name: Retain Q6 fuzz corpus and failure artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: q6-fuzz-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            q6-fuzz-metadata.txt
+            q6-fuzz-artifacts/**
+            .qualification-suite/qualification/perfect-arithmetic/fuzz/corpus/**
+          if-no-files-found: warn
 
       - name: Record Q6 qualification state
         if: ${{ always() }}
