@@ -25,7 +25,7 @@ MAX_HIGH_THROUGHPUT_OVER_DEFAULT = 0.95
 
 def blocker(message: str) -> None:
     print(f"Q6 PERFORMANCE BLOCKER: {message}", file=sys.stderr)
-    raise SystemExit(1)
+    raise SystemExit(75)
 
 
 def fail(message: str) -> None:
