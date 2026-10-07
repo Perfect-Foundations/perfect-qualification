@@ -19,6 +19,23 @@ ORDERED_JOBS = (
     ("class-b", "Class B matrix"),
 )
 
+EXPECTED_LEGS = (
+    ("quality", "Q6 Quality / MSRV", "quality"),
+    ("performance", "Candidate-bound performance", "performance"),
+    ("fuzz", "Candidate-bound fuzz", "fuzz"),
+    ("mutation", "Candidate-bound mutation", "mutation"),
+    ("class-a-ubuntu-24.04", "Class A / ubuntu-24.04", "class-a"),
+    ("class-a-ubuntu-24.04-arm", "Class A / ubuntu-24.04-arm", "class-a"),
+    ("class-a-windows-2025", "Class A / windows-2025", "class-a"),
+    ("class-b-wasm32v1-none", "Class B / wasm32v1-none", "class-b"),
+    ("class-b-thumbv7em-none-eabihf", "Class B / thumbv7em-none-eabihf", "class-b"),
+    (
+        "class-b-riscv64imac-unknown-none-elf",
+        "Class B / riscv64imac-unknown-none-elf",
+        "class-b",
+    ),
+)
+
 REQUIRED_REUSE_SECTIONS = (
     "Destination binding",
     "Source revisions",
@@ -157,9 +174,7 @@ def parse_status(
         return {}
 
 
-def classify_execution(
-    needs_json: str,
-) -> tuple[dict[str, dict[str, str]], str]:
+def parse_needs(needs_json: str) -> tuple[dict[str, str], str]:
     try:
         needs = json.loads(needs_json or "{}")
     except json.JSONDecodeError as error:
@@ -168,21 +183,55 @@ def classify_execution(
     else:
         decode_error = ""
 
-    execution: dict[str, dict[str, str]] = {}
-    for job_id, label in ORDERED_JOBS:
-        raw = (needs.get(job_id) or {}).get("result", "skipped")
-        if raw == "success":
-            state = "PASS"
-        elif raw == "failure":
-            state = "FAIL"
-        else:
-            state = "NOT-RUN"
-        execution[job_id] = {
+    raw_results = {
+        job_id: (needs.get(job_id) or {}).get("result", "skipped")
+        for job_id, _ in ORDERED_JOBS
+    }
+    return raw_results, decode_error
+
+
+def load_leg_states(
+    state_root: Path,
+    blockers: list[str],
+) -> dict[str, dict[str, str]]:
+    states: dict[str, dict[str, str]] = {}
+    valid_states = {"PASS", "FAIL", "BLOCKED"}
+
+    for key, label, job_id in EXPECTED_LEGS:
+        path = state_root / f"{key}.json"
+        if not path.is_file():
+            states[key] = {
+                "label": label,
+                "job_id": job_id,
+                "qualification_state": "NOT-RUN",
+            }
+            continue
+
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            blockers.append(f"malformed Q6 job-state artifact {path}: {error}")
+            states[key] = {
+                "label": label,
+                "job_id": job_id,
+                "qualification_state": "BLOCKED",
+            }
+            continue
+
+        state = payload.get("state")
+        if state not in valid_states:
+            blockers.append(
+                f"Q6 job-state artifact {path} has invalid state {state!r}"
+            )
+            state = "BLOCKED"
+
+        states[key] = {
             "label": label,
-            "raw_result": raw,
-            "execution_state": state,
+            "job_id": job_id,
+            "qualification_state": state,
         }
-    return execution, decode_error
+
+    return states
 
 
 def append_reuse_markdown(
@@ -272,13 +321,15 @@ def append_reuse_markdown(
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--target-root", type=Path, required=True)
+    parser.add_argument("--state-root", type=Path, required=True)
     args = parser.parse_args()
 
-    execution, needs_decode_error = classify_execution(
+    raw_job_results, needs_decode_error = parse_needs(
         os.environ.get("NEEDS_JSON", "{}")
     )
 
     blockers: list[str] = []
+    leg_states = load_leg_states(args.state_root, blockers)
     checkout_ok = os.environ.get("TARGET_STATUS_CHECKOUT") == "success"
     status = parse_status(args.target_root, checkout_ok, blockers)
     historical_reuse = parse_historical_reuse(
@@ -301,16 +352,26 @@ def main() -> int:
             if isinstance(value, str) and value.lower().startswith("blocked"):
                 blockers.append(f"project-status engineering.{key}={value}")
 
+    blocked_legs = [
+        data["label"]
+        for data in leg_states.values()
+        if data["qualification_state"] == "BLOCKED"
+    ]
     failures = [
         data["label"]
-        for data in execution.values()
-        if data["execution_state"] == "FAIL"
+        for data in leg_states.values()
+        if data["qualification_state"] == "FAIL"
     ]
     not_run = [
         data["label"]
-        for data in execution.values()
-        if data["execution_state"] == "NOT-RUN"
+        for data in leg_states.values()
+        if data["qualification_state"] == "NOT-RUN"
     ]
+
+    if blocked_legs:
+        blockers.extend(
+            f"qualification leg blocked: {label}" for label in blocked_legs
+        )
 
     if blockers:
         overall = "BLOCKED"
@@ -354,24 +415,35 @@ def main() -> int:
     lines.extend(
         [
             "",
-            "## Gates attempted and execution results",
+            "## Gates attempted and qualification states",
             "",
-            "| Gate | Raw job result | Execution state |",
-            "| --- | --- | --- |",
+            "| Execution leg | Qualification state |",
+            "| --- | --- |",
         ]
     )
-    for job_id, _ in ORDERED_JOBS:
-        data = execution[job_id]
+    for key, _, _ in EXPECTED_LEGS:
+        data = leg_states[key]
         lines.append(
-            f"| {data['label']} | `{data['raw_result']}` | "
-            f"**{data['execution_state']}** |"
+            f"| {data['label']} | **{data['qualification_state']}** |"
         )
 
     lines.extend(
         [
             "",
-            "Execution-state labels describe GitHub job execution only. "
-            "They are not silently promoted to qualification claims.",
+            "### GitHub aggregate job results",
+            "",
+            "| Job | Raw GitHub result |",
+            "| --- | --- |",
+        ]
+    )
+    for job_id, label in ORDERED_JOBS:
+        lines.append(f"| {label} | `{raw_job_results[job_id]}` |")
+
+    lines.extend(
+        [
+            "",
+            "Qualification-state labels come from retained per-leg state artifacts. "
+            "A missing state artifact is NOT-RUN and is never promoted to PASS.",
             "",
             "## Qualification classification",
             "",
@@ -421,8 +493,8 @@ def main() -> int:
 
     remaining = [
         data["label"]
-        for data in execution.values()
-        if data["execution_state"] != "PASS"
+        for data in leg_states.values()
+        if data["qualification_state"] != "PASS"
     ]
     if remaining:
         lines.extend(f"- {item}" for item in remaining)
@@ -494,7 +566,8 @@ def main() -> int:
         "caller_sha": os.environ["CALLER_SHA"],
         "run_id": run_id,
         "run_attempt": run_attempt,
-        "execution": execution,
+        "raw_github_job_results": raw_job_results,
+        "execution_legs": leg_states,
         "qualification_state": overall,
         "failures": failures,
         "blockers": blockers,
