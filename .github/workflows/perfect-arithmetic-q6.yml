@@ -841,3 +841,323 @@ jobs:
           cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --target "${{ matrix.target }}"
           cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --features high-throughput --target "${{ matrix.target }}"
           git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/Cargo.lock
+
+
+  report:
+    name: Q6 / Qualification report
+    if: ${{ always() }}
+    needs:
+      - quality
+      - performance
+      - fuzz
+      - mutation
+      - class-a
+      - class-b
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact target status
+        id: target-status
+        continue-on-error: true
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-arithmetic
+          ref: ${{ inputs.source_ref }}
+          path: .report-target
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Generate exact Q6 qualification report
+        if: ${{ always() }}
+        shell: bash
+        env:
+          TARGET_REPOSITORY: Perfect-Foundations/perfect-arithmetic
+          TARGET_SHA: ${{ inputs.source_ref }}
+          QUALIFICATION_REPOSITORY: ${{ job.workflow_repository }}
+          QUALIFICATION_SHA: ${{ job.workflow_sha }}
+          CALLER_REPOSITORY: ${{ github.repository }}
+          CALLER_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          TARGET_STATUS_CHECKOUT: ${{ steps.target-status.outcome }}
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import json
+          import os
+          from pathlib import Path
+          import tomllib
+
+          ordered_jobs = [
+              ("quality", "Q6 Quality / MSRV"),
+              ("performance", "Candidate-bound performance"),
+              ("fuzz", "Candidate-bound fuzz"),
+              ("mutation", "Candidate-bound mutation"),
+              ("class-a", "Class A matrix"),
+              ("class-b", "Class B matrix"),
+          ]
+
+          try:
+              needs = json.loads(os.environ.get("NEEDS_JSON", "{}"))
+          except json.JSONDecodeError as error:
+              needs = {}
+              needs_decode_error = str(error)
+          else:
+              needs_decode_error = ""
+
+          execution = {}
+          for job_id, label in ordered_jobs:
+              raw = (needs.get(job_id) or {}).get("result", "skipped")
+              if raw == "success":
+                  state = "PASS"
+              elif raw == "failure":
+                  state = "FAIL"
+              else:
+                  state = "NOT-RUN"
+              execution[job_id] = {
+                  "label": label,
+                  "raw_result": raw,
+                  "execution_state": state,
+              }
+
+          blockers: list[str] = []
+          status_path = Path(".report-target/project-status.toml")
+          status: dict = {}
+          if os.environ.get("TARGET_STATUS_CHECKOUT") != "success" or not status_path.is_file():
+              blockers.append("exact target project-status.toml was unavailable to the report job")
+          else:
+              try:
+                  with status_path.open("rb") as handle:
+                      status = tomllib.load(handle)
+              except (OSError, tomllib.TOMLDecodeError) as error:
+                  blockers.append(f"exact target project-status.toml could not be parsed: {error}")
+
+          if status:
+              lifecycle = status.get("lifecycle", {})
+              work = status.get("work", {})
+              engineering = status.get("engineering", {})
+
+              if lifecycle.get("health") == "blocked":
+                  blockers.append("project-status lifecycle.health=blocked")
+              if int(work.get("blocking_issues", 0) or 0) > 0:
+                  blockers.append(
+                      f"project-status work.blocking_issues={work.get('blocking_issues')}"
+                  )
+
+              for key in (
+                  "ci_health",
+                  "qualification_status",
+                  "cargo_package",
+                  "offline_build",
+              ):
+                  value = engineering.get(key)
+                  if isinstance(value, str) and "blocked" in value.lower():
+                      blockers.append(f"project-status engineering.{key}={value}")
+
+          failures = [
+              data["label"]
+              for data in execution.values()
+              if data["execution_state"] == "FAIL"
+          ]
+          not_run = [
+              data["label"]
+              for data in execution.values()
+              if data["execution_state"] == "NOT-RUN"
+          ]
+
+          if blockers:
+              overall = "BLOCKED"
+          elif failures:
+              overall = "FAIL"
+          elif not_run:
+              overall = "NOT-RUN"
+          else:
+              overall = "PASS"
+
+          target_sha = os.environ["TARGET_SHA"]
+          qualification_sha = os.environ["QUALIFICATION_SHA"]
+          run_id = os.environ["RUN_ID"]
+          run_attempt = os.environ["RUN_ATTEMPT"]
+
+          lines = [
+              "# Perfect Arithmetic Q6 Qualification Report",
+              "",
+              "## Exact identity",
+              "",
+              f"- Target repository: `{os.environ['TARGET_REPOSITORY']}`",
+              f"- Target SHA: `{target_sha}`",
+              f"- Qualification repository: `{os.environ['QUALIFICATION_REPOSITORY']}`",
+              f"- Qualification workflow SHA: `{qualification_sha}`",
+              f"- Caller repository: `{os.environ['CALLER_REPOSITORY']}`",
+              f"- Caller SHA: `{os.environ['CALLER_SHA']}`",
+              f"- GitHub run: `{run_id}`, attempt `{run_attempt}`",
+              "",
+              "## Exact configuration",
+              "",
+              "- MSRV: Rust 1.99.0; stable replay where configured.",
+              "- Fuzz toolchain: nightly-2026-10-04, cargo-fuzz 0.13.2.",
+              "- Mutation tool: cargo-mutants 27.1.0 with candidate config suppression disabled.",
+              "- Class A: ubuntu-24.04, ubuntu-24.04-arm, windows-2025.",
+              "- Class B: wasm32v1-none, thumbv7em-none-eabihf, riscv64imac-unknown-none-elf.",
+              "- Candidate, consumer, performance, and fuzz dependency graphs use retained locks.",
+              "",
+              "## Gates attempted and execution results",
+              "",
+              "| Gate | Raw job result | Execution state |",
+              "| --- | --- | --- |",
+          ]
+
+          for job_id, _ in ordered_jobs:
+              data = execution[job_id]
+              lines.append(
+                  f"| {data['label']} | `{data['raw_result']}` | **{data['execution_state']}** |"
+              )
+
+          lines.extend(
+              [
+                  "",
+                  "Execution-state labels describe GitHub job execution only. They are not "
+                  "silently promoted to qualification claims.",
+                  "",
+                  "## Qualification classification",
+                  "",
+                  f"**{overall}**",
+                  "",
+                  "### Failures",
+                  "",
+              ]
+          )
+
+          if failures:
+              lines.extend(f"- {item}" for item in failures)
+          else:
+              lines.append("- None recorded by aggregate job results.")
+
+          lines.extend(["", "### Blockers", ""])
+          if blockers:
+              lines.extend(f"- {item}" for item in blockers)
+          else:
+              lines.append("- None recorded from the exact target status/report preflight.")
+
+          lines.extend(["", "### Not run", ""])
+          if not_run:
+              lines.extend(f"- {item}" for item in not_run)
+          else:
+              lines.append("- None.")
+
+          lines.extend(
+              [
+                  "",
+                  "### Not applicable",
+                  "",
+                  "- None for the configured Q6 job set.",
+                  "",
+                  "## Evidence retained",
+                  "",
+                  f"- Performance artifact: `q6-performance-{run_id}-{run_attempt}` when the performance runner produced files.",
+                  f"- Overall report artifact: `q6-qualification-report-{run_id}-{run_attempt}`.",
+                  "- Exact commands, versions, target matrices, lockfiles, and job logs remain revision/run bound.",
+                  "",
+                  "## Remaining unqualified work",
+                  "",
+              ]
+          )
+
+          remaining = [
+              data["label"]
+              for data in execution.values()
+              if data["execution_state"] != "PASS"
+          ]
+          if remaining:
+              lines.extend(f"- {item}" for item in remaining)
+          else:
+              lines.append("- No configured Q6 execution job remains non-passing.")
+
+          if blockers:
+              lines.append("- Authoritative blocker(s) listed above remain unresolved.")
+
+          lines.extend(
+              [
+                  "- Public-release gates outside this private Q6 run remain governed by the exact target `project-status.toml`; this report does not release or publish the crate.",
+                  "",
+                  "## Next safe action",
+                  "",
+              ]
+          )
+
+          if overall == "BLOCKED":
+              next_action = (
+                  "Resolve the authoritative blocker(s) without treating unavailable evidence as a pass, "
+                  "then rerun Q6 on the exact resulting target and qualification revisions."
+              )
+          elif overall == "FAIL":
+              next_action = (
+                  "Investigate and correct the failing qualification job(s), then rerun the exact "
+                  "target/configuration; do not award Q6 from this report."
+              )
+          elif overall == "NOT-RUN":
+              next_action = (
+                  "Restore the unavailable/cancelled execution path and rerun the exact target/configuration."
+              )
+          else:
+              next_action = (
+                  "Review and retain this report plus all evidence artifacts before changing authoritative "
+                  "status; a PASS report alone does not publish or release the crate."
+              )
+          lines.append(next_action)
+
+          if needs_decode_error:
+              lines.extend(
+                  [
+                      "",
+                      "## Report-generation warning",
+                      "",
+                      f"- Could not decode the `needs` context: {needs_decode_error}",
+                  ]
+              )
+
+          report_text = "\n".join(lines) + "\n"
+          Path("q6-qualification-report.md").write_text(report_text, encoding="utf-8")
+
+          machine = {
+              "schema_version": 1,
+              "target_repository": os.environ["TARGET_REPOSITORY"],
+              "target_sha": target_sha,
+              "qualification_repository": os.environ["QUALIFICATION_REPOSITORY"],
+              "qualification_sha": qualification_sha,
+              "caller_repository": os.environ["CALLER_REPOSITORY"],
+              "caller_sha": os.environ["CALLER_SHA"],
+              "run_id": run_id,
+              "run_attempt": run_attempt,
+              "execution": execution,
+              "qualification_state": overall,
+              "failures": failures,
+              "blockers": blockers,
+              "not_run": not_run,
+              "not_applicable": [],
+              "next_safe_action": next_action,
+          }
+          Path("q6-qualification-report.json").write_text(
+              json.dumps(machine, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+
+          summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          if summary:
+              with Path(summary).open("a", encoding="utf-8") as handle:
+                  handle.write(report_text)
+
+          print(f"Q6_REPORT_STATE={overall}")
+          PY
+
+      - name: Retain overall Q6 qualification report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: q6-qualification-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            q6-qualification-report.md
+            q6-qualification-report.json
+          if-no-files-found: error
