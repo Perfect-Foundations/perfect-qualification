@@ -213,7 +213,11 @@ jobs:
             exit 1
           }
 
-          if grep -R -nE '#[[:space:]]*\[[[:space:]]*path[[:space:]]*=|include![[:space:]]*\(' src; then
+          if find src -type l -print -quit | grep -q .; then
+            echo "Q6 FAIL: production src tree may not contain symbolic links"
+            exit 1
+          fi
+          if grep -R -nE '#[[:space:]]*\[[^]]*path[[:space:]]*=|include![[:space:]]*\(' src; then
             echo "Q6 FAIL: production source may not escape the reviewed src tree through path/include directives"
             exit 1
           fi
