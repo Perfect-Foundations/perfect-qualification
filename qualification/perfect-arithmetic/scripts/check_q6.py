@@ -335,22 +335,27 @@ def main() -> int:
                 "DEFERRED_WITH_IMPACT state"
             )
 
-    if blockers:
+    if blockers or problems:
         for message in blockers:
             print(f"Q6 BLOCKER: {message}", file=sys.stderr)
-        print(
-            f"Q6 BLOCKED: {len(blockers)} required private release-candidate evidence item(s) unavailable",
-            file=sys.stderr,
-        )
-        return 75
-
-    if problems:
         for message in problems:
             print(f"Q6 FAILURE: {message}", file=sys.stderr)
-        print(
-            f"Q6 FAIL: {len(problems)} private release-candidate prerequisite violation(s)",
-            file=sys.stderr,
-        )
+
+        if blockers:
+            print(
+                f"Q6 BLOCKED: {len(blockers)} required private release-candidate evidence item(s) unavailable",
+                file=sys.stderr,
+            )
+        if problems:
+            print(
+                f"Q6 FAIL: {len(problems)} private release-candidate prerequisite violation(s)",
+                file=sys.stderr,
+            )
+
+        if blockers and problems:
+            return 76
+        if blockers:
+            return 75
         return 1
 
     print(f"Q6 INFO: exact retained Arithmetic baseline is {ARITHMETIC_REV}")
