@@ -63,6 +63,17 @@ jobs:
           test "$(git -C .qualified-source rev-parse HEAD)" = "$EXPECTED_SOURCE_REF"
           test "$(git -C .qualification-suite rev-parse HEAD)" = "$EXPECTED_QUALIFICATION_REF"
 
+          review_commit="$(git -C .qualified-source log -1 --format=%H -- docs/PROVEN-REUSE-REVIEW.md)"
+          test "$review_commit" = "$EXPECTED_SOURCE_REF" || {
+            echo "Q6 FAIL: exact candidate is newer than its historical proven-reuse review"
+            exit 1
+          }
+          review_parent="$(git -C .qualified-source rev-parse "$EXPECTED_SOURCE_REF^")"
+          grep -F -- "Destination production parent reviewed: `$review_parent`"             .qualified-source/docs/PROVEN-REUSE-REVIEW.md >/dev/null || {
+            echo "Q6 FAIL: historical proven-reuse review is not bound to the candidate parent"
+            exit 1
+          }
+
           arithmetic_path="$(cd .qualified-source && pwd)"
 
           ARITHMETIC_MANIFEST="$arithmetic_path/Cargo.toml" python3 - <<'PY'
@@ -393,6 +404,7 @@ jobs:
           cd "$QUAL_FUZZ_ROOT"
           cargo +nightly-2026-10-04 fuzz run natural_api --sanitizer address -- -runs=25000 -max_len=128
           cargo +nightly-2026-10-04 fuzz run integer_api --sanitizer address -- -runs=25000 -max_len=128
+          cargo +nightly-2026-10-04 fuzz run deep_paths --sanitizer address -- -runs=5000 -max_len=64
 
   mutation:
     name: Q6 / Candidate-bound mutation
@@ -432,9 +444,209 @@ jobs:
           rustup default 1.99.0
           cargo install cargo-mutants --version =27.1.0 --locked
 
+      - name: Validate candidate mutation reachability
+        working-directory: .qualified-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .cargo/mutants.toml
+          test ! -e mutants.toml
+          if grep -R -nE 'mutants[[:space:]]*::[[:space:]]*(skip|exclude_re)' src; then
+            echo "Q6 FAIL: candidate production source suppresses cargo-mutants coverage"
+            exit 1
+          fi
+
+          cargo mutants --all-features --list --no-config --exclude-re 'tests::' > ../q6-mutants.txt
+          mutant_count="$(grep -cve '^[[:space:]]*
+  class-a:
+    name: Q6 / Class A / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - windows-2025
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout exact Perfect Arithmetic candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-arithmetic
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify source and redirect qualification dependencies
+        shell: bash
+        env:
+          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
+          EXPECTED_SOURCE_REF: ${{ inputs.source_ref }}
+          EXPECTED_QUALIFICATION_REF: ${{ job.workflow_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "$EXPECTED_SOURCE_REF"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "$EXPECTED_QUALIFICATION_REF"
+
+          arithmetic_shell="$(cd .qualified-source && pwd)"
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            arithmetic_cargo="$(cygpath -m "$arithmetic_shell")"
+          else
+            arithmetic_cargo="$arithmetic_shell"
+          fi
+
+          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_shell/Cargo.toml"
+          rm "$arithmetic_shell/Cargo.toml.bak"
+
+          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_BASELINE_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_cargo\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
+          rm "$QUAL_MANIFEST.bak"
+
+      - name: Install Rust 1.99.0
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+
+      - name: Q6 Class-A tests and semantic reproducibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .qualified-source
+          cargo test
+          cargo test --all-features
+          cargo test --no-default-features
+          expected="$(tr -d '\r\n' < verification/semantic-fingerprint.txt)"
+          first="$(cargo run --example semantic_fingerprint --quiet)"
+          second="$(cargo run --example semantic_fingerprint --quiet)"
+          all_features="$(cargo run --example semantic_fingerprint --quiet --all-features)"
+          no_std="$(cargo run --example semantic_fingerprint --quiet --no-default-features)"
+          test "$first" = "$expected"
+          test "$second" = "$expected"
+          test "$all_features" = "$expected"
+          test "$no_std" = "$expected"
+          echo "Q6 semantic fingerprint: $expected"
+
+      - name: Q0-Q5 Class-A consumer requalification
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path "$QUAL_MANIFEST"
+          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
+          expected="$(tr -d '\r\n' < "$QUAL_ROOT/semantic-fingerprint.txt")"
+          first="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
+          second="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
+          all_features="$(cargo run --manifest-path "$QUAL_MANIFEST" --all-features --example fingerprint --quiet)"
+          no_std="$(cargo run --manifest-path "$QUAL_MANIFEST" --no-default-features --example fingerprint --quiet)"
+          test "$first" = "$expected"
+          test "$second" = "$expected"
+          test "$all_features" = "$expected"
+          test "$no_std" = "$expected"
+
+  class-b:
+    name: Q6 / Class B / ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - wasm32v1-none
+          - thumbv7em-none-eabihf
+          - riscv64imac-unknown-none-elf
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact Perfect Arithmetic candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-arithmetic
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Materialize exact Perfect Numeric source
+        id: numeric-source
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/perfect-numeric
+
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify source and redirect qualification dependencies
+        shell: bash
+        env:
+          PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
+          EXPECTED_SOURCE_REF: ${{ inputs.source_ref }}
+          EXPECTED_QUALIFICATION_REF: ${{ job.workflow_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "$EXPECTED_SOURCE_REF"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "$EXPECTED_QUALIFICATION_REF"
+
+          arithmetic_shell="$(cd .qualified-source && pwd)"
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            arithmetic_cargo="$(cygpath -m "$arithmetic_shell")"
+          else
+            arithmetic_cargo="$arithmetic_shell"
+          fi
+
+          sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_shell/Cargo.toml"
+          rm "$arithmetic_shell/Cargo.toml.bak"
+
+          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_BASELINE_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_cargo\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
+          rm "$QUAL_MANIFEST.bak"
+
+      - name: Install Rust 1.99.0 and target
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+          rustup target add "${{ matrix.target }}"
+
+      - name: Q6 Class-B no_std build
+        shell: bash
+        run: |
+          cd .qualified-source
+          cargo check --no-default-features --target "${{ matrix.target }}"
+          cargo check --no-default-features --features high-throughput --target "${{ matrix.target }}"
+
+      - name: Q0-Q5 Class-B consumer requalification
+        shell: bash
+        run: |
+          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --target "${{ matrix.target }}"
+          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --features high-throughput --target "${{ matrix.target }}"
+ ../q6-mutants.txt)"
+          if [ "$mutant_count" -lt 80 ]; then
+            echo "Q6 FAIL: mutation inventory shrank below retained M5 floor (80): $mutant_count"
+            exit 1
+          fi
+          echo "Q6 mutation inventory: $mutant_count"
+
       - name: Re-run production mutation campaign on exact Q6 candidate
         working-directory: .qualified-source
-        run: cargo mutants --all-features --jobs 2 --timeout 90 --build-timeout 180 --no-shuffle --exclude-re 'tests::'
+        run: cargo mutants --all-features --jobs 2 --timeout 90 --build-timeout 180 --no-shuffle --no-config --exclude-re 'tests::'
 
   class-a:
     name: Q6 / Class A / ${{ matrix.os }}
