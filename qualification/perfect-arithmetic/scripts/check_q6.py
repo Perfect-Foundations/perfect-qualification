@@ -113,10 +113,11 @@ def main() -> int:
         problem("project-status.toml has no [engineering] table")
         engineering = {}
     if engineering.get("qualification_status") not in (
+        "q0-q5-baseline-retained-current-candidate-requalification-blocked",
         "q0-q5-passing-q6-open",
         "q0-q6-passing",
     ):
-        problem("Q0-Q5 qualification status is not retained")
+        problem("Q0-Q5 baseline/current-candidate requalification state is not explicit")
 
     for relative in (
         "README.md",
