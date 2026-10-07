@@ -11,10 +11,6 @@ on:
         description: Exact Perfect Arithmetic private release-candidate revision.
         required: true
         type: string
-      qualification_ref:
-        description: Exact Perfect Qualification revision containing this Q6 harness.
-        required: true
-        type: string
 
 permissions:
   contents: read
@@ -26,6 +22,7 @@ env:
   PERFECT_NUMERIC_REV: 19b6747cd852a47a694a020b97ba70b6b3ef259b
   QUAL_ROOT: .qualification-suite/qualification/perfect-arithmetic
   QUAL_MANIFEST: .qualification-suite/qualification/perfect-arithmetic/Cargo.toml
+  PERF_MANIFEST: .qualification-suite/qualification/perfect-arithmetic/performance/Cargo.toml
   Q6_CHECK: .qualification-suite/qualification/perfect-arithmetic/scripts/check_q6.py
   Q6_PERF_CHECK: .qualification-suite/qualification/perfect-arithmetic/scripts/check_q6_performance.py
 
@@ -52,8 +49,8 @@ jobs:
       - name: Checkout exact qualification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: Perfect-Foundations/perfect-qualification
-          ref: ${{ inputs.qualification_ref }}
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
           path: .qualification-suite
           fetch-depth: 1
           persist-credentials: false
@@ -63,7 +60,7 @@ jobs:
         env:
           PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
           EXPECTED_SOURCE_REF: ${{ inputs.source_ref }}
-          EXPECTED_QUALIFICATION_REF: ${{ inputs.qualification_ref }}
+          EXPECTED_QUALIFICATION_REF: ${{ job.workflow_sha }}
         run: |
           set -euo pipefail
           test "$(git -C .qualified-source rev-parse HEAD)" = "$EXPECTED_SOURCE_REF"
@@ -77,6 +74,8 @@ jobs:
           import tomllib
 
           manifest = tomllib.loads(Path(os.environ["ARITHMETIC_MANIFEST"]).read_text())
+          assert "patch" not in manifest, "candidate Cargo.toml may not override registry sources"
+          assert "replace" not in manifest, "candidate Cargo.toml may not replace dependency sources"
           assert manifest["package"]["name"] == "perfect-arithmetic"
           assert manifest["package"]["rust-version"] == "1.99"
           assert manifest["features"]["default"] == ["std"]
@@ -108,6 +107,9 @@ jobs:
           }
           print("Q6_EXACT_DIRECT_DEPENDENCY_CONTRACT_PASS")
           PY
+
+          test ! -e "$arithmetic_path/.cargo/config"
+          test ! -e "$arithmetic_path/.cargo/config.toml"
 
           expected='perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "'"$PERFECT_NUMERIC_REV"'", version = "=0.1.0", default-features = false }'
           grep -F -- "$expected" "$arithmetic_path/Cargo.toml" >/dev/null
@@ -267,8 +269,8 @@ jobs:
       - name: Checkout exact qualification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: Perfect-Foundations/perfect-qualification
-          ref: ${{ inputs.qualification_ref }}
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
           path: .qualification-suite
           fetch-depth: 1
           persist-credentials: false
@@ -278,16 +280,25 @@ jobs:
         env:
           PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
           EXPECTED_SOURCE_REF: ${{ inputs.source_ref }}
-          EXPECTED_QUALIFICATION_REF: ${{ inputs.qualification_ref }}
+          EXPECTED_QUALIFICATION_REF: ${{ job.workflow_sha }}
         run: |
           set -euo pipefail
           test "$(git -C .qualified-source rev-parse HEAD)" = "$EXPECTED_SOURCE_REF"
           test "$(git -C .qualification-suite rev-parse HEAD)" = "$EXPECTED_QUALIFICATION_REF"
+
+          arithmetic_path="$(cd .qualified-source && pwd)"
           sed -i.bak \
             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|" \
-            .qualified-source/Cargo.toml
-          rm .qualified-source/Cargo.toml.bak
-          grep -F -- "perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }" .qualified-source/Cargo.toml >/dev/null
+            "$arithmetic_path/Cargo.toml"
+          rm "$arithmetic_path/Cargo.toml.bak"
+          grep -F -- "perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }" "$arithmetic_path/Cargo.toml" >/dev/null
+
+          expected_driver='perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "'"$PERFECT_ARITHMETIC_BASELINE_REV"'", version = "=0.1.0", default-features = false, features = ["std"] }'
+          grep -F -- "$expected_driver" "$PERF_MANIFEST" >/dev/null
+          sed -i.bak \
+            "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_BASELINE_REV\", version = \"=0.1.0\", default-features = false, features = \[\"std\"\] }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false, features = [\"std\"] }|" \
+            "$PERF_MANIFEST"
+          rm "$PERF_MANIFEST.bak"
 
       - name: Install Rust 1.99.0
         run: |
@@ -298,11 +309,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo run --release --manifest-path .qualified-source/benchmarks/backend-comparison/Cargo.toml -- --quick > q6-default-timing.csv
-          cargo run --release --manifest-path .qualified-source/benchmarks/backend-comparison/Cargo.toml --features alloc-count -- --quick > q6-default-alloc.csv
-          cargo run --release --manifest-path .qualified-source/benchmarks/backend-comparison/Cargo.toml --features product-high-throughput -- --quick > q6-high-throughput-timing.csv
-          cargo run --release --manifest-path .qualified-source/benchmarks/backend-comparison/Cargo.toml --features "alloc-count product-high-throughput" -- --quick > q6-high-throughput-alloc.csv
-          cargo run --release --manifest-path .qualified-source/benchmarks/backend-comparison/Cargo.toml --bin hash_alloc > q6-hash-alloc.csv
+          cargo run --release --manifest-path "$PERF_MANIFEST" > q6-default-timing.csv
+          cargo run --release --manifest-path "$PERF_MANIFEST" --features alloc-count > q6-default-alloc.csv
+          cargo run --release --manifest-path "$PERF_MANIFEST" --features candidate-high-throughput > q6-high-throughput-timing.csv
+          cargo run --release --manifest-path "$PERF_MANIFEST" --features "alloc-count candidate-high-throughput" > q6-high-throughput-alloc.csv
+          cargo run --release --manifest-path "$PERF_MANIFEST" --bin hash_alloc > q6-hash-alloc.csv
           grep -F 'natural,131072,0.000,0.000,0.000' q6-hash-alloc.csv >/dev/null
           grep -F 'integer,131072,0.000,0.000,0.000' q6-hash-alloc.csv >/dev/null
 
@@ -428,8 +439,8 @@ jobs:
       - name: Checkout exact qualification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: Perfect-Foundations/perfect-qualification
-          ref: ${{ inputs.qualification_ref }}
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
           path: .qualification-suite
           fetch-depth: 1
           persist-credentials: false
@@ -439,7 +450,7 @@ jobs:
         env:
           PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
           EXPECTED_SOURCE_REF: ${{ inputs.source_ref }}
-          EXPECTED_QUALIFICATION_REF: ${{ inputs.qualification_ref }}
+          EXPECTED_QUALIFICATION_REF: ${{ job.workflow_sha }}
         run: |
           set -euo pipefail
           test "$(git -C .qualified-source rev-parse HEAD)" = "$EXPECTED_SOURCE_REF"
@@ -529,8 +540,8 @@ jobs:
       - name: Checkout exact qualification harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: Perfect-Foundations/perfect-qualification
-          ref: ${{ inputs.qualification_ref }}
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
           path: .qualification-suite
           fetch-depth: 1
           persist-credentials: false
@@ -540,7 +551,7 @@ jobs:
         env:
           PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
           EXPECTED_SOURCE_REF: ${{ inputs.source_ref }}
-          EXPECTED_QUALIFICATION_REF: ${{ inputs.qualification_ref }}
+          EXPECTED_QUALIFICATION_REF: ${{ job.workflow_sha }}
         run: |
           set -euo pipefail
           test "$(git -C .qualified-source rev-parse HEAD)" = "$EXPECTED_SOURCE_REF"
