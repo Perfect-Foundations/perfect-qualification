@@ -69,6 +69,7 @@ jobs:
           review_path=".qualified-source/docs/PROVEN-REUSE-REVIEW.md"
           if [ ! -f "$review_path" ]; then
             echo "Q6 BLOCKED: required historical proven-reuse review is unavailable"
+            touch .q6-blocked
             exit 1
           fi
 
@@ -194,7 +195,17 @@ jobs:
           git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/Cargo.lock
 
       - name: Q6 non-package prerelease prerequisites
-        run: python3 "$Q6_CHECK" .qualified-source
+        shell: bash
+        run: |
+          set +e
+          python3 "$Q6_CHECK" .qualified-source
+          rc="$?"
+          set -e
+          if [ "$rc" -eq 75 ]; then
+            touch .q6-blocked
+            exit 1
+          fi
+          exit "$rc"
 
       - name: Q6 production-boundary and dependency review
         shell: bash
@@ -374,6 +385,7 @@ jobs:
           cd .qualified-source
           if grep -F 'cargo_package = "blocked-by-upstream-registry-sequence"' project-status.toml >/dev/null; then
             echo "Q6 BLOCKED: final cargo package/offline-build evidence requires the declared Perfect Numeric registry release"
+            touch ../.q6-blocked
             exit 1
           fi
 
@@ -383,6 +395,7 @@ jobs:
           prepackage_lock="../$PREPACKAGE_LOCK"
           if [ ! -f "$prepackage_lock" ]; then
             echo "Q6 BLOCKED: retained clean pre-package dependency lock is unavailable"
+            touch ../.q6-blocked
             exit 1
           fi
 
@@ -407,12 +420,39 @@ jobs:
           registry_lock="../$QUAL_ROOT/RegistryPackage.lock"
           if [ ! -f "$registry_lock" ]; then
             echo "Q6 BLOCKED: retained extracted-package registry dependency lock is unavailable"
+            touch ../.q6-blocked
             exit 1
           fi
           cp "$registry_lock" "$(dirname "$package_manifest")/Cargo.lock"
           cmp "$registry_lock" "$(dirname "$package_manifest")/Cargo.lock"
           CARGO_NET_OFFLINE=true cargo check --locked --manifest-path "$package_manifest" --all-features
           CARGO_NET_OFFLINE=true cargo check --locked --manifest-path "$package_manifest" --no-default-features
+
+
+      - name: Record Q6 qualification state
+        if: ${{ always() }}
+        shell: bash
+        env:
+          Q6_JOB_KEY: quality
+          Q6_JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          mkdir -p q6-job-state
+          state=FAIL
+          if [ -f .q6-blocked ]; then
+            state=BLOCKED
+          elif [ "$Q6_JOB_STATUS" = "success" ]; then
+            state=PASS
+          fi
+          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+
+      - name: Retain Q6 qualification state
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: q6-job-state-quality
+          path: q6-job-state/quality.json
+          if-no-files-found: error
 
   performance:
     name: Q6 / Candidate-bound performance
@@ -530,12 +570,21 @@ jobs:
           git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/performance/Cargo.lock
 
       - name: Enforce candidate-bound timing and resource gates
+        shell: bash
         run: |
+          set +e
           python3 "$Q6_PERF_CHECK" \
             --default-timing q6-default-timing.csv \
             --default-alloc q6-default-alloc.csv \
             --high-throughput-timing q6-high-throughput-timing.csv \
             --high-throughput-alloc q6-high-throughput-alloc.csv
+          rc="$?"
+          set -e
+          if [ "$rc" -eq 75 ]; then
+            touch .q6-blocked
+            exit 1
+          fi
+          exit "$rc"
 
       - name: Retain candidate-bound performance evidence
         if: ${{ always() }}
@@ -550,6 +599,32 @@ jobs:
             q6-high-throughput-alloc.csv
             q6-hash-alloc.csv
           if-no-files-found: warn
+
+
+      - name: Record Q6 qualification state
+        if: ${{ always() }}
+        shell: bash
+        env:
+          Q6_JOB_KEY: performance
+          Q6_JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          mkdir -p q6-job-state
+          state=FAIL
+          if [ -f .q6-blocked ]; then
+            state=BLOCKED
+          elif [ "$Q6_JOB_STATUS" = "success" ]; then
+            state=PASS
+          fi
+          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+
+      - name: Retain Q6 qualification state
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: q6-job-state-performance
+          path: q6-job-state/performance.json
+          if-no-files-found: error
 
   fuzz:
     name: Q6 / Candidate-bound fuzz
@@ -627,6 +702,32 @@ jobs:
           cargo +nightly-2026-10-04 fuzz run integer_api --sanitizer address -- -runs=25000 -max_len=128
           cargo +nightly-2026-10-04 fuzz run deep_paths --sanitizer address -- -runs=5000 -max_len=64
           git -C "$qualification_root" diff --exit-code -- qualification/perfect-arithmetic/fuzz/Cargo.lock
+
+
+      - name: Record Q6 qualification state
+        if: ${{ always() }}
+        shell: bash
+        env:
+          Q6_JOB_KEY: fuzz
+          Q6_JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          mkdir -p q6-job-state
+          state=FAIL
+          if [ -f .q6-blocked ]; then
+            state=BLOCKED
+          elif [ "$Q6_JOB_STATUS" = "success" ]; then
+            state=PASS
+          fi
+          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+
+      - name: Retain Q6 qualification state
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: q6-job-state-fuzz
+          path: q6-job-state/fuzz.json
+          if-no-files-found: error
 
   mutation:
     name: Q6 / Candidate-bound mutation
@@ -707,6 +808,32 @@ jobs:
         run: |
           cargo mutants --all-features --jobs 2 --timeout 90 --build-timeout 180 --no-shuffle --no-config --exclude-re 'tests::'
           cmp "../$CANDIDATE_LOCK" Cargo.lock
+
+
+      - name: Record Q6 qualification state
+        if: ${{ always() }}
+        shell: bash
+        env:
+          Q6_JOB_KEY: mutation
+          Q6_JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          mkdir -p q6-job-state
+          state=FAIL
+          if [ -f .q6-blocked ]; then
+            state=BLOCKED
+          elif [ "$Q6_JOB_STATUS" = "success" ]; then
+            state=PASS
+          fi
+          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+
+      - name: Retain Q6 qualification state
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: q6-job-state-mutation
+          path: q6-job-state/mutation.json
+          if-no-files-found: error
 
   class-a:
     name: Q6 / Class A / ${{ matrix.os }}
@@ -814,6 +941,32 @@ jobs:
           test "$no_std" = "$expected"
           git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/Cargo.lock
 
+
+      - name: Record Q6 qualification state
+        if: ${{ always() }}
+        shell: bash
+        env:
+          Q6_JOB_KEY: ${{ format('class-a-{0}', matrix.os) }}
+          Q6_JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          mkdir -p q6-job-state
+          state=FAIL
+          if [ -f .q6-blocked ]; then
+            state=BLOCKED
+          elif [ "$Q6_JOB_STATUS" = "success" ]; then
+            state=PASS
+          fi
+          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+
+      - name: Retain Q6 qualification state
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: q6-job-state-${{ format('class-a-{0}', matrix.os) }}
+          path: q6-job-state/${{ format('class-a-{0}', matrix.os) }}.json
+          if-no-files-found: error
+
   class-b:
     name: Q6 / Class B / ${{ matrix.target }}
     strategy:
@@ -899,6 +1052,32 @@ jobs:
           git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/Cargo.lock
 
 
+
+      - name: Record Q6 qualification state
+        if: ${{ always() }}
+        shell: bash
+        env:
+          Q6_JOB_KEY: ${{ format('class-b-{0}', matrix.target) }}
+          Q6_JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          mkdir -p q6-job-state
+          state=FAIL
+          if [ -f .q6-blocked ]; then
+            state=BLOCKED
+          elif [ "$Q6_JOB_STATUS" = "success" ]; then
+            state=PASS
+          fi
+          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+
+      - name: Retain Q6 qualification state
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: q6-job-state-${{ format('class-b-{0}', matrix.target) }}
+          path: q6-job-state/${{ format('class-b-{0}', matrix.target) }}.json
+          if-no-files-found: error
+
   report:
     name: Q6 / Qualification report
     if: ${{ always() }}
@@ -931,6 +1110,16 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      - name: Download Q6 qualification-state artifacts
+        id: job-states
+        if: ${{ always() }}
+        continue-on-error: true
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          pattern: q6-job-state-*
+          path: q6-job-state
+          merge-multiple: true
+
       - name: Generate exact Q6 qualification report
         if: ${{ always() }}
         shell: bash
@@ -948,7 +1137,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 .qualification-suite/qualification/perfect-arithmetic/scripts/render_q6_report.py \
-            --target-root .report-target
+            --target-root .report-target \
+            --state-root q6-job-state
 
       - name: Retain overall Q6 qualification report
         if: ${{ always() }}
