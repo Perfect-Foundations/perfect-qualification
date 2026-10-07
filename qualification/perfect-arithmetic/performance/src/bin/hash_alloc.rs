@@ -46,8 +46,14 @@ unsafe impl GlobalAlloc for CountingAllocator {
     unsafe fn realloc(&self, ptr: *mut u8, old: Layout, new_size: usize) -> *mut u8 {
         // SAFETY: forwarded unchanged to the system allocator.
         let new_ptr = unsafe { System.realloc(ptr, old, new_size) };
-        if COUNTING.load(Ordering::Relaxed) && !new_ptr.is_null() && new_size >= old.size() {
-            BYTES_ALLOCATED.fetch_add((new_size - old.size()) as u64, Ordering::Relaxed);
+        if COUNTING.load(Ordering::Relaxed) && !new_ptr.is_null() {
+            // Treat every successful realloc as one allocation plus one
+            // deallocation event and charge the full destination allocation.
+            // This reports allocation traffic consistently even for in-place
+            // growth or shrinkage.
+            ALLOCS.fetch_add(1, Ordering::Relaxed);
+            DEALLOCS.fetch_add(1, Ordering::Relaxed);
+            BYTES_ALLOCATED.fetch_add(new_size as u64, Ordering::Relaxed);
         }
         new_ptr
     }
