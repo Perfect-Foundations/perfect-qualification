@@ -278,6 +278,21 @@ def main() -> int:
                         f"{disposition}"
                     )
 
+            for line in section.splitlines():
+                if "DEFERRED_WITH_IMPACT" not in line:
+                    continue
+                normalized_line = re.sub(r"[^a-z0-9]+", " ", line.lower()).strip()
+                if "release compatible" not in normalized_line or "recheck" not in normalized_line:
+                    problem(
+                        f"historical reuse review {checkpoint} has DEFERRED_WITH_IMPACT "
+                        "without an entry-local release-compatible disposition and recheck gate"
+                    )
+                if "blocking" in normalized_line:
+                    problem(
+                        f"historical reuse review {checkpoint} retains a blocking "
+                        "DEFERRED_WITH_IMPACT entry"
+                    )
+
         if "unresolved deferred with impact none" not in text:
             problem(
                 "historical reuse review retains or fails to classify unresolved "
