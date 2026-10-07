@@ -18,6 +18,7 @@ env:
   PERFECT_NUMERIC_REV: 19b6747cd852a47a694a020b97ba70b6b3ef259b
   QUAL_ROOT: .qualification-suite/qualification/perfect-arithmetic
   QUAL_MANIFEST: .qualification-suite/qualification/perfect-arithmetic/Cargo.toml
+  CANDIDATE_LOCK: .qualification-suite/qualification/perfect-arithmetic/Candidate.lock
   PERF_MANIFEST: .qualification-suite/qualification/perfect-arithmetic/performance/Cargo.toml
   QUAL_FUZZ_ROOT: .qualification-suite/qualification/perfect-arithmetic/fuzz
   Q6_CHECK: .qualification-suite/qualification/perfect-arithmetic/scripts/check_q6.py
@@ -159,6 +160,10 @@ jobs:
           sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_BASELINE_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
 
+          test -f "$CANDIDATE_LOCK"
+          cp "$CANDIDATE_LOCK" "$arithmetic_path/Cargo.lock"
+          cmp "$CANDIDATE_LOCK" "$arithmetic_path/Cargo.lock"
+
       - name: Install MSRV and stable
         shell: bash
         run: |
@@ -168,6 +173,14 @@ jobs:
           rustc --version
           cargo --version
           rustc +stable --version
+
+      - name: Verify retained candidate dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --manifest-path .qualified-source/Cargo.toml --locked --all-features --format-version 1 >/dev/null
+          cargo metadata --manifest-path .qualified-source/Cargo.toml --locked --no-default-features --format-version 1 >/dev/null
+          cmp "$CANDIDATE_LOCK" .qualified-source/Cargo.lock
 
       - name: Verify retained Q0-Q5 consumer dependency lock
         shell: bash
@@ -186,7 +199,7 @@ jobs:
         run: |
           set -euo pipefail
           cd .qualified-source
-          metadata="$(cargo metadata --format-version 1 --no-deps)"
+          metadata="$(cargo metadata --locked --format-version 1 --no-deps)"
           expected_lib="$(pwd -P)/src/lib.rs"
           printf '%s' "$metadata" | jq -e --arg expected_lib "$expected_lib" '
             .packages[]
@@ -249,19 +262,19 @@ jobs:
           set -euo pipefail
           cd .qualified-source
           cargo fmt -- --check
-          cargo check --all-targets
-          cargo check --all-targets --all-features
-          cargo check --no-default-features
-          cargo check --no-default-features --features high-throughput
-          cargo test
-          cargo test --all-features
-          cargo test --no-default-features
-          cargo test --no-default-features --features high-throughput
-          cargo +stable test --all-features
-          cargo +stable test --no-default-features
-          cargo clippy --all-targets --all-features -- -D warnings
-          cargo clippy --all-targets --no-default-features -- -D warnings
-          RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features
+          cargo check --locked --all-targets
+          cargo check --locked --all-targets --all-features
+          cargo check --locked --no-default-features
+          cargo check --locked --no-default-features --features high-throughput
+          cargo test --locked
+          cargo test --locked --all-features
+          cargo test --locked --no-default-features
+          cargo test --locked --no-default-features --features high-throughput
+          cargo +stable test --locked --all-features
+          cargo +stable test --locked --no-default-features
+          cargo clippy --locked --all-targets --all-features -- -D warnings
+          cargo clippy --locked --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo doc --locked --no-deps --all-features
 
       - name: Q6 independent reference and deterministic hardening
         shell: bash
@@ -269,11 +282,12 @@ jobs:
           set -euo pipefail
           cd .qualified-source
           python3 scripts/reference_oracle.py
-          cargo test --test m5_hardening --all-features
+          cargo test --locked --test m5_hardening --all-features
           expected="$(tr -d '\r\n' < verification/semantic-fingerprint.txt)"
-          actual="$(cargo run --example semantic_fingerprint --quiet --all-features)"
+          actual="$(cargo run --locked --example semantic_fingerprint --quiet --all-features)"
           test "$actual" = "$expected"
           test -f docs/verification/M5-HARDENING.md
+          cmp "$CANDIDATE_LOCK" Cargo.lock
 
       - name: Q0-Q5 requalification against supplied candidate
         shell: bash
@@ -319,9 +333,11 @@ jobs:
           git reset --hard HEAD
           git clean -fdx
           test -z "$(git status --porcelain)"
+          cp "$CANDIDATE_LOCK" Cargo.lock
+          cmp "$CANDIDATE_LOCK" Cargo.lock
 
-          cargo package --list > ../package-list.txt
-          cargo package
+          cargo package --locked --list > ../package-list.txt
+          cargo package --locked
           test -s ../package-list.txt
           package_manifest="target/package/perfect-arithmetic-0.1.0/Cargo.toml"
           test -f "$package_manifest"
@@ -561,18 +577,32 @@ jobs:
         with:
           destination: ${{ runner.temp }}/perfect-numeric
 
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .qualification-suite
+          fetch-depth: 1
+          persist-credentials: false
+
       - name: Verify source and redirect private Numeric dependency
         shell: bash
         env:
           PERFECT_NUMERIC_PATH: ${{ steps.numeric-source.outputs.cargo-path }}
           EXPECTED_SOURCE_REF: ${{ inputs.source_ref }}
+          EXPECTED_QUALIFICATION_REF: ${{ job.workflow_sha }}
         run: |
           set -euo pipefail
           test "$(git -C .qualified-source rev-parse HEAD)" = "$EXPECTED_SOURCE_REF"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "$EXPECTED_QUALIFICATION_REF"
           sed -i.bak \
             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$PERFECT_NUMERIC_PATH\", version = \"=0.1.0\", default-features = false }|" \
             .qualified-source/Cargo.toml
           rm .qualified-source/Cargo.toml.bak
+          test -f "$CANDIDATE_LOCK"
+          cp "$CANDIDATE_LOCK" .qualified-source/Cargo.lock
+          cmp "$CANDIDATE_LOCK" .qualified-source/Cargo.lock
 
       - name: Install pinned mutation toolchain
         run: |
@@ -592,6 +622,7 @@ jobs:
             exit 1
           fi
 
+          cargo metadata --locked --all-features --format-version 1 >/dev/null
           cargo mutants --all-features --list --no-config --exclude-re 'tests::' > ../q6-mutants.txt
           mutant_count="$(grep -cve '^[[:space:]]*$' ../q6-mutants.txt)"
           if [ "$mutant_count" -lt 80 ]; then
@@ -599,10 +630,13 @@ jobs:
             exit 1
           fi
           echo "Q6 mutation inventory: $mutant_count"
+          cmp "../$CANDIDATE_LOCK" Cargo.lock
 
       - name: Re-run production mutation campaign on exact Q6 candidate
         working-directory: .qualified-source
-        run: cargo mutants --all-features --jobs 2 --timeout 90 --build-timeout 180 --no-shuffle --no-config --exclude-re 'tests::'
+        run: |
+          cargo mutants --all-features --jobs 2 --timeout 90 --build-timeout 180 --no-shuffle --no-config --exclude-re 'tests::'
+          cmp "../$CANDIDATE_LOCK" Cargo.lock
 
   class-a:
     name: Q6 / Class A / ${{ matrix.os }}
@@ -662,6 +696,9 @@ jobs:
 
           sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_BASELINE_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_cargo\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
+          test -f "$CANDIDATE_LOCK"
+          cp "$CANDIDATE_LOCK" "$arithmetic_shell/Cargo.lock"
+          cmp "$CANDIDATE_LOCK" "$arithmetic_shell/Cargo.lock"
 
       - name: Install Rust 1.99.0
         shell: bash
@@ -674,19 +711,20 @@ jobs:
         run: |
           set -euo pipefail
           cd .qualified-source
-          cargo test
-          cargo test --all-features
-          cargo test --no-default-features
+          cargo test --locked
+          cargo test --locked --all-features
+          cargo test --locked --no-default-features
           expected="$(tr -d '\r\n' < verification/semantic-fingerprint.txt)"
-          first="$(cargo run --example semantic_fingerprint --quiet)"
-          second="$(cargo run --example semantic_fingerprint --quiet)"
-          all_features="$(cargo run --example semantic_fingerprint --quiet --all-features)"
-          no_std="$(cargo run --example semantic_fingerprint --quiet --no-default-features)"
+          first="$(cargo run --locked --example semantic_fingerprint --quiet)"
+          second="$(cargo run --locked --example semantic_fingerprint --quiet)"
+          all_features="$(cargo run --locked --example semantic_fingerprint --quiet --all-features)"
+          no_std="$(cargo run --locked --example semantic_fingerprint --quiet --no-default-features)"
           test "$first" = "$expected"
           test "$second" = "$expected"
           test "$all_features" = "$expected"
           test "$no_std" = "$expected"
           echo "Q6 semantic fingerprint: $expected"
+          cmp "$CANDIDATE_LOCK" Cargo.lock
 
       - name: Q0-Q5 Class-A consumer requalification
         shell: bash
@@ -764,6 +802,9 @@ jobs:
 
           sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_BASELINE_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_cargo\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
+          test -f "$CANDIDATE_LOCK"
+          cp "$CANDIDATE_LOCK" "$arithmetic_shell/Cargo.lock"
+          cmp "$CANDIDATE_LOCK" "$arithmetic_shell/Cargo.lock"
 
       - name: Install Rust 1.99.0 and target
         shell: bash
@@ -776,8 +817,9 @@ jobs:
         shell: bash
         run: |
           cd .qualified-source
-          cargo check --no-default-features --target "${{ matrix.target }}"
-          cargo check --no-default-features --features high-throughput --target "${{ matrix.target }}"
+          cargo check --locked --no-default-features --target "${{ matrix.target }}"
+          cargo check --locked --no-default-features --features high-throughput --target "${{ matrix.target }}"
+          cmp "$CANDIDATE_LOCK" Cargo.lock
 
       - name: Q0-Q5 Class-B consumer requalification
         shell: bash
