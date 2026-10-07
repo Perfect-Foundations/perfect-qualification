@@ -187,14 +187,36 @@ jobs:
           set -euo pipefail
           cd .qualified-source
           metadata="$(cargo metadata --format-version 1 --no-deps)"
-          printf '%s' "$metadata" | jq -e '
+          expected_lib="$(pwd -P)/src/lib.rs"
+          printf '%s' "$metadata" | jq -e --arg expected_lib "$expected_lib" '
             .packages[]
             | select(.name == "perfect-arithmetic")
-            | all(.targets[]; (.kind | index("custom-build")) == null)
+            | (
+                [.targets[]
+                 | select(any(.kind[];
+                     . == "lib"
+                     or . == "bin"
+                     or . == "proc-macro"
+                     or . == "cdylib"
+                     or . == "dylib"
+                     or . == "staticlib"
+                   ))
+                ] as $production
+                | all(.targets[]; (.kind | index("custom-build")) == null)
+                  and ($production | length == 1)
+                  and ($production[0].kind == ["lib"])
+                  and ($production[0].crate_types == ["lib"])
+                  and ($production[0].src_path == $expected_lib)
+              )
           ' >/dev/null || {
-            echo "Q6 FAIL: custom Cargo build target detected"
+            echo "Q6 FAIL: production targets differ from the reviewed standard src/lib.rs library contract"
             exit 1
           }
+
+          if grep -R -nE '#[[:space:]]*\[[[:space:]]*path[[:space:]]*=|include![[:space:]]*\(' src; then
+            echo "Q6 FAIL: production source may not escape the reviewed src tree through path/include directives"
+            exit 1
+          fi
 
           printf '%s' "$metadata" | jq -e '
             .packages[]
@@ -368,6 +390,24 @@ jobs:
           cargo metadata --manifest-path "$PERF_MANIFEST" --locked --all-features --format-version 1 >/dev/null
           git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/performance/Cargo.lock
 
+      - name: Record performance evidence identity
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ inputs.source_ref }}
+          QUALIFICATION_SHA: ${{ job.workflow_sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          {
+            printf 'candidate_sha=%s\n' "$CANDIDATE_SHA"
+            printf 'qualification_workflow_sha=%s\n' "$QUALIFICATION_SHA"
+            printf 'run_id=%s\n' "$RUN_ID"
+            printf 'run_attempt=%s\n' "$RUN_ATTEMPT"
+            rustc -vV
+            cargo -V
+          } > q6-performance-metadata.txt
+
       - name: Measure exact candidate against same-run baselines
         shell: bash
         run: |
@@ -406,6 +446,20 @@ jobs:
             --default-alloc q6-default-alloc.csv \
             --high-throughput-timing q6-high-throughput-timing.csv \
             --high-throughput-alloc q6-high-throughput-alloc.csv
+
+      - name: Retain candidate-bound performance evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: q6-performance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            q6-performance-metadata.txt
+            q6-default-timing.csv
+            q6-default-alloc.csv
+            q6-high-throughput-timing.csv
+            q6-high-throughput-alloc.csv
+            q6-hash-alloc.csv
+          if-no-files-found: warn
 
   fuzz:
     name: Q6 / Candidate-bound fuzz
