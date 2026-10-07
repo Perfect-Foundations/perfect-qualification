@@ -75,9 +75,35 @@ jobs:
             exit 1
           }
 
-          review_digest="$(
-            git -C .qualified-source ls-tree -r --full-tree HEAD |
-              grep -v 
+          review_digest="$(python3 - <<'PY'
+          import hashlib
+          import subprocess
+
+          review_path = b"docs/PROVEN-REUSE-REVIEW.md"
+          raw = subprocess.check_output(
+              ["git", "-C", ".qualified-source", "ls-tree", "-r", "-z", "--full-tree", "HEAD"]
+          )
+          digest = hashlib.sha256()
+          for record in raw.split(b"\0"):
+              if not record:
+                  continue
+              try:
+                  _, path = record.split(b"\t", 1)
+              except ValueError as error:
+                  raise SystemExit(f"malformed git ls-tree record: {record!r}") from error
+              if path == review_path:
+                  continue
+              digest.update(record)
+              digest.update(b"\0")
+          print(digest.hexdigest())
+          PY
+          )"
+          expected_review_digest='Destination content digest reviewed: `sha256:'"$review_digest"'`'
+          grep -F -- "$expected_review_digest" "$review_path" >/dev/null || {
+            echo "Q6 FAIL: historical proven-reuse review content digest does not match candidate tree"
+            exit 1
+          }
+
           arithmetic_path="$(cd .qualified-source && pwd)"
 
           ARITHMETIC_MANIFEST="$arithmetic_path/Cargo.toml" python3 - <<'PY'
