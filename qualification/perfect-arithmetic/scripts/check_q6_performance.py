@@ -23,8 +23,13 @@ MAX_DEFAULT_OVER_DIRECT = 1.75
 MAX_HIGH_THROUGHPUT_OVER_DEFAULT = 0.95
 
 
-def fail(message: str) -> None:
+def blocker(message: str) -> None:
     print(f"Q6 PERFORMANCE BLOCKER: {message}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+def fail(message: str) -> None:
+    print(f"Q6 PERFORMANCE FAIL: {message}", file=sys.stderr)
     raise SystemExit(1)
 
 
@@ -33,7 +38,7 @@ def read_rows(path: Path) -> list[dict[str, str]]:
         with path.open(newline="", encoding="utf-8") as handle:
             return list(csv.DictReader(handle))
     except OSError as error:
-        fail(f"cannot read {path}: {error}")
+        blocker(f"cannot read {path}: {error}")
 
 
 def timing_index(path: Path) -> dict[tuple[str, str, int], float]:
@@ -46,9 +51,9 @@ def timing_index(path: Path) -> dict[tuple[str, str, int], float]:
             bits = int(row["target_bits"])
             value = float(row["median_ns_per_op"])
         except (KeyError, TypeError, ValueError) as error:
-            fail(f"malformed timing row in {path}: {error}")
+            blocker(f"malformed timing row in {path}: {error}")
         if not math.isfinite(value) or value <= 0:
-            fail(f"non-positive/non-finite timing in {path}: {row}")
+            blocker(f"non-positive/non-finite timing in {path}: {row}")
         result[(backend, operation, bits)] = value
     return result
 
@@ -65,16 +70,16 @@ def allocation_index(path: Path) -> dict[tuple[str, str, int], tuple[float, floa
                 float(row["allocated_bytes_per_op"]),
             )
         except (KeyError, TypeError, ValueError) as error:
-            fail(f"malformed allocation row in {path}: {error}")
+            blocker(f"malformed allocation row in {path}: {error}")
         if any(not math.isfinite(value) or value < 0 for value in values):
-            fail(f"invalid allocation measurement in {path}: {row}")
+            blocker(f"invalid allocation measurement in {path}: {row}")
         result[key] = values
     return result
 
 
 def required(index: dict, key: tuple[str, str, int], source: Path):
     if key not in index:
-        fail(f"missing required row {key!r} in {source}")
+        blocker(f"missing required row {key!r} in {source}")
     return index[key]
 
 
