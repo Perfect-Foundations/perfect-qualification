@@ -330,19 +330,33 @@ jobs:
 
           # Earlier Q6 steps intentionally rewrite the private Numeric dependency
           # to a local path. Package only the exact clean candidate checkout.
+          #
+          # The candidate-root lock is path-bound and cannot prove the eventual
+          # registry package. Once the upstream registry blocker is cleared,
+          # Q6 additionally requires a separately retained lock generated from
+          # the clean registry-bound candidate manifest.
+          registry_lock="../$QUAL_ROOT/RegistryPackage.lock"
+          if [ ! -f "$registry_lock" ]; then
+            echo "Q6 BLOCKED: retained registry-package dependency lock is unavailable"
+            exit 1
+          fi
+
           git reset --hard HEAD
           git clean -fdx
           test -z "$(git status --porcelain)"
-          cp "../$CANDIDATE_LOCK" Cargo.lock
-          cmp "../$CANDIDATE_LOCK" Cargo.lock
+          cp "$registry_lock" Cargo.lock
+          cmp "$registry_lock" Cargo.lock
+          cargo metadata --locked --all-features --format-version 1 >/dev/null
+          cargo metadata --locked --no-default-features --format-version 1 >/dev/null
 
           cargo package --locked --list > ../package-list.txt
           cargo package --locked
           test -s ../package-list.txt
           package_manifest="target/package/perfect-arithmetic-0.1.0/Cargo.toml"
           test -f "$package_manifest"
-          CARGO_NET_OFFLINE=true cargo check --manifest-path "$package_manifest" --all-features
-          CARGO_NET_OFFLINE=true cargo check --manifest-path "$package_manifest" --no-default-features
+          cp Cargo.lock "$(dirname "$package_manifest")/Cargo.lock"
+          CARGO_NET_OFFLINE=true cargo check --locked --manifest-path "$package_manifest" --all-features
+          CARGO_NET_OFFLINE=true cargo check --locked --manifest-path "$package_manifest" --no-default-features
 
   performance:
     name: Q6 / Candidate-bound performance
