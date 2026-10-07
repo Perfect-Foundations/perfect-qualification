@@ -256,7 +256,7 @@ def main() -> int:
         }
         for checkpoint, dispositions in checkpoint_expectations.items():
             match = re.search(
-                rf"(?ms)^### {checkpoint}\\b.*?(?=^### |^## |\\Z)",
+                rf"(?ms)^### {checkpoint}\b.*?(?=^### |^## |\Z)",
                 raw,
             )
             if match is None:
