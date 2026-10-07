@@ -140,6 +140,14 @@ def parse_historical_reuse(
         blockers.append(
             "historical proven-reuse report has no requirement/ADR verification mapping"
         )
+    if not deferred_impact:
+        blockers.append(
+            "historical proven-reuse report has no explicit deferred-impact disposition"
+        )
+    if not recheck:
+        blockers.append(
+            "historical proven-reuse report has no explicit mandatory recheck trigger"
+        )
 
     required_disposition_fields = (
         "Source lesson",
