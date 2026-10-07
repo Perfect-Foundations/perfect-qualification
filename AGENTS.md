@@ -15,12 +15,14 @@ Perfect Qualification owns cross-family integration/qualification evidence. It i
 
 ## Required preflight
 Before a qualification run:
-- inspect live target repo SHA/status, its `project-status.toml`, requirements/ADRs/traceability, CI, packaging evidence, dependency SHAs, and prior qualification reports;
+- inspect live target repo SHA/status, its `project-status.toml`, requirements/ADRs/traceability, CI, packaging evidence, dependency SHAs, prior qualification reports, and the applicable family historical-reuse disposition;
 - inspect this repository's current qualification contract and scripts;
 - verify the target configuration is reproducible and the intended revision is immutable.
 
 ## Evidence discipline
-Retain commands, versions, targets, features, inputs/vectors, result summaries, and exact SHAs. Qualification proves only the tested configuration.
+Retain commands, versions, targets, features, inputs/vectors, result summaries, exact SHAs, and predecessor source/disposition provenance where applicable. Qualification proves only the tested configuration.
+
+Required historical-reuse evidence follows `qualification/HISTORICAL-REUSE.md`. Missing required review evidence is BLOCKED, not PASS or NOT_APPLICABLE.
 
 ## Perfectπ
 Perfectπ remains read-only. Qualification may consume/reference it but must not modify it.
