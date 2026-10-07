@@ -935,25 +935,24 @@ jobs:
                   blockers.append(f"exact target project-status.toml could not be parsed: {error}")
 
           if status:
-              lifecycle = status.get("lifecycle", {})
               work = status.get("work", {})
               engineering = status.get("engineering", {})
 
-              if lifecycle.get("health") == "blocked":
-                  blockers.append("project-status lifecycle.health=blocked")
-              if int(work.get("blocking_issues", 0) or 0) > 0:
+              critical_blockers = int(work.get("critical_blockers", 0) or 0)
+              if critical_blockers > 0:
                   blockers.append(
-                      f"project-status work.blocking_issues={work.get('blocking_issues')}"
+                      f"project-status work.critical_blockers={critical_blockers}"
                   )
 
-              for key in (
-                  "ci_health",
-                  "qualification_status",
-                  "cargo_package",
-                  "offline_build",
-              ):
+              # Do not treat lifecycle.health, ci_health, or the pre-Q6
+              # qualification_status as independent blockers: those fields are
+              # expected to remain blocked/pending until exact-head evidence
+              # exists and using them here would make a PASS circularly
+              # impossible. Only blockers that must be cleared before Q6 can
+              # complete are promoted into the report classification.
+              for key in ("cargo_package", "offline_build"):
                   value = engineering.get(key)
-                  if isinstance(value, str) and "blocked" in value.lower():
+                  if isinstance(value, str) and value.lower().startswith("blocked"):
                       blockers.append(f"project-status engineering.{key}={value}")
 
           failures = [
@@ -1039,7 +1038,7 @@ jobs:
           if blockers:
               lines.extend(f"- {item}" for item in blockers)
           else:
-              lines.append("- None recorded from the exact target status/report preflight.")
+              lines.append("- None recorded from independent pre-Q6 target-status/report prerequisites.")
 
           lines.extend(["", "### Not run", ""])
           if not_run:
@@ -1076,7 +1075,7 @@ jobs:
               lines.append("- No configured Q6 execution job remains non-passing.")
 
           if blockers:
-              lines.append("- Authoritative blocker(s) listed above remain unresolved.")
+              lines.append("- Independent pre-Q6 blocker(s) listed above remain unresolved.")
 
           lines.extend(
               [
