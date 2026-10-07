@@ -1,0 +1,26 @@
+[package]
+name = "qualify-perfect-arithmetic-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "=0.4.13"
+perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "9ec660f9abfd7fe93e441e77dbb1158c371603f5", version = "=0.1.0", default-features = false, features = ["std", "high-throughput"] }
+
+[[bin]]
+name = "natural_api"
+path = "fuzz_targets/natural_api.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "integer_api"
+path = "fuzz_targets/integer_api.rs"
+test = false
+doc = false
+bench = false
