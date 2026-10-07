@@ -228,6 +228,10 @@ def main() -> int:
             "reuse method only",
             "evaluated rejected",
             "documentation disposition catch up only",
+            "destination binding",
+            "destination production parent reviewed",
+            "backend independent canonical hashing",
+            "adapt with provenance",
             "does not close q6",
         ):
             if phrase not in text:
