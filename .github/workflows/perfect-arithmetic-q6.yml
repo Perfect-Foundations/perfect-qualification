@@ -34,7 +34,7 @@ jobs:
           repository: Perfect-Foundations/perfect-arithmetic
           ref: ${{ inputs.source_ref }}
           path: .qualified-source
-          fetch-depth: 1
+          fetch-depth: 2
           persist-credentials: false
 
       - name: Materialize exact Perfect Numeric source
@@ -329,8 +329,26 @@ jobs:
           cargo run --release --manifest-path "$PERF_MANIFEST" --features candidate-high-throughput > q6-high-throughput-timing.csv
           cargo run --release --manifest-path "$PERF_MANIFEST" --features "alloc-count candidate-high-throughput" > q6-high-throughput-alloc.csv
           cargo run --release --manifest-path "$PERF_MANIFEST" --bin hash_alloc > q6-hash-alloc.csv
-          grep -F 'natural,131072,0.000,0.000,0.000' q6-hash-alloc.csv >/dev/null
-          grep -F 'integer,131072,0.000,0.000,0.000' q6-hash-alloc.csv >/dev/null
+          python3 - <<'PY'
+          import csv
+
+          rows = {}
+          with open("q6-hash-alloc.csv", newline="", encoding="utf-8") as handle:
+              for row in csv.DictReader(handle):
+                  rows[(row["kind"], int(row["target_bits"]))] = (
+                      float(row["allocs"]),
+                      float(row["deallocs"]),
+                      float(row["allocated_bytes"]),
+                  )
+
+          for kind in ("natural", "integer"):
+              values = rows.get((kind, 131_072))
+              assert values is not None, f"missing {kind} 131072-bit hash allocation row"
+              assert values == (0.0, 0.0, 0.0), (
+                  f"{kind} hash allocation must remain zero at 131072 bits: {values}"
+              )
+          print("Q6_HASH_ALLOCATION_PASS")
+          PY
 
       - name: Enforce candidate-bound timing and resource gates
         run: |
