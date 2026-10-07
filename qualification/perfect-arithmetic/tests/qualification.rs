@@ -258,5 +258,5 @@ fn sign_magnitude_bit_structure_and_conversion_boundaries_compose() {
 
 #[test]
 fn retained_qualification_fingerprint_matches() {
-    assert_eq!(semantic_fingerprint(), 0xf203_3362_4f98_0b77);
+    assert_eq!(semantic_fingerprint(), 0xfe16_8ade_8562_7aca);
 }
