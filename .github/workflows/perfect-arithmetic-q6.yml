@@ -944,6 +944,7 @@ jobs:
           import json
           import os
           from pathlib import Path
+          import re
           import tomllib
 
           ordered_jobs = [
@@ -989,6 +990,116 @@ jobs:
                       status = tomllib.load(handle)
               except (OSError, tomllib.TOMLDecodeError) as error:
                   blockers.append(f"exact target project-status.toml could not be parsed: {error}")
+
+          def section_body(raw: str, heading: str) -> str | None:
+              match = re.search(
+                  rf"(?ms)^## {re.escape(heading)}[[:space:]]*\n(.*?)(?=^## |\Z)",
+                  raw,
+              )
+              return match.group(1).strip() if match is not None else None
+
+          def markdown_table(body: str) -> list[dict[str, str]]:
+              rows = [
+                  line.strip()
+                  for line in body.splitlines()
+                  if line.strip().startswith("|")
+              ]
+              if len(rows) < 2:
+                  return []
+              headers = [cell.strip() for cell in rows[0].strip("|").split("|")]
+              parsed: list[dict[str, str]] = []
+              for line in rows[2:]:
+                  cells = [cell.strip() for cell in line.strip("|").split("|")]
+                  if len(cells) != len(headers):
+                      continue
+                  parsed.append(
+                      {
+                          header: re.sub(r"\*\*", "", value).strip()
+                          for header, value in zip(headers, cells)
+                      }
+                  )
+              return parsed
+
+          reuse_review_path = Path(".report-target/docs/PROVEN-REUSE-REVIEW.md")
+          historical_reuse: dict[str, object] = {}
+          if (
+              os.environ.get("TARGET_STATUS_CHECKOUT") != "success"
+              or not reuse_review_path.is_file()
+          ):
+              blockers.append(
+                  "exact target historical proven-reuse review was unavailable to the report job"
+              )
+          else:
+              try:
+                  reuse_raw = reuse_review_path.read_text(encoding="utf-8")
+              except OSError as error:
+                  blockers.append(
+                      f"exact target historical proven-reuse review could not be read: {error}"
+                  )
+              else:
+                  required_reuse_sections = (
+                      "Destination binding",
+                      "Source revisions",
+                      "Dispositions",
+                      "Destination traceability and independent verification",
+                      "Deferred-impact state",
+                      "Current M6 effect",
+                      "Recheck",
+                  )
+                  reuse_sections: dict[str, str] = {}
+                  for heading in required_reuse_sections:
+                      body = section_body(reuse_raw, heading)
+                      if body is None:
+                          blockers.append(
+                              f"historical proven-reuse review missing report section: {heading}"
+                          )
+                      else:
+                          reuse_sections[heading] = body
+
+                  if len(reuse_sections) == len(required_reuse_sections):
+                      source_revisions = [
+                          line[2:].strip()
+                          for line in reuse_sections["Source revisions"].splitlines()
+                          if line.startswith("- ")
+                      ]
+                      deferred_impact = [
+                          line[2:].strip()
+                          for line in reuse_sections["Deferred-impact state"].splitlines()
+                          if line.startswith("- ")
+                      ]
+                      recheck = [
+                          line[2:].strip()
+                          for line in reuse_sections["Recheck"].splitlines()
+                          if line.startswith("- ")
+                      ]
+                      dispositions = markdown_table(reuse_sections["Dispositions"])
+                      traceability = markdown_table(
+                          reuse_sections[
+                              "Destination traceability and independent verification"
+                          ]
+                      )
+                      if not source_revisions:
+                          blockers.append(
+                              "historical proven-reuse report has no predecessor revision entries"
+                          )
+                      if not dispositions:
+                          blockers.append(
+                              "historical proven-reuse report has no destination dispositions"
+                          )
+                      if not traceability:
+                          blockers.append(
+                              "historical proven-reuse report has no requirement/ADR verification mapping"
+                          )
+
+                      historical_reuse = {
+                          "destination_binding": reuse_sections["Destination binding"],
+                          "source_revisions": source_revisions,
+                          "dispositions": dispositions,
+                          "traceability_and_independent_verification": traceability,
+                          "deferred_impact": deferred_impact,
+                          "limitations": reuse_sections["Current M6 effect"],
+                          "recheck": recheck,
+                      }
 
           if status:
               work = status.get("work", {})
@@ -1058,7 +1169,98 @@ jobs:
               "- Class B: wasm32v1-none, thumbv7em-none-eabihf, riscv64imac-unknown-none-elf.",
               "- Candidate, consumer, performance, and fuzz dependency graphs use retained locks.",
               "",
-              "## Gates attempted and execution results",
+              "## Historical proven-reuse evidence",
+              "",
+          ]
+
+          if historical_reuse:
+              lines.extend(
+                  [
+                      "### Destination binding",
+                      "",
+                      str(historical_reuse["destination_binding"]),
+                      "",
+                      "### Predecessor source revisions",
+                      "",
+                  ]
+              )
+              lines.extend(
+                  f"- {item}"
+                  for item in historical_reuse["source_revisions"]
+              )
+
+              lines.extend(
+                  [
+                      "",
+                      "### Destination dispositions",
+                      "",
+                      "| Source lesson | Disposition | Arithmetic consequence |",
+                      "| --- | --- | --- |",
+                  ]
+              )
+              for row in historical_reuse["dispositions"]:
+                  lines.append(
+                      "| {Source lesson} | {Disposition} | {Arithmetic consequence} |".format(
+                          **row
+                      )
+                  )
+
+              lines.extend(
+                  [
+                      "",
+                      "### Affected requirements / ADRs and independent verification",
+                      "",
+                      "| Reuse item | Affected requirement / ADR / gate | Independent verification / reference method |",
+                      "| --- | --- | --- |",
+                  ]
+              )
+              for row in historical_reuse[
+                  "traceability_and_independent_verification"
+              ]:
+                  lines.append(
+                      "| {Reuse item} | {Affected requirement / ADR / gate} | "
+                      "{Independent verification / reference method} |".format(**row)
+                  )
+
+              lines.extend(
+                  [
+                      "",
+                      "### Limitations",
+                      "",
+                      str(historical_reuse["limitations"]),
+                      "",
+                      "### Remaining deferred impact",
+                      "",
+                  ]
+              )
+              deferred = historical_reuse["deferred_impact"]
+              if deferred:
+                  lines.extend(f"- {item}" for item in deferred)
+              else:
+                  lines.append("- None recorded.")
+
+              lines.extend(["", "### Mandatory recheck", ""])
+              recheck = historical_reuse["recheck"]
+              if recheck:
+                  lines.extend(f"- {item}" for item in recheck)
+              else:
+                  lines.append("- No recheck trigger recorded.")
+              lines.extend(["", "## Gates attempted and execution results", ""])
+          else:
+              lines.extend(
+                  [
+                      "- Historical proven-reuse evidence unavailable; see blocker classification.",
+                      "",
+                      "## Gates attempted and execution results",
+                      "",
+                  ]
+              )
+
+          lines.extend(
+              [
+              "| Gate | Raw job result | Execution state |",
+              "| --- | --- | --- |",
+          ]
               "",
               "| Gate | Raw job result | Execution state |",
               "| --- | --- | --- |",
@@ -1192,6 +1394,7 @@ jobs:
               "blockers": blockers,
               "not_run": not_run,
               "not_applicable": [],
+              "historical_reuse": historical_reuse,
               "next_safe_action": next_action,
           }
           Path("q6-qualification-report.json").write_text(
