@@ -69,7 +69,8 @@ jobs:
             exit 1
           }
           review_parent="$(git -C .qualified-source rev-parse "$EXPECTED_SOURCE_REF^")"
-          grep -F -- "Destination production parent reviewed: `$review_parent`"             .qualified-source/docs/PROVEN-REUSE-REVIEW.md >/dev/null || {
+          expected_review_parent='Destination production parent reviewed: `'"$review_parent"'`'
+          grep -F -- "$expected_review_parent" .qualified-source/docs/PROVEN-REUSE-REVIEW.md >/dev/null || {
             echo "Q6 FAIL: historical proven-reuse review is not bound to the candidate parent"
             exit 1
           }
