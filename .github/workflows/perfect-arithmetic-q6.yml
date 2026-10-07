@@ -3,10 +3,6 @@ name: Qualify Perfect Arithmetic Q6 Release Candidate
 on:
   workflow_call:
     inputs:
-      source_repository:
-        description: Perfect Arithmetic repository in owner/name form.
-        required: true
-        type: string
       source_ref:
         description: Exact Perfect Arithmetic private release-candidate revision.
         required: true
@@ -34,7 +30,7 @@ jobs:
       - name: Checkout exact Perfect Arithmetic candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: ${{ inputs.source_repository }}
+          repository: Perfect-Foundations/perfect-arithmetic
           ref: ${{ inputs.source_ref }}
           path: .qualified-source
           fetch-depth: 1
@@ -254,7 +250,7 @@ jobs:
       - name: Checkout exact Perfect Arithmetic candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: ${{ inputs.source_repository }}
+          repository: Perfect-Foundations/perfect-arithmetic
           ref: ${{ inputs.source_ref }}
           path: .qualified-source
           fetch-depth: 1
@@ -332,7 +328,7 @@ jobs:
       - name: Checkout exact Perfect Arithmetic candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: ${{ inputs.source_repository }}
+          repository: Perfect-Foundations/perfect-arithmetic
           ref: ${{ inputs.source_ref }}
           path: .qualified-source
           fetch-depth: 1
@@ -375,7 +371,7 @@ jobs:
       - name: Checkout exact Perfect Arithmetic candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: ${{ inputs.source_repository }}
+          repository: Perfect-Foundations/perfect-arithmetic
           ref: ${{ inputs.source_ref }}
           path: .qualified-source
           fetch-depth: 1
@@ -424,7 +420,7 @@ jobs:
       - name: Checkout exact Perfect Arithmetic candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: ${{ inputs.source_repository }}
+          repository: Perfect-Foundations/perfect-arithmetic
           ref: ${{ inputs.source_ref }}
           path: .qualified-source
           fetch-depth: 1
@@ -525,7 +521,7 @@ jobs:
       - name: Checkout exact Perfect Arithmetic candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: ${{ inputs.source_repository }}
+          repository: Perfect-Foundations/perfect-arithmetic
           ref: ${{ inputs.source_ref }}
           path: .qualified-source
           fetch-depth: 1
