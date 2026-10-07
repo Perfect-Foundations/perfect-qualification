@@ -2,7 +2,30 @@
 #![forbid(unsafe_code)]
 #![doc = "Independent Perfect Qualification consumer for Perfect Arithmetic."]
 
+use core::hash::{Hash, Hasher};
+
 use perfect_arithmetic::{Integer, Natural};
+
+struct StableHasher(u64);
+
+impl StableHasher {
+    fn new() -> Self {
+        Self(0xcbf2_9ce4_8422_2325)
+    }
+}
+
+impl Hasher for StableHasher {
+    fn finish(&self) -> u64 {
+        self.0
+    }
+
+    fn write(&mut self, bytes: &[u8]) {
+        for &byte in bytes {
+            self.0 ^= u64::from(byte);
+            self.0 = self.0.wrapping_mul(0x0000_0100_0000_01b3);
+        }
+    }
+}
 
 fn mix_byte(hash: &mut u64, value: u8) {
     *hash ^= u64::from(value).wrapping_add(0x9e);
@@ -41,11 +64,19 @@ fn mix_natural(hash: &mut u64, value: &Natural) {
         let (_, remainder) = value.div_rem(&Natural::from(probe)).unwrap();
         mix_u64(hash, remainder.try_to_u64().unwrap().into_value());
     }
+
+    let mut public_hasher = StableHasher::new();
+    value.hash(&mut public_hasher);
+    mix_u64(hash, public_hasher.finish());
 }
 
 fn mix_integer(hash: &mut u64, value: &Integer) {
     mix_byte(hash, u8::from(value.is_negative()));
     mix_natural(hash, &value.unsigned_abs());
+
+    let mut public_hasher = StableHasher::new();
+    value.hash(&mut public_hasher);
+    mix_u64(hash, public_hasher.finish());
 }
 
 /// Returns a deterministic qualification fingerprint derived only from public
