@@ -20,6 +20,7 @@ env:
   QUAL_ROOT: .qualification-suite/qualification/perfect-arithmetic
   QUAL_MANIFEST: .qualification-suite/qualification/perfect-arithmetic/Cargo.toml
   CANDIDATE_LOCK: .qualification-suite/qualification/perfect-arithmetic/Candidate.lock
+  PREPACKAGE_LOCK: .qualification-suite/qualification/perfect-arithmetic/PrePackage.lock
   PERF_MANIFEST: .qualification-suite/qualification/perfect-arithmetic/performance/Cargo.toml
   QUAL_FUZZ_ROOT: .qualification-suite/qualification/perfect-arithmetic/fuzz
   Q6_CHECK: .qualification-suite/qualification/perfect-arithmetic/scripts/check_q6.py
@@ -377,32 +378,39 @@ jobs:
           fi
 
           # Earlier Q6 steps intentionally rewrite the private Numeric dependency
-          # to a local path. Package only the exact clean candidate checkout.
-          #
-          # The candidate-root lock is path-bound and cannot prove the eventual
-          # registry package. Once the upstream registry blocker is cleared,
-          # Q6 additionally requires a separately retained lock generated from
-          # the clean registry-bound candidate manifest.
-          registry_lock="../$QUAL_ROOT/RegistryPackage.lock"
-          if [ ! -f "$registry_lock" ]; then
-            echo "Q6 BLOCKED: retained registry-package dependency lock is unavailable"
+          # to a local path. Restore the exact clean Git-bound candidate and
+          # validate that manifest against its own retained lock first.
+          prepackage_lock="../$PREPACKAGE_LOCK"
+          if [ ! -f "$prepackage_lock" ]; then
+            echo "Q6 BLOCKED: retained clean pre-package dependency lock is unavailable"
             exit 1
           fi
 
           git reset --hard HEAD
           git clean -fdx
           test -z "$(git status --porcelain)"
-          cp "$registry_lock" Cargo.lock
-          cmp "$registry_lock" Cargo.lock
+          cp "$prepackage_lock" Cargo.lock
+          cmp "$prepackage_lock" Cargo.lock
           cargo metadata --locked --all-features --format-version 1 >/dev/null
           cargo metadata --locked --no-default-features --format-version 1 >/dev/null
 
           cargo package --locked --list > ../package-list.txt
           cargo package --locked
           test -s ../package-list.txt
+          cmp "$prepackage_lock" Cargo.lock
+
+          # Cargo publishes a git+version dependency as its registry version.
+          # The extracted package therefore has a different dependency identity
+          # from the clean Git-bound candidate and requires its own retained lock.
           package_manifest="target/package/perfect-arithmetic-0.1.0/Cargo.toml"
           test -f "$package_manifest"
-          cp Cargo.lock "$(dirname "$package_manifest")/Cargo.lock"
+          registry_lock="../$QUAL_ROOT/RegistryPackage.lock"
+          if [ ! -f "$registry_lock" ]; then
+            echo "Q6 BLOCKED: retained extracted-package registry dependency lock is unavailable"
+            exit 1
+          fi
+          cp "$registry_lock" "$(dirname "$package_manifest")/Cargo.lock"
+          cmp "$registry_lock" "$(dirname "$package_manifest")/Cargo.lock"
           CARGO_NET_OFFLINE=true cargo check --locked --manifest-path "$package_manifest" --all-features
           CARGO_NET_OFFLINE=true cargo check --locked --manifest-path "$package_manifest" --no-default-features
 
