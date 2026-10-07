@@ -287,7 +287,7 @@ jobs:
           actual="$(cargo run --locked --example semantic_fingerprint --quiet --all-features)"
           test "$actual" = "$expected"
           test -f docs/verification/M5-HARDENING.md
-          cmp "$CANDIDATE_LOCK" Cargo.lock
+          cmp "../$CANDIDATE_LOCK" Cargo.lock
 
       - name: Q0-Q5 requalification against supplied candidate
         shell: bash
@@ -333,8 +333,8 @@ jobs:
           git reset --hard HEAD
           git clean -fdx
           test -z "$(git status --porcelain)"
-          cp "$CANDIDATE_LOCK" Cargo.lock
-          cmp "$CANDIDATE_LOCK" Cargo.lock
+          cp "../$CANDIDATE_LOCK" Cargo.lock
+          cmp "../$CANDIDATE_LOCK" Cargo.lock
 
           cargo package --locked --list > ../package-list.txt
           cargo package --locked
@@ -724,7 +724,7 @@ jobs:
           test "$all_features" = "$expected"
           test "$no_std" = "$expected"
           echo "Q6 semantic fingerprint: $expected"
-          cmp "$CANDIDATE_LOCK" Cargo.lock
+          cmp "../$CANDIDATE_LOCK" Cargo.lock
 
       - name: Q0-Q5 Class-A consumer requalification
         shell: bash
@@ -819,7 +819,7 @@ jobs:
           cd .qualified-source
           cargo check --locked --no-default-features --target "${{ matrix.target }}"
           cargo check --locked --no-default-features --features high-throughput --target "${{ matrix.target }}"
-          cmp "$CANDIDATE_LOCK" Cargo.lock
+          cmp "../$CANDIDATE_LOCK" Cargo.lock
 
       - name: Q0-Q5 Class-B consumer requalification
         shell: bash
