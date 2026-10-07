@@ -324,15 +324,22 @@ jobs:
           rustup toolchain install 1.99.0 --profile minimal
           rustup default 1.99.0
 
+      - name: Verify retained performance dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$QUAL_ROOT/performance/Cargo.lock"
+          cargo metadata --manifest-path "$PERF_MANIFEST" --locked --all-features --format-version 1 >/dev/null
+
       - name: Measure exact candidate against same-run baselines
         shell: bash
         run: |
           set -euo pipefail
-          cargo run --release --manifest-path "$PERF_MANIFEST" > q6-default-timing.csv
-          cargo run --release --manifest-path "$PERF_MANIFEST" --features alloc-count > q6-default-alloc.csv
-          cargo run --release --manifest-path "$PERF_MANIFEST" --features candidate-high-throughput > q6-high-throughput-timing.csv
-          cargo run --release --manifest-path "$PERF_MANIFEST" --features "alloc-count candidate-high-throughput" > q6-high-throughput-alloc.csv
-          cargo run --release --manifest-path "$PERF_MANIFEST" --bin hash_alloc > q6-hash-alloc.csv
+          cargo run --locked --release --manifest-path "$PERF_MANIFEST" > q6-default-timing.csv
+          cargo run --locked --release --manifest-path "$PERF_MANIFEST" --features alloc-count > q6-default-alloc.csv
+          cargo run --locked --release --manifest-path "$PERF_MANIFEST" --features candidate-high-throughput > q6-high-throughput-timing.csv
+          cargo run --locked --release --manifest-path "$PERF_MANIFEST" --features "alloc-count candidate-high-throughput" > q6-high-throughput-alloc.csv
+          cargo run --locked --release --manifest-path "$PERF_MANIFEST" --bin hash_alloc > q6-hash-alloc.csv
           python3 - <<'PY'
           import csv
 
@@ -419,6 +426,13 @@ jobs:
           rustup toolchain install nightly-2026-10-04 --profile minimal --component rust-src
           cargo install cargo-fuzz --version =0.13.2 --locked
 
+      - name: Verify retained fuzz dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$QUAL_FUZZ_ROOT/Cargo.lock"
+          cargo +nightly-2026-10-04 metadata             --manifest-path "$QUAL_FUZZ_ROOT/Cargo.toml"             --locked             --all-features             --format-version 1 >/dev/null
+
       - name: Run qualification-owned fuzz campaigns on exact Q6 candidate
         shell: bash
         run: |
@@ -427,6 +441,7 @@ jobs:
           cargo +nightly-2026-10-04 fuzz run natural_api --sanitizer address -- -runs=25000 -max_len=128
           cargo +nightly-2026-10-04 fuzz run integer_api --sanitizer address -- -runs=25000 -max_len=128
           cargo +nightly-2026-10-04 fuzz run deep_paths --sanitizer address -- -runs=5000 -max_len=64
+          git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/fuzz/Cargo.lock
 
   mutation:
     name: Q6 / Candidate-bound mutation
