@@ -233,13 +233,9 @@ def main() -> int:
             "perfect main",
             "perfect specialized runtime pr 13 reviewed head",
             "lmes github mirror reference",
-            "reuse method only",
-            "evaluated rejected",
-            "documentation disposition catch up only",
             "destination binding",
-            "destination production parent reviewed",
+            "destination content digest reviewed",
             "backend independent canonical hashing",
-            "adapt with provenance",
             "does not close q6",
         ):
             if phrase not in text:
@@ -251,8 +247,40 @@ def main() -> int:
         ):
             if revision not in raw:
                 problem(f"historical reuse review missing exact predecessor revision: {revision}")
-        if "DEFERRED_WITH_IMPACT" in raw:
-            problem("historical reuse review retains a release-blocking DEFERRED_WITH_IMPACT disposition")
+
+        checkpoint_expectations = {
+            "M1": ("EVALUATED_REJECTED", "REUSE_METHOD_ONLY"),
+            "M3": ("EVALUATED_REJECTED", "REUSE_METHOD_ONLY"),
+            "M5": ("REUSE_METHOD_ONLY",),
+            "M6": ("REUSE_METHOD_ONLY", "ADAPT_WITH_PROVENANCE"),
+        }
+        for checkpoint, dispositions in checkpoint_expectations.items():
+            match = re.search(
+                rf"(?ms)^### {checkpoint}\\b.*?(?=^### |^## |\\Z)",
+                raw,
+            )
+            if match is None:
+                problem(
+                    f"historical reuse review missing explicit {checkpoint} checkpoint disposition"
+                )
+                continue
+            section = match.group(0)
+            if "Reuse review state: **COMPLETE**" not in section:
+                problem(
+                    f"historical reuse review {checkpoint} checkpoint is not marked COMPLETE"
+                )
+            for disposition in dispositions:
+                if disposition not in section:
+                    problem(
+                        f"historical reuse review {checkpoint} checkpoint missing disposition: "
+                        f"{disposition}"
+                    )
+
+        if "unresolved deferred with impact none" not in text:
+            problem(
+                "historical reuse review retains or fails to classify unresolved "
+                "DEFERRED_WITH_IMPACT state"
+            )
 
     if blockers:
         for message in blockers:
