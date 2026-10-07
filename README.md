@@ -115,13 +115,13 @@ Family rules:
 
 | Gate | Name | Purpose |
 |---|---|---|
-| **Q0** | Repository integrity | Revision, source state, dependency inventory, declared targets/features |
+| **Q0** | Repository integrity | Revision, source state, dependency inventory, declared targets/features, historical-reuse provenance |
 | **Q1** | Build matrix | MSRV, stable, OS/arch, `no_std`, feature combinations |
 | **Q2** | Semantic integration | Cross-crate conversions, exactness, rounding, units, uncertainty, canonical bytes |
 | **Q3** | Reproducibility | Deterministic outputs, seeded stochastic behavior, byte stability |
-| **Q4** | Robustness | Fuzzing, mutation, sanitizers/Miri, malformed inputs |
-| **Q5** | External reference | Known-answer vectors, standards, independent implementations |
-| **Q6** | Release candidate | Full matrix, docs, FFI/dependency review, performance/evidence bundle |
+| **Q4** | Robustness | Fuzzing, mutation, sanitizers/Miri, malformed inputs, applicable predecessor defect classes |
+| **Q5** | External reference | Known-answer vectors, standards, materially independent implementations/oracles |
+| **Q6** | Release candidate | Full matrix, historical-reuse closure, docs, FFI/dependency review, performance/evidence bundle |
 
 Not every test class applies to every crate. Qualification is **domain-specific but systematically recorded**.
 
@@ -183,6 +183,7 @@ The family should be designed so that:
 - 🏠 [Perfect Foundations organization](https://github.com/Perfect-Foundations)
 - 📋 [Perfect Family Project](https://github.com/orgs/Perfect-Foundations/projects/1)
 - 📄 [Qualification Plan](QUALIFICATION-PLAN.md)
+- ♻️ [Historical Proven-Reuse Qualification](qualification/HISTORICAL-REUSE.md)
 
 ---
 
