@@ -287,10 +287,19 @@ def main() -> int:
                         f"historical reuse review {checkpoint} has DEFERRED_WITH_IMPACT "
                         "without an entry-local release-compatible disposition and recheck gate"
                     )
-                if "blocking" in normalized_line:
+                blocking_view = normalized_line
+                for resolved_phrase in (
+                    "no longer release blocking",
+                    "no longer blocking",
+                    "not release blocking",
+                    "not blocking",
+                    "non blocking",
+                ):
+                    blocking_view = blocking_view.replace(resolved_phrase, " ")
+                if re.search(r"\b(?:release blocking|blocking release|blocking)\b", blocking_view):
                     problem(
-                        f"historical reuse review {checkpoint} retains a blocking "
-                        "DEFERRED_WITH_IMPACT entry"
+                        f"historical reuse review {checkpoint} retains an explicitly "
+                        "release-blocking DEFERRED_WITH_IMPACT entry"
                     )
 
         if "unresolved deferred with impact none" not in text:
