@@ -77,6 +77,7 @@ trait Backend {
     const NAME: &'static str;
 
     fn from_u64(value: u64) -> Self::N;
+    fn shl_bits(value: &Self::N, bits: u64) -> Self::N;
     fn add(left: &Self::N, right: &Self::N) -> Self::N;
     fn mul(left: &Self::N, right: &Self::N) -> Self::N;
     fn div_rem(left: &Self::N, right: &Self::N) -> (Self::N, Self::N);
@@ -91,6 +92,10 @@ impl Backend for Perfect {
 
     fn from_u64(value: u64) -> Self::N {
         PerfectNatural::from(value)
+    }
+
+    fn shl_bits(value: &Self::N, bits: u64) -> Self::N {
+        value.shl_bits(bits)
     }
 
     fn add(left: &Self::N, right: &Self::N) -> Self::N {
@@ -114,6 +119,10 @@ impl Backend for Direct {
         BigUint::from(value)
     }
 
+    fn shl_bits(value: &Self::N, bits: u64) -> Self::N {
+        value << usize::try_from(bits).expect("qualification bit count fits usize")
+    }
+
     fn add(left: &Self::N, right: &Self::N) -> Self::N {
         left + right
     }
@@ -128,14 +137,23 @@ impl Backend for Direct {
 }
 
 fn build_value<B: Backend>(target_bits: usize, seed: u64, salt: u64) -> B::N {
-    let steps = ((target_bits.saturating_sub(1)) / 61).max(1);
-    let base = B::from_u64(BASE);
-    let mut value = B::from_u64(seed);
-    for step in 0..steps {
+    assert!(target_bits >= 2);
+
+    // Construct base-2^61 chunks so the declared target bit is set exactly.
+    // This avoids labeling near-threshold operands with a size they do not have.
+    let chunks = target_bits.div_ceil(61);
+    let top_bits = target_bits - (chunks - 1) * 61;
+    let top_high = 1_u64 << (top_bits - 1);
+    let top_mask = top_high - 1;
+    let mut value = B::from_u64(top_high | (seed & top_mask));
+
+    for chunk in 1..chunks {
+        value = B::shl_bits(&value, 61);
         let term = salt
-            .wrapping_add((step as u64).wrapping_mul(1_000_003))
-            .wrapping_add(17);
-        value = B::add(&B::mul(&value, &base), &B::from_u64(term));
+            .wrapping_add((chunk as u64).wrapping_mul(1_000_003))
+            .wrapping_add(17)
+            & BASE;
+        value = B::add(&value, &B::from_u64(term));
     }
     value
 }
