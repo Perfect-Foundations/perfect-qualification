@@ -32,7 +32,7 @@ REQUIRED_REUSE_SECTIONS = (
 
 def section_body(raw: str, heading: str) -> str | None:
     match = re.search(
-        rf"(?ms)^## {re.escape(heading)}\\s*\\n(.*?)(?=^## |\\Z)",
+        rf"(?ms)^## {re.escape(heading)}\s*\n(.*?)(?=^## |\Z)",
         raw,
     )
     return match.group(1).strip() if match is not None else None
@@ -55,7 +55,7 @@ def markdown_table(body: str) -> list[dict[str, str]]:
             continue
         parsed.append(
             {
-                header: re.sub(r"\\*\\*", "", value).strip()
+                header: re.sub(r"\*\*", "", value).strip()
                 for header, value in zip(headers, cells)
             }
         )
@@ -223,9 +223,9 @@ def append_reuse_markdown(
     )
     for row in historical_reuse["dispositions"]:
         lines.append(
-            "| {Source lesson} | {Disposition} | {Arithmetic consequence} |".format(
-                **row
-            )
+            f"| {row.get('Source lesson', '')} | "
+            f"{row.get('Disposition', '')} | "
+            f"{row.get('Arithmetic consequence', '')} |"
         )
 
     lines.extend(
@@ -239,8 +239,9 @@ def append_reuse_markdown(
     )
     for row in historical_reuse["traceability_and_independent_verification"]:
         lines.append(
-            "| {Reuse item} | {Affected requirement / ADR / gate} | "
-            "{Independent verification / reference method} |".format(**row)
+            f"| {row.get('Reuse item', '')} | "
+            f"{row.get('Affected requirement / ADR / gate', '')} | "
+            f"{row.get('Independent verification / reference method', '')} |"
         )
 
     lines.extend(
