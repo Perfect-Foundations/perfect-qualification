@@ -207,6 +207,11 @@ jobs:
           python3 "$Q6_CHECK" .qualified-source
           rc="$?"
           set -e
+          if [ "$rc" -eq 76 ]; then
+            touch .q6-blocked
+            touch .q6-failed
+            exit 1
+          fi
           if [ "$rc" -eq 75 ]; then
             touch .q6-blocked
             exit 1
@@ -445,14 +450,21 @@ jobs:
           set -euo pipefail
           mkdir -p q6-job-state
           state=FAIL
+          failure_present=false
+          if [ -f .q6-failed ]; then
+            failure_present=true
+          fi
           if [ -f .q6-blocked ]; then
             state=BLOCKED
           elif [ ! -f .q6-evidence-started ]; then
             state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
+          else
+            failure_present=true
           fi
-          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+          printf '{"job_key":"%s","state":"%s","failure_present":%s}\n' \
+            "$Q6_JOB_KEY" "$state" "$failure_present" > "q6-job-state/$Q6_JOB_KEY.json"
 
       - name: Retain Q6 qualification state
         if: ${{ always() }}
@@ -625,14 +637,21 @@ jobs:
           set -euo pipefail
           mkdir -p q6-job-state
           state=FAIL
+          failure_present=false
+          if [ -f .q6-failed ]; then
+            failure_present=true
+          fi
           if [ -f .q6-blocked ]; then
             state=BLOCKED
           elif [ ! -f .q6-evidence-started ]; then
             state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
+          else
+            failure_present=true
           fi
-          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+          printf '{"job_key":"%s","state":"%s","failure_present":%s}\n' \
+            "$Q6_JOB_KEY" "$state" "$failure_present" > "q6-job-state/$Q6_JOB_KEY.json"
 
       - name: Retain Q6 qualification state
         if: ${{ always() }}
@@ -736,14 +755,21 @@ jobs:
           set -euo pipefail
           mkdir -p q6-job-state
           state=FAIL
+          failure_present=false
+          if [ -f .q6-failed ]; then
+            failure_present=true
+          fi
           if [ -f .q6-blocked ]; then
             state=BLOCKED
           elif [ ! -f .q6-evidence-started ]; then
             state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
+          else
+            failure_present=true
           fi
-          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+          printf '{"job_key":"%s","state":"%s","failure_present":%s}\n' \
+            "$Q6_JOB_KEY" "$state" "$failure_present" > "q6-job-state/$Q6_JOB_KEY.json"
 
       - name: Retain Q6 qualification state
         if: ${{ always() }}
@@ -850,14 +876,21 @@ jobs:
           set -euo pipefail
           mkdir -p q6-job-state
           state=FAIL
+          failure_present=false
+          if [ -f .q6-failed ]; then
+            failure_present=true
+          fi
           if [ -f .q6-blocked ]; then
             state=BLOCKED
           elif [ ! -f .q6-evidence-started ]; then
             state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
+          else
+            failure_present=true
           fi
-          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+          printf '{"job_key":"%s","state":"%s","failure_present":%s}\n' \
+            "$Q6_JOB_KEY" "$state" "$failure_present" > "q6-job-state/$Q6_JOB_KEY.json"
 
       - name: Retain Q6 qualification state
         if: ${{ always() }}
@@ -990,14 +1023,21 @@ jobs:
           set -euo pipefail
           mkdir -p q6-job-state
           state=FAIL
+          failure_present=false
+          if [ -f .q6-failed ]; then
+            failure_present=true
+          fi
           if [ -f .q6-blocked ]; then
             state=BLOCKED
           elif [ ! -f .q6-evidence-started ]; then
             state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
+          else
+            failure_present=true
           fi
-          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+          printf '{"job_key":"%s","state":"%s","failure_present":%s}\n' \
+            "$Q6_JOB_KEY" "$state" "$failure_present" > "q6-job-state/$Q6_JOB_KEY.json"
 
       - name: Retain Q6 qualification state
         if: ${{ always() }}
@@ -1109,14 +1149,21 @@ jobs:
           set -euo pipefail
           mkdir -p q6-job-state
           state=FAIL
+          failure_present=false
+          if [ -f .q6-failed ]; then
+            failure_present=true
+          fi
           if [ -f .q6-blocked ]; then
             state=BLOCKED
           elif [ ! -f .q6-evidence-started ]; then
             state=BLOCKED
           elif [ "$Q6_JOB_STATUS" = "success" ]; then
             state=PASS
+          else
+            failure_present=true
           fi
-          printf '{"job_key":"%s","state":"%s"}\n' "$Q6_JOB_KEY" "$state" > "q6-job-state/$Q6_JOB_KEY.json"
+          printf '{"job_key":"%s","state":"%s","failure_present":%s}\n' \
+            "$Q6_JOB_KEY" "$state" "$failure_present" > "q6-job-state/$Q6_JOB_KEY.json"
 
       - name: Retain Q6 qualification state
         if: ${{ always() }}
