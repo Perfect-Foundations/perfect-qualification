@@ -240,24 +240,34 @@ jobs:
           test "$actual" = "$expected"
           test -f docs/verification/M5-HARDENING.md
 
+      - name: Verify retained Q0-Q5 consumer dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$QUAL_ROOT/Cargo.lock"
+          cargo metadata --manifest-path "$QUAL_MANIFEST" --locked --all-features --format-version 1 >/dev/null
+          cargo metadata --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --format-version 1 >/dev/null
+          git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/Cargo.lock
+
       - name: Q0-Q5 requalification against supplied candidate
         shell: bash
         run: |
           set -euo pipefail
           python3 "$QUAL_ROOT/scripts/verify_oracle.py"
           cargo fmt --manifest-path "$QUAL_MANIFEST" -- --check
-          cargo check --manifest-path "$QUAL_MANIFEST" --all-targets --all-features
-          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features
-          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
-          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
-          cargo +stable test --manifest-path "$QUAL_MANIFEST" --all-features
-          cargo +stable test --manifest-path "$QUAL_MANIFEST" --no-default-features
-          cargo clippy --manifest-path "$QUAL_MANIFEST" --all-targets --all-features -- -D warnings
-          cargo clippy --manifest-path "$QUAL_MANIFEST" --all-targets --no-default-features -- -D warnings
-          RUSTDOCFLAGS="-D warnings" cargo doc --manifest-path "$QUAL_MANIFEST" --no-deps --all-features
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --all-targets --all-features
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo +stable test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo +stable test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo clippy --manifest-path "$QUAL_MANIFEST" --locked --all-targets --all-features -- -D warnings
+          cargo clippy --manifest-path "$QUAL_MANIFEST" --locked --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo doc --manifest-path "$QUAL_MANIFEST" --locked --no-deps --all-features
           expected="$(tr -d '\r\n' < "$QUAL_ROOT/semantic-fingerprint.txt")"
-          actual="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet --all-features)"
+          actual="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --example fingerprint --quiet --all-features)"
           test "$actual" = "$expected"
+          git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/Cargo.lock
 
       - name: Q6 performance architecture inputs
         shell: bash
@@ -463,11 +473,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cd "$QUAL_FUZZ_ROOT"
+          qualification_root="$(cd .qualification-suite && pwd)"
+          fuzz_root="$(cd "$QUAL_FUZZ_ROOT" && pwd)"
+          cd "$fuzz_root"
           cargo +nightly-2026-10-04 fuzz run natural_api --sanitizer address -- -runs=25000 -max_len=128
           cargo +nightly-2026-10-04 fuzz run integer_api --sanitizer address -- -runs=25000 -max_len=128
           cargo +nightly-2026-10-04 fuzz run deep_paths --sanitizer address -- -runs=5000 -max_len=64
-          git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/fuzz/Cargo.lock
+          git -C "$qualification_root" diff --exit-code -- qualification/perfect-arithmetic/fuzz/Cargo.lock
 
   mutation:
     name: Q6 / Candidate-bound mutation
@@ -613,20 +625,21 @@ jobs:
           test "$second" = "$expected"
           test "$all_features" = "$expected"
           test "$no_std" = "$expected"
+          git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/Cargo.lock
           echo "Q6 semantic fingerprint: $expected"
 
       - name: Q0-Q5 Class-A consumer requalification
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --manifest-path "$QUAL_MANIFEST"
-          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
-          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
           expected="$(tr -d '\r\n' < "$QUAL_ROOT/semantic-fingerprint.txt")"
-          first="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
-          second="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
-          all_features="$(cargo run --manifest-path "$QUAL_MANIFEST" --all-features --example fingerprint --quiet)"
-          no_std="$(cargo run --manifest-path "$QUAL_MANIFEST" --no-default-features --example fingerprint --quiet)"
+          first="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --example fingerprint --quiet)"
+          second="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --example fingerprint --quiet)"
+          all_features="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --all-features --example fingerprint --quiet)"
+          no_std="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --example fingerprint --quiet)"
           test "$first" = "$expected"
           test "$second" = "$expected"
           test "$all_features" = "$expected"
@@ -708,8 +721,9 @@ jobs:
       - name: Q0-Q5 Class-B consumer requalification
         shell: bash
         run: |
-          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --target "${{ matrix.target }}"
-          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --features high-throughput --target "${{ matrix.target }}"
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --target "${{ matrix.target }}"
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --features high-throughput --target "${{ matrix.target }}"
+          git -C .qualification-suite diff --exit-code -- qualification/perfect-arithmetic/Cargo.lock
 \tdocs/PROVEN-REUSE-REVIEW.md
           arithmetic_path="$(cd .qualified-source && pwd)"
 
@@ -853,17 +867,17 @@ jobs:
           set -euo pipefail
           python3 "$QUAL_ROOT/scripts/verify_oracle.py"
           cargo fmt --manifest-path "$QUAL_MANIFEST" -- --check
-          cargo check --manifest-path "$QUAL_MANIFEST" --all-targets --all-features
-          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features
-          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
-          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
-          cargo +stable test --manifest-path "$QUAL_MANIFEST" --all-features
-          cargo +stable test --manifest-path "$QUAL_MANIFEST" --no-default-features
-          cargo clippy --manifest-path "$QUAL_MANIFEST" --all-targets --all-features -- -D warnings
-          cargo clippy --manifest-path "$QUAL_MANIFEST" --all-targets --no-default-features -- -D warnings
-          RUSTDOCFLAGS="-D warnings" cargo doc --manifest-path "$QUAL_MANIFEST" --no-deps --all-features
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --all-targets --all-features
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo +stable test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo +stable test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo clippy --manifest-path "$QUAL_MANIFEST" --locked --all-targets --all-features -- -D warnings
+          cargo clippy --manifest-path "$QUAL_MANIFEST" --locked --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo doc --manifest-path "$QUAL_MANIFEST" --locked --no-deps --all-features
           expected="$(tr -d '\r\n' < "$QUAL_ROOT/semantic-fingerprint.txt")"
-          actual="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet --all-features)"
+          actual="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --example fingerprint --quiet --all-features)"
           test "$actual" = "$expected"
 
       - name: Q6 performance architecture inputs
@@ -1211,14 +1225,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --manifest-path "$QUAL_MANIFEST"
-          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
-          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
           expected="$(tr -d '\r\n' < "$QUAL_ROOT/semantic-fingerprint.txt")"
-          first="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
-          second="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
-          all_features="$(cargo run --manifest-path "$QUAL_MANIFEST" --all-features --example fingerprint --quiet)"
-          no_std="$(cargo run --manifest-path "$QUAL_MANIFEST" --no-default-features --example fingerprint --quiet)"
+          first="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --example fingerprint --quiet)"
+          second="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --example fingerprint --quiet)"
+          all_features="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --all-features --example fingerprint --quiet)"
+          no_std="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --example fingerprint --quiet)"
           test "$first" = "$expected"
           test "$second" = "$expected"
           test "$all_features" = "$expected"
@@ -1300,8 +1314,8 @@ jobs:
       - name: Q0-Q5 Class-B consumer requalification
         shell: bash
         run: |
-          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --target "${{ matrix.target }}"
-          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --features high-throughput --target "${{ matrix.target }}"
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --target "${{ matrix.target }}"
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --features high-throughput --target "${{ matrix.target }}"
  |
               LC_ALL=C sort |
               sha256sum |
@@ -1455,17 +1469,17 @@ jobs:
           set -euo pipefail
           python3 "$QUAL_ROOT/scripts/verify_oracle.py"
           cargo fmt --manifest-path "$QUAL_MANIFEST" -- --check
-          cargo check --manifest-path "$QUAL_MANIFEST" --all-targets --all-features
-          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features
-          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
-          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
-          cargo +stable test --manifest-path "$QUAL_MANIFEST" --all-features
-          cargo +stable test --manifest-path "$QUAL_MANIFEST" --no-default-features
-          cargo clippy --manifest-path "$QUAL_MANIFEST" --all-targets --all-features -- -D warnings
-          cargo clippy --manifest-path "$QUAL_MANIFEST" --all-targets --no-default-features -- -D warnings
-          RUSTDOCFLAGS="-D warnings" cargo doc --manifest-path "$QUAL_MANIFEST" --no-deps --all-features
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --all-targets --all-features
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo +stable test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo +stable test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo clippy --manifest-path "$QUAL_MANIFEST" --locked --all-targets --all-features -- -D warnings
+          cargo clippy --manifest-path "$QUAL_MANIFEST" --locked --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo doc --manifest-path "$QUAL_MANIFEST" --locked --no-deps --all-features
           expected="$(tr -d '\r\n' < "$QUAL_ROOT/semantic-fingerprint.txt")"
-          actual="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet --all-features)"
+          actual="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --example fingerprint --quiet --all-features)"
           test "$actual" = "$expected"
 
       - name: Q6 performance architecture inputs
@@ -1813,14 +1827,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --manifest-path "$QUAL_MANIFEST"
-          cargo test --manifest-path "$QUAL_MANIFEST" --all-features
-          cargo test --manifest-path "$QUAL_MANIFEST" --no-default-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
           expected="$(tr -d '\r\n' < "$QUAL_ROOT/semantic-fingerprint.txt")"
-          first="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
-          second="$(cargo run --manifest-path "$QUAL_MANIFEST" --example fingerprint --quiet)"
-          all_features="$(cargo run --manifest-path "$QUAL_MANIFEST" --all-features --example fingerprint --quiet)"
-          no_std="$(cargo run --manifest-path "$QUAL_MANIFEST" --no-default-features --example fingerprint --quiet)"
+          first="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --example fingerprint --quiet)"
+          second="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --example fingerprint --quiet)"
+          all_features="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --all-features --example fingerprint --quiet)"
+          no_std="$(cargo run --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --example fingerprint --quiet)"
           test "$first" = "$expected"
           test "$second" = "$expected"
           test "$all_features" = "$expected"
@@ -1902,5 +1916,5 @@ jobs:
       - name: Q0-Q5 Class-B consumer requalification
         shell: bash
         run: |
-          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --target "${{ matrix.target }}"
-          cargo check --manifest-path "$QUAL_MANIFEST" --no-default-features --features high-throughput --target "${{ matrix.target }}"
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --target "${{ matrix.target }}"
+          cargo check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --features high-throughput --target "${{ matrix.target }}"
