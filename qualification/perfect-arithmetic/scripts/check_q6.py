@@ -33,22 +33,30 @@ def main() -> int:
     args = parser.parse_args()
     root = args.source.resolve()
     problems: list[str] = []
+    blockers: list[str] = []
 
     def problem(message: str) -> None:
         problems.append(message)
 
+    def blocker(message: str) -> None:
+        blockers.append(message)
+
     def require_file(relative: str) -> Path | None:
         path = root / relative
         if not path.is_file():
-            problem(f"required Q6 file missing: {relative}")
+            blocker(f"required Q6 file missing: {relative}")
             return None
         return path
 
     manifest_path = require_file("Cargo.toml")
     status_path = require_file("project-status.toml")
     if manifest_path is None or status_path is None:
-        for message in problems:
+        for message in blockers:
             print(f"Q6 BLOCKER: {message}", file=sys.stderr)
+        print(
+            f"Q6 BLOCKED: {len(blockers)} required private release-candidate evidence item(s) unavailable",
+            file=sys.stderr,
+        )
         return 1
 
     try:
@@ -246,11 +254,20 @@ def main() -> int:
         if "DEFERRED_WITH_IMPACT" in raw:
             problem("historical reuse review retains a release-blocking DEFERRED_WITH_IMPACT disposition")
 
-    if problems:
-        for message in problems:
+    if blockers:
+        for message in blockers:
             print(f"Q6 BLOCKER: {message}", file=sys.stderr)
         print(
-            f"Q6 FAIL: {len(problems)} private release-candidate prerequisite(s) unresolved",
+            f"Q6 BLOCKED: {len(blockers)} required private release-candidate evidence item(s) unavailable",
+            file=sys.stderr,
+        )
+        return 1
+
+    if problems:
+        for message in problems:
+            print(f"Q6 FAILURE: {message}", file=sys.stderr)
+        print(
+            f"Q6 FAIL: {len(problems)} private release-candidate prerequisite violation(s)",
             file=sys.stderr,
         )
         return 1
