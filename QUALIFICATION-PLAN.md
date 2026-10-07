@@ -7,6 +7,7 @@
 - clean source state
 - dependency inventory
 - declared MSRV/targets/features
+- required historical-reuse disposition and exact predecessor revisions present
 
 ### Q1 — build matrix
 - stable/MSRV
@@ -33,18 +34,21 @@
 - mutation testing
 - sanitizer/Miri coverage where applicable
 - malformed-input handling
+- applicable LMES/Perfectπ historical defect classes exercised or technically NOT_APPLICABLE
 
 ### Q5 — external reference
 - known-answer vectors
 - independent implementations
 - standards/reference datasets
 - numerical error analysis
+- adapted predecessor implementation is not used as its own independent oracle
 
 ### Q6 — release candidate
 - full supported matrix
 - documentation consistency
 - dependency/FFI review
 - performance regression review
+- M1/M3/M5/M6 historical-reuse catch-up complete; unresolved release-blocking deferrals absent
 - evidence bundle
 
 Qualification requirements are crate-specific; not every test class applies to every domain.
