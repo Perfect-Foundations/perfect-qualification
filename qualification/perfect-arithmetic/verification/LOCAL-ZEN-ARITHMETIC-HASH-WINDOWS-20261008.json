@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "repo": "Perfect-Foundations/perfect-qualification",
+  "subject": {
+    "qualification_pr": 6,
+    "qualification_sha": "29b5d92739620c6a309acd73ab88bcea38e38a2c",
+    "arithmetic_sha": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+    "numeric_sha": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "platform": "Zen native Windows AMD64, Rust 1.99.0",
+  "method": "new clean independent qualification checkout, cloned source revisions, isolated path-materialized manifests with offline Cargo; original shared repos unchanged",
+  "execution": {
+    "python_original_reference": "72/72 PASS",
+    "python_canonical_hash_reference": "25/25 PASS",
+    "rust_hash_consumer": "1/1 both feature modes",
+    "full_independent_consumer_all_features": {
+      "pass": 8,
+      "fail": 0,
+      "exit": 0
+    },
+    "full_independent_consumer_no_default": {
+      "pass": 8,
+      "fail": 0,
+      "exit": 0
+    },
+    "rustfmt": "PASS",
+    "clippy_all": "PASS -D warnings",
+    "clippy_no_default": "PASS -D warnings",
+    "rustdoc": "PASS -D warnings",
+    "exit_code": 0,
+    "local_log_directory": "C:\\Dev\\PerfectFoundations\\_pf_arith_qual_win_20261008\\logs",
+    "lock_sha256": "709e15a8bb8854fae5e6ee62653fd16a6b78c22cab62c30b02216b3cee6e784b"
+  },
+  "corroboration": "Lock SHA256 matches separately executed exact-pinned Ubuntu WSL2 consumer",
+  "limits": [
+    "Native Windows is not Linux ARM64",
+    "Only checked exact qualified revision and two feature modes; no hosted Q0-Q5 pass claimed",
+    "No release/registry package test or Q6 promotion",
+    "Perfectπ unchanged; project-status.toml unchanged"
+  ]
+}
