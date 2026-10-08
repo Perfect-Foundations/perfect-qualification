@@ -1,0 +1,82 @@
+{
+  "source_shas": {
+    "qualification": "dab428a63cd7010aa35cbdf5c9ebdf07cde859c4",
+    "arithmetic": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+    "numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "lock_sha256": "65afe1602046b2bdfd2820d53cd980bb29e52beb23146ea752745a759244b1ac",
+  "runner": "Zen WSL2 Ubuntu x86_64",
+  "toolchain": "nightly-2026-10-04",
+  "cargo_fuzz": "0.13.2",
+  "sanitizer": "address",
+  "results": {
+    "natural_api": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "+nightly-2026-10-04",
+        "fuzz",
+        "run",
+        "natural_api",
+        "--sanitizer",
+        "address",
+        "--",
+        "-runs=25000",
+        "-max_len=128",
+        "-seed=424242",
+        "-print_final_stats=1"
+      ],
+      "iterations": 25000,
+      "input_cap": 128,
+      "log": "/home/ubuntu/pf-verify/qualification-fuzz-dab-evidence-20261008/natural_api.log",
+      "duration_sec": 11.828
+    },
+    "integer_api": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "+nightly-2026-10-04",
+        "fuzz",
+        "run",
+        "integer_api",
+        "--sanitizer",
+        "address",
+        "--",
+        "-runs=25000",
+        "-max_len=128",
+        "-seed=424242",
+        "-print_final_stats=1"
+      ],
+      "iterations": 25000,
+      "input_cap": 128,
+      "log": "/home/ubuntu/pf-verify/qualification-fuzz-dab-evidence-20261008/integer_api.log",
+      "duration_sec": 1.277
+    },
+    "deep_paths": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "+nightly-2026-10-04",
+        "fuzz",
+        "run",
+        "deep_paths",
+        "--sanitizer",
+        "address",
+        "--",
+        "-runs=5000",
+        "-max_len=64",
+        "-seed=424242",
+        "-print_final_stats=1"
+      ],
+      "iterations": 5000,
+      "input_cap": 64,
+      "log": "/home/ubuntu/pf-verify/qualification-fuzz-dab-evidence-20261008/deep_paths.log",
+      "duration_sec": 1.978
+    }
+  },
+  "lock_sha256_after": "65afe1602046b2bdfd2820d53cd980bb29e52beb23146ea752745a759244b1ac",
+  "evidence_boundary": "Local ASan fuzz execution of qualification-owned targets, not completed Q4/Q6 qualification. No hosted execution, independently executed ARM64/macOS matrix, registry-package lock, or release gate is inferred."
+}

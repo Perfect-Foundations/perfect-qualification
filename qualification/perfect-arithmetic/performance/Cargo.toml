@@ -1,0 +1,22 @@
+[package]
+name = "qualify-perfect-arithmetic-performance"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+default-run = "qualify-perfect-arithmetic-performance"
+
+[features]
+default = []
+alloc-count = []
+candidate-high-throughput = ["perfect-arithmetic/high-throughput"]
+
+[dependencies]
+perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "9ec660f9abfd7fe93e441e77dbb1158c371603f5", version = "=0.1.0", default-features = false, features = ["std"] }
+num-bigint = { version = "=0.5.1", default-features = false, features = ["std"] }
+num-integer = "=0.1.47"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+strip = "symbols"
