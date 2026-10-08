@@ -33,7 +33,7 @@ jobs:
         run: |
           set -euo pipefail
           test "${{ inputs.source_repository }}" = "Perfect-Foundations/perfect-decimal"
-          test "${{ inputs.source_ref }}" = "ce9ff7c91beb9b1ee10e088d65465302b68eecc7"
+          test "${{ inputs.source_ref }}" = "85f4408838131007146fff14b1c9c1d760c585a8"
 
       - name: Checkout exact Decimal candidate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

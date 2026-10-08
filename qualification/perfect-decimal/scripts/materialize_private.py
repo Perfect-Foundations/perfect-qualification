@@ -9,7 +9,7 @@ from pathlib import Path
 import subprocess
 
 PINS={
-"perfect-decimal":"ce9ff7c91beb9b1ee10e088d65465302b68eecc7",
+"perfect-decimal":"85f4408838131007146fff14b1c9c1d760c585a8",
 "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b",
 "perfect-arithmetic":"1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
 "perfect-rational":"97cce0ae8ff7ef206929d273e1d4a5774f6a2a34",
