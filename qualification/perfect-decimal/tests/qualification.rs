@@ -214,3 +214,34 @@ fn rounded_ratio_reports_direction() {
     let neg = one.neg().div(&three, context).unwrap();
     assert_eq!(neg.relation(), Ordering::Greater);
 }
+
+#[test]
+fn independent_cross_platform_decimal_representation_fingerprint() {
+    const VECTORS: &str = include_str!("../vectors/representation.tsv");
+    const FINGERPRINT: &str = include_str!("../semantic-fingerprint.txt");
+    let mut hash = 0xcbf2_9ce4_8422_2325_u64;
+    let mut checked = 0_usize;
+    for line in VECTORS
+        .lines()
+        .filter(|line| !line.is_empty() && !line.starts_with('#'))
+    {
+        let cols: Vec<_> = line.split_whitespace().collect();
+        assert_eq!(cols.len(), 3, "invalid representation vector: {line}");
+        let parsed = Decimal::parse(cols[0], limits()).unwrap();
+        let original = parsed.to_string();
+        let normalized = parsed.normalized().unwrap().to_string();
+        assert_eq!(original, cols[1], "source={}", cols[0]);
+        assert_eq!(normalized, cols[2], "source={}", cols[0]);
+        for byte in original
+            .bytes()
+            .chain(core::iter::once(b'|'))
+            .chain(normalized.bytes())
+            .chain(core::iter::once(b'\n'))
+        {
+            hash = (hash ^ u64::from(byte)).wrapping_mul(0x0000_0100_0000_01b3);
+        }
+        checked += 1;
+    }
+    assert_eq!(checked, 21);
+    assert_eq!(format!("{hash:016x}"), FINGERPRINT.trim());
+}

@@ -106,6 +106,7 @@ jobs:
           grep -F 'rust-version = "1.99"' .qualified-source/Cargo.toml
           grep -F 'publish = false' .qualified-source/Cargo.toml
           python3 .qualification-suite/qualification/perfect-decimal/scripts/verify_oracle.py
+          python3 .qualification-suite/qualification/perfect-decimal/scripts/verify_fingerprint.py
           cargo +1.99.0 generate-lockfile --manifest-path "$QUAL_MANIFEST"
           cargo +1.99.0 metadata --manifest-path "$QUAL_MANIFEST" --locked --format-version 1 > /dev/null
 

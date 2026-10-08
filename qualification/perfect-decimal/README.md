@@ -28,7 +28,7 @@ does not prove that its runner executed successfully.
 - Q0: Exact source, dependency inventory, MSRV and source-boundary checks pending hosted execution.
 - Q1: MSRV, feature, three-host and Class-B matrices pending hosted execution.
 - Q2: Independent public Decimal/Numeric/Arithmetic/Rational consumer tests.
-- Q3: Determinism and canonical representation coverage present; cross-host fingerprint qualification pending.
+- Q3: Retained 21-case canonical representation vectors and independent Python-generated FNV64 fingerprint `a0e4476440bf4082` are checked by the public Rust API on local all-feature and no-default configurations; hosted cross-platform fingerprint qualification remains pending.
 - Q4: Consumer boundary tests supplement the separately retained Decimal mutation/fuzz/Miri evidence; **17 full-suite timeouts unresolved in the earlier source report** and must be reconciled against focused tests.
 - Q5: Independent primitive integer and Python decimal checks locally executable.
 - Q6: **not claimed**; native ARM64, full hardening acceptance, release gate, registry packaging and historical-reuse completion are independent requirements.
