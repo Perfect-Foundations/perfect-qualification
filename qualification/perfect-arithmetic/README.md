@@ -1,6 +1,8 @@
 # Perfect Arithmetic qualification configuration
 
-Target revision: `9ec660f9abfd7fe93e441e77dbb1158c371603f5`
+Historical Q0–Q5 template/reference revision: `9ec660f9abfd7fe93e441e77dbb1158c371603f5`.
+
+The reusable Q0–Q5 workflow accepts the requested candidate as a **full, immutable 40-character source SHA** through `workflow_call.inputs.source_ref`. It checks out that exact candidate and rewrites this directory's historical Git-pinned manifest template to a path pointing to the checked-out source. The template revision is not an assertion that every requested candidate is `9ec660f`. Earlier reports for the historical SHA are not evidence for a newer candidate. The independent October 8 local Windows/Linux reports for `0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6` are scoped local verification, not completed three-host Q0–Q5 qualification or Q6.
 
 Required Perfect Numeric revision: `19b6747cd852a47a694a020b97ba70b6b3ef259b`
 
