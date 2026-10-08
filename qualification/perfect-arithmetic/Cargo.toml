@@ -11,4 +11,4 @@ std = ["perfect-arithmetic/std"]
 high-throughput = ["perfect-arithmetic/high-throughput"]
 
 [dependencies]
-perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "9ec660f9abfd7fe93e441e77dbb1158c371603f5", version = "=0.1.0", default-features = false }
+perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6", version = "=0.1.0", default-features = false }

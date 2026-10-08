@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "repository": "Perfect-Foundations/perfect-qualification",
+  "qualification_base_sha": "6b3d8d9966cfdefbfe34742000d56caade4ec32f",
+  "source": {
+    "arithmetic": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+    "arithmetic_production_revision": "68b6c21cb70fcc3a917c3ec8d3c1c8793cee6ce1",
+    "numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "independent_test_blob": "535a0d377b8a8295aeec3f1fadf2a382e947e9ba",
+    "python_oracle_blob": "69e297236536b45304eb375c7801707c5e9f8ebc",
+    "vector_blob": "0b73fbcc88704888ead06e995b20135ed11f5cbf"
+  },
+  "method": "Independent non-production public Natural/Integer Hash consumer; captured Hasher write calls compared with Python-generated canonical byte streams of arbitrary-precision mathematical integers, including sign and limb boundaries.",
+  "host": "Zen Ubuntu WSL2 Linux x86_64",
+  "rust": "1.99.0 (b940084d7 2026-09-28)",
+  "dependency": "Exact Git source clones with isolated path materialization, offline, not published registry identity",
+  "local_logs": "/home/ubuntu/pf-verify/arithmetic-qual-hash-0e61-20261008/logs",
+  "checks": {
+    "old_reference_vectors": {
+      "natural": 24,
+      "integer": 24,
+      "gcd": 24,
+      "status": "PASS"
+    },
+    "new_hash_oracle": {
+      "vectors": 25,
+      "status": "PASS"
+    },
+    "rust_hash_contract_all_features": {
+      "pass": 1,
+      "fail": 0,
+      "exit": 0
+    },
+    "rust_hash_contract_no_default": {
+      "pass": 1,
+      "fail": 0,
+      "exit": 0
+    },
+    "rust_independent_consumer_all_features": {
+      "pass": 8,
+      "fail": 0,
+      "exit": 0
+    },
+    "rust_independent_consumer_no_default": {
+      "pass": 8,
+      "fail": 0,
+      "exit": 0
+    },
+    "high_throughput_hash_contract": {
+      "pass": 1,
+      "fail": 0,
+      "exit": 0
+    },
+    "format": "PASS",
+    "clippy_all": "PASS -D warnings",
+    "clippy_no_default": "PASS -D warnings",
+    "rustdoc": "PASS -D warnings",
+    "python_reference": "PASS",
+    "lock_sha256": "709e15a8bb8854fae5e6ee62653fd16a6b78c22cab62c30b02216b3cee6e784b",
+    "overall": "PASS_LOCAL_EXACT_ONLY"
+  },
+  "limitations": {
+    "hosted_q0_q5": "NOT RUN",
+    "native_arm64": "NOT RUN",
+    "q6": "NOT EARNED",
+    "registry": "UNPUBLISHED; no substitution",
+    "project_status": "UNMODIFIED",
+    "perfect_pi": "UNMODIFIED",
+    "consumers": "Independent qualification is nonproduction; no mutation/fuzz campaigns repeated because production source unchanged"
+  }
+}

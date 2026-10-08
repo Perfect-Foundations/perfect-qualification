@@ -22,7 +22,7 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: "1"
-  PERFECT_ARITHMETIC_REV: 9ec660f9abfd7fe93e441e77dbb1158c371603f5
+  PERFECT_ARITHMETIC_REV: 0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6
   PERFECT_NUMERIC_REV: 19b6747cd852a47a694a020b97ba70b6b3ef259b
   QUAL_ROOT: .qualification-suite/qualification/perfect-arithmetic
   QUAL_MANIFEST: .qualification-suite/qualification/perfect-arithmetic/Cargo.toml
@@ -135,8 +135,12 @@ jobs:
             exit 1
           fi
 
-      - name: Q5 independent Python big-integer oracle
-        run: python3 "$QUAL_ROOT/scripts/verify_oracle.py"
+      - name: Q5 independent Python big-integer and canonical Hash oracles
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$QUAL_ROOT/scripts/verify_oracle.py"
+          python3 "$QUAL_ROOT/scripts/verify_hash_oracle.py"
 
       - name: Format qualification consumer
         run: cargo fmt --manifest-path "$QUAL_MANIFEST" -- --check
