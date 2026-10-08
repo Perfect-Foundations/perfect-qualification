@@ -1,0 +1,132 @@
+name: Qualify Perfect Decimal
+
+on:
+  workflow_call:
+    inputs:
+      source_repository:
+        description: Perfect Decimal source repository.
+        required: true
+        type: string
+      source_ref:
+        description: Exact source commit to qualify.
+        required: true
+        type: string
+      qualification_ref:
+        description: Exact Perfect Qualification commit containing this harness.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  q0-q5:
+    name: Decimal Q0-Q5 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-2025]
+    steps:
+      - name: Validate exact source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ inputs.source_repository }}" = "Perfect-Foundations/perfect-decimal"
+          test "${{ inputs.source_ref }}" = "85f4408838131007146fff14b1c9c1d760c585a8"
+
+      - name: Checkout exact Decimal candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.source_repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          persist-credentials: false
+
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          persist-credentials: false
+
+      - name: Materialize exact Numeric
+        id: numeric
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/decimal-qual-numeric
+
+      - name: Materialize exact Arithmetic
+        id: arithmetic
+        uses: Perfect-Foundations/perfect-arithmetic/.github/actions/source-snapshot@1a54d3c7cbbae4e73325cc70fd2777a2427b1504
+        with:
+          destination: ${{ runner.temp }}/decimal-qual-arithmetic
+
+      - name: Materialize exact Rational
+        id: rational
+        uses: Perfect-Foundations/perfect-rational/.github/actions/source-snapshot@97cce0ae8ff7ef206929d273e1d4a5774f6a2a34
+        with:
+          destination: ${{ runner.temp }}/decimal-qual-rational
+
+      - name: Verify checkouts and rewrite only pinned private dependencies
+        shell: bash
+        env:
+          NUMERIC_CARGO_PATH: ${{ steps.numeric.outputs.cargo-path }}
+          ARITHMETIC_CARGO_PATH: ${{ steps.arithmetic.outputs.cargo-path }}
+          RATIONAL_CARGO_PATH: ${{ steps.rational.outputs.cargo-path }}
+        run: |
+          set -euo pipefail
+          test "$(git -C .qualified-source rev-parse HEAD)" = "${{ inputs.source_ref }}"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+          if [ "$RUNNER_OS" = Windows ]; then
+            export DECIMAL_CARGO_PATH="$(cygpath -m "$PWD/.qualified-source")"
+            export DECIMAL_SHELL_PATH="$DECIMAL_CARGO_PATH"
+            export QUAL_MANIFEST="$(cygpath -m "$PWD/.qualification-suite/qualification/perfect-decimal/Cargo.toml")"
+          else
+            export DECIMAL_CARGO_PATH="$PWD/.qualified-source"
+            export DECIMAL_SHELL_PATH="$PWD/.qualified-source"
+            export QUAL_MANIFEST="$PWD/.qualification-suite/qualification/perfect-decimal/Cargo.toml"
+          fi
+          python3 .qualification-suite/qualification/perfect-decimal/scripts/materialize_private.py
+          echo "QUAL_MANIFEST=$QUAL_MANIFEST" >> "$GITHUB_ENV"
+
+      - name: Install declared MSRV
+        shell: bash
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
+          rustc +1.99.0 --version
+
+      - name: Q0 and independent Q5 reference vectors
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .qualified-source/build.rs
+          grep -F 'name = "perfect-decimal"' .qualified-source/Cargo.toml
+          grep -F 'rust-version = "1.99"' .qualified-source/Cargo.toml
+          grep -F 'publish = false' .qualified-source/Cargo.toml
+          python3 .qualification-suite/qualification/perfect-decimal/scripts/verify_oracle.py
+          python3 .qualification-suite/qualification/perfect-decimal/scripts/verify_fingerprint.py
+          cargo +1.99.0 generate-lockfile --manifest-path "$QUAL_MANIFEST"
+          cargo +1.99.0 metadata --manifest-path "$QUAL_MANIFEST" --locked --format-version 1 > /dev/null
+
+      - name: Q1-Q4 independent MSRV consumer
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.99.0 fmt --manifest-path "$QUAL_MANIFEST" -- --check
+          cargo +1.99.0 test --manifest-path "$QUAL_MANIFEST" --locked --all-features
+          cargo +1.99.0 test --manifest-path "$QUAL_MANIFEST" --locked --no-default-features
+          cargo +1.99.0 clippy --manifest-path "$QUAL_MANIFEST" --locked --all-targets --all-features -- -D warnings
+          cargo +1.99.0 clippy --manifest-path "$QUAL_MANIFEST" --locked --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo +1.99.0 doc --manifest-path "$QUAL_MANIFEST" --locked --no-deps --all-features
+
+      - name: Q1 Class-B no_std + alloc compilation
+        if: matrix.os == 'ubuntu-24.04'
+        shell: bash
+        run: |
+          set -euo pipefail
+          for target in wasm32v1-none thumbv7em-none-eabihf riscv64imac-unknown-none-elf; do
+            rustup target add --toolchain 1.99.0 "$target"
+            cargo +1.99.0 check --manifest-path "$QUAL_MANIFEST" --locked --no-default-features --target "$target"
+          done
