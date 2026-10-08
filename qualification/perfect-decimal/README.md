@@ -23,6 +23,37 @@ and qualification harness revisions explicitly. It defines Q0–Q5 checks on thr
 Class-A hosts and Class-B `no_std + alloc` checks. Merely configuring a workflow
 does not prove that its runner executed successfully.
 
+## Run the independent consumer without GitHub Actions minutes
+
+On an authorized Linux x86-64 host such as Zen's Ubuntu WSL2, with Rust
+1.99.0 and the three Class-B targets installed, run from a checkout of
+this qualification PR:
+
+```bash
+PF_DECIMAL_REPO=/path/to/perfect-decimal \
+PF_NUMERIC_REPO=/path/to/perfect-numeric \
+PF_ARITHMETIC_REPO=/path/to/perfect-arithmetic \
+PF_RATIONAL_REPO=/path/to/perfect-rational \
+PF_EVIDENCE_ROOT="$HOME/pf-verify" \
+bash qualification/perfect-decimal/scripts/run-local.sh
+```
+
+The script clones each local Git repository into a **new** isolated directory
+at its exact required SHA. It does not modify the original worktrees, their
+uncommitted files, or any package registry; it never requests a paid runner.
+Python's independent rounding and representation oracles are checked
+before Cargo runs. The entry point then uses only offline Cargo operations,
+checks the 1.99.0 compiler, both feature-mode test configurations, both
+warning-denied Clippy configurations, rustdoc, and three Class-B `no_std`
+cross-compilations. It verifies that the generated local development lockfile
+does not change after verification.
+
+Every run retains its exact source pins, logs, lock hash, architecture and
+PASS/FAIL summary under a newly created `decimal-qualification.XXXXXXXX`
+directory. Its final state is **PASS_LOCAL_ONLY**, never hosted Q0–Q5
+qualification or native ARM64. Do not use x86-64/WASM/ARM cross-compilation
+to mark the native Linux ARM64 Class-A gate passed.
+
 ## Gate ledger
 
 - Q0: Exact source, dependency inventory, MSRV and source-boundary checks pending hosted execution.
