@@ -1,0 +1,374 @@
+{
+  "identity_sha256": "4f638d3a5a5821c7d81edd07915c58a078fb9f8fdd2fbb57b67e585c39b7c8d0",
+  "identity": {
+    "sources": {
+      "/home/ubuntu/pf-verify/qualification-0e61": "f802308fd9efff7103244851be8ca7d0fbe3f95a",
+      "/home/ubuntu/pf-verify/arithmetic-0e61": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+      "/home/ubuntu/pf-verify/numeric-exact": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+    },
+    "commands": [
+      [
+        "Q0-metadata",
+        [
+          "cargo",
+          "metadata",
+          "--offline",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--format-version",
+          "1"
+        ]
+      ],
+      [
+        "Q5-independent-oracle",
+        [
+          "python3",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/scripts/verify_oracle.py"
+        ]
+      ],
+      [
+        "Q1-fmt",
+        [
+          "cargo",
+          "fmt",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--",
+          "--check"
+        ]
+      ],
+      [
+        "Q1-all-features-check",
+        [
+          "cargo",
+          "check",
+          "--offline",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--all-targets",
+          "--all-features"
+        ]
+      ],
+      [
+        "Q1-no-default-check",
+        [
+          "cargo",
+          "check",
+          "--offline",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--no-default-features"
+        ]
+      ],
+      [
+        "Q2-all-features-tests",
+        [
+          "cargo",
+          "test",
+          "--offline",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--all-features"
+        ]
+      ],
+      [
+        "Q2-no-default-tests",
+        [
+          "cargo",
+          "test",
+          "--offline",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--no-default-features"
+        ]
+      ],
+      [
+        "Q1-all-features-clippy",
+        [
+          "cargo",
+          "clippy",
+          "--offline",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--all-targets",
+          "--all-features",
+          "--",
+          "-D",
+          "warnings"
+        ]
+      ],
+      [
+        "Q1-no-default-clippy",
+        [
+          "cargo",
+          "clippy",
+          "--offline",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--all-targets",
+          "--no-default-features",
+          "--",
+          "-D",
+          "warnings"
+        ]
+      ],
+      [
+        "Q1-rustdoc",
+        [
+          "cargo",
+          "doc",
+          "--offline",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--all-features",
+          "--no-deps"
+        ]
+      ],
+      [
+        "Q3-fingerprint-default",
+        [
+          "cargo",
+          "run",
+          "--offline",
+          "--release",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--example",
+          "fingerprint"
+        ]
+      ],
+      [
+        "Q3-fingerprint-all",
+        [
+          "cargo",
+          "run",
+          "--offline",
+          "--release",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--all-features",
+          "--example",
+          "fingerprint"
+        ]
+      ],
+      [
+        "Q3-fingerprint-no-default",
+        [
+          "cargo",
+          "run",
+          "--offline",
+          "--release",
+          "--manifest-path",
+          "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+          "--no-default-features",
+          "--example",
+          "fingerprint"
+        ]
+      ]
+    ],
+    "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "expected_qualification_fingerprint": "fe168ade85627aca"
+  },
+  "results": {
+    "Q0-metadata": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "metadata",
+        "--offline",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--format-version",
+        "1"
+      ],
+      "duration_sec": 0.15,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q0-metadata.log"
+    },
+    "Q5-independent-oracle": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/scripts/verify_oracle.py"
+      ],
+      "duration_sec": 0.22,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q5-independent-oracle.log"
+    },
+    "Q1-fmt": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "fmt",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--",
+        "--check"
+      ],
+      "duration_sec": 0.06,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q1-fmt.log"
+    },
+    "Q1-all-features-check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "check",
+        "--offline",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--all-targets",
+        "--all-features"
+      ],
+      "duration_sec": 2.11,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q1-all-features-check.log"
+    },
+    "Q1-no-default-check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "check",
+        "--offline",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--no-default-features"
+      ],
+      "duration_sec": 1.21,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q1-no-default-check.log"
+    },
+    "Q2-all-features-tests": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--all-features"
+      ],
+      "duration_sec": 2.58,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q2-all-features-tests.log"
+    },
+    "Q2-no-default-tests": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--no-default-features"
+      ],
+      "duration_sec": 1.67,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q2-no-default-tests.log"
+    },
+    "Q1-all-features-clippy": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "duration_sec": 0.2,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q1-all-features-clippy.log"
+    },
+    "Q1-no-default-clippy": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--all-targets",
+        "--no-default-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "duration_sec": 0.16,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q1-no-default-clippy.log"
+    },
+    "Q1-rustdoc": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "doc",
+        "--offline",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--all-features",
+        "--no-deps"
+      ],
+      "duration_sec": 0.16,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q1-rustdoc.log"
+    },
+    "Q3-fingerprint-default": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--release",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--example",
+        "fingerprint"
+      ],
+      "duration_sec": 2.41,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q3-fingerprint-default.log",
+      "observed_fingerprint": "fe168ade85627aca"
+    },
+    "Q3-fingerprint-all": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--release",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--all-features",
+        "--example",
+        "fingerprint"
+      ],
+      "duration_sec": 3.03,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q3-fingerprint-all.log",
+      "observed_fingerprint": "fe168ade85627aca"
+    },
+    "Q3-fingerprint-no-default": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--release",
+        "--manifest-path",
+        "/home/ubuntu/pf-verify/qualification-0e61/qualification/perfect-arithmetic/Cargo.toml",
+        "--no-default-features",
+        "--example",
+        "fingerprint"
+      ],
+      "duration_sec": 2.13,
+      "log": "/home/ubuntu/pf-verify/q0q5-0e61-20261008/Q3-fingerprint-no-default.log",
+      "observed_fingerprint": "fe168ade85627aca"
+    }
+  }
+}
