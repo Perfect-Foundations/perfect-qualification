@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "repository": "Perfect-Foundations/perfect-qualification",
+  "subject": {
+    "number_theory_sha": "41aaa4763da2d11aea9e65666f9ed7f84d43ed61",
+    "arithmetic_sha": "9ec660f9abfd7fe93e441e77dbb1158c371603f5",
+    "numeric_sha": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "qualification_base_sha": "6b3d8d9966cfdefbfe34742000d56caade4ec32f"
+  },
+  "reference_method": "Independent CPython stdlib integer/mathematical reference: modular arithmetic, inverse by pow, CRT brute-force, trial division through 4096, Lucas-Lehmer p=61 Mersenne verification and checked large-composite factors.",
+  "vectors": {
+    "modular": 300,
+    "crt": 189,
+    "primality": 4103,
+    "total": 4592
+  },
+  "environment": {
+    "host": "Zen Ubuntu WSL2 Linux x86_64",
+    "toolchain": "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "source": "isolated clean exact Git revision clones; development manifests rewritten to local path only for private verification",
+    "logs": "/home/ubuntu/pf-verify/qualify-number-theory-20261008/logs/",
+    "lock_sha256": "5f0ae91cf8e9f6640529844f61c799b8b2d332e49f751e108f0601a96efc3bc9"
+  },
+  "executed": {
+    "python_vectors": "4592/4592 PASS",
+    "rust_consumer_all_features": {
+      "pass": 6,
+      "fail": 0,
+      "exit": 0
+    },
+    "rust_consumer_no_default_features": {
+      "pass": 6,
+      "fail": 0,
+      "exit": 0
+    },
+    "fmt": "PASS",
+    "clippy_all": "PASS -D warnings",
+    "clippy_no_default": "PASS -D warnings",
+    "rustdoc": "PASS -D warnings",
+    "class_b_no_std_compiled": [
+      "wasm32v1-none",
+      "thumbv7em-none-eabihf",
+      "riscv64imac-unknown-none-elf"
+    ],
+    "exit_code": 0
+  },
+  "limitations": {
+    "native_aarch64": "NOT-RUN",
+    "native_windows_independent_consumer": "NOT-RUN",
+    "hosted_q0_q5": "NOT-RUN",
+    "m1_lifecycle": "BLOCKED; no promotion",
+    "u64_exhaustiveness": "4097 small inputs and 6 large fixtures, not a proof of full u64 classifier",
+    "registry_release": "Not claimed",
+    "perfect_pi_unchanged": true,
+    "production_code_unchanged": true
+  },
+  "tested_local_source_blobs": {
+    "test": "418ca4a3009f8d10e10a06b2129b836cb8f53140",
+    "python_oracle": "0f2c6eef0ca5d01f99d203dd584ab88d05331bb7"
+  }
+}

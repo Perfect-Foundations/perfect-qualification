@@ -1,0 +1,14 @@
+[package]
+name = "qualify-perfect-number-theory"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+
+[features]
+default = ["std"]
+std = ["perfect-number-theory/std", "perfect-arithmetic/std"]
+
+[dependencies]
+perfect-number-theory = { git = "https://github.com/Perfect-Foundations/perfect-number-theory.git", rev = "41aaa4763da2d11aea9e65666f9ed7f84d43ed61", version = "=0.1.0", default-features = false }
+perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "9ec660f9abfd7fe93e441e77dbb1158c371603f5", version = "=0.1.0", default-features = false }
