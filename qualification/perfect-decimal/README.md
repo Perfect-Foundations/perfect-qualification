@@ -54,6 +54,27 @@ directory. Its final state is **PASS_LOCAL_ONLY**, never hosted Q0–Q5
 qualification or native ARM64. Do not use x86-64/WASM/ARM cross-compilation
 to mark the native Linux ARM64 Class-A gate passed.
 
+### Native Windows, no GitHub-hosted minutes
+
+Run the corresponding Windows entry point in PowerShell with local clones of
+the four family repositories. It builds its own clean source and harness clones
+at their exact pinned revisions, so dirty worktrees are not copied or edited:
+
+```powershell
+$env:PF_DECIMAL_REPO = "C:\Dev\PerfectFoundations\perfect-decimal"
+$env:PF_NUMERIC_REPO = "C:\Dev\PerfectFoundations\perfect-numeric"
+$env:PF_ARITHMETIC_REPO = "C:\Dev\PerfectFoundations\perfect-arithmetic"
+$env:PF_RATIONAL_REPO = "C:\Dev\PerfectFoundations\perfect-rational"
+$env:PF_EVIDENCE_ROOT = "C:\Dev\PerfectFoundations\_pf_qual_evidence"
+python qualification/perfect-decimal/scripts/run-local-windows.py
+```
+
+It checks Python's two independent vector oracles and Rust 1.99.0
+all-feature/no-default consumer tests, formatting, both denied-warning Clippy
+modes, and rustdoc. It records source SHAs, environment, exit codes, the
+unchanged offline lock and all logs in a new directory. The result is explicitly
+**PASS_LOCAL_ONLY**, not native Linux ARM64 or hosted Q0–Q5 qualification.
+
 ## Gate ledger
 
 - Q0: Exact source, dependency inventory, MSRV and source-boundary checks pending hosted execution.
