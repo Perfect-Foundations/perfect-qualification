@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-09",
+  "repo": "Perfect-Foundations/perfect-arithmetic",
+  "branch": "m6-canonical-hash-fuzz-20261008",
+  "workflow_commit": "9461c83fc132a194cff6c4b546a311d615632b68",
+  "workflow_path": ".github/workflows/zen-isolated-arithmetic-q0q5.yml",
+  "run_id": 37872674909,
+  "run_url": "https://github.com/Perfect-Foundations/perfect-arithmetic/actions/runs/37872674909",
+  "job_id": 113634072483,
+  "job_conclusion": "success",
+  "end_utc": "2026-10-09T02:04:09Z",
+  "exact_sources": {
+    "arithmetic": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+    "numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "qualification": "30fcde39196f53235263eb7a25d24c384b3bdd52"
+  },
+  "runner": {
+    "host": "Zen Ubuntu WSL2 Linux x86_64",
+    "version": "2.338.0",
+    "image": "pf-rational-ephemeral-20261008",
+    "registration": "repository-scoped ephemeral",
+    "uid": 10001,
+    "capabilities": "all dropped",
+    "network": "Docker bridge for required GitHub and Cargo operations",
+    "no_docker_socket": true,
+    "no_unrelated_host_mounts": true,
+    "privilege_escalation": false,
+    "memory_limit_gib": 4,
+    "cpu_limit": 3,
+    "pids_limit": 256,
+    "registration_cleanup": "runner exited 0; credential and runner files removed; zero registered Arithmetic runners after job"
+  },
+  "observed": {
+    "rust_msrv": "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "rust_stable": "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "natural_oracle_vectors": {
+      "passed": 24
+    },
+    "integer_oracle_vectors": {
+      "passed": 24
+    },
+    "gcd_oracle_vectors": {
+      "passed": 24
+    },
+    "canonical_hash_vectors": {
+      "passed": 25
+    },
+    "consumer_all_features_msrv": {
+      "passed": 8
+    },
+    "consumer_no_default_msrv": {
+      "passed": 8
+    },
+    "consumer_all_features_stable": {
+      "passed": 8
+    },
+    "consumer_no_default_stable": {
+      "passed": 8
+    },
+    "rustfmt": "PASS",
+    "cargo_check_all_targets_all_features": "PASS",
+    "cargo_check_no_default": "PASS",
+    "clippy_all_and_no_default_deny_warnings": "PASS",
+    "rustdoc_deny_warnings": "PASS",
+    "fingerprint_default": "f20333624f980b77",
+    "fingerprint_all_features": "f20333624f980b77",
+    "fingerprint_no_default": "f20333624f980b77",
+    "cargo_lock_sha256": "709e15a8bb8854fae5e6ee62653fd16a6b78c22cab62c30b02216b3cee6e784b",
+    "github_steps": "all successful"
+  },
+  "qualification_boundaries": {
+    "linux_x86_64_subset": "PASS",
+    "official_q0_q5_full_matrix": "NOT_RUN",
+    "native_arm64": "NOT_RUN",
+    "class_b_no_std_targets": "NOT_RUN_IN_THIS_ACTIONS_JOB",
+    "windows": "RETAINED_SEPARATE_EVIDENCE_NOT_THIS_ACTIONS_JOB",
+    "q4_full_reconciliation": "PENDING",
+    "q6_registry": "BLOCKED",
+    "release": "NOT_EARNED",
+    "perfect_pi": "UNMODIFIED"
+  },
+  "assertion": "This is an independently executed pinned-source GitHub Actions Linux x86_64 qualification-consumer subset, not the official multi-host reusable Q0-Q5 workflow nor aggregate acceptance."
+}
