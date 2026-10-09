@@ -1,0 +1,13 @@
+[package]
+name = "qualify-perfect-constants"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+
+[features]
+default = ["std"]
+std = ["perfect-constants/std"]
+
+[dependencies]
+perfect-constants = { git = "https://github.com/Perfect-Foundations/perfect-constants.git", rev = "d88d8055f45fb075c905f1fe9e82a623029faf41", version = "=0.1.0", default-features = false }

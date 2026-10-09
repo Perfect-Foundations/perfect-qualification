@@ -1,0 +1,9 @@
+# Independent mpmath 1.3.0 (180 decimal digit precision) and exact-rational enclosure reference; hex IEEE-754 nearest ties-to-even.
+# Q-PC-MATH-V1 order: name f32_bits f64_bits
+e 402df854 4005bf0a8b145769
+golden_ratio 3fcf1bbd 3ff9e3779b97f4a8
+sqrt2 3fb504f3 3ff6a09e667f3bcd
+ln2 3f317218 3fe62e42fefa39ef
+euler_mascheroni 3f13c468 3fe2788cfc6fb619
+catalan 3f6a7cb9 3fed4f9713e8135d
+apery_zeta3 3f99dd00 3ff33ba004f00621
