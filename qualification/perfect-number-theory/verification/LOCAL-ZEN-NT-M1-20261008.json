@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "scope": "Independent local Perfect Number Theory M1 consumer (not hosted Q0-Q5 acceptance)",
+  "exact_revisions": {
+    "number_theory": "41aaa4763da2d11aea9e65666f9ed7f84d43ed61",
+    "arithmetic": "9ec660f9abfd7fe93e441e77dbb1158c371603f5",
+    "numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "qualification_base": "6b3d8d9966cfdefbfe34742000d56caade4ec32f"
+  },
+  "reference": {
+    "implementation": "Python 3 stdlib math, random fixed seed, Lucas-Lehmer for 2^61-1; no production API used for expected values",
+    "modular_rows": 300,
+    "crt_rows": 189,
+    "primality_rows": 4103,
+    "total_rows": 4592,
+    "fnv1a64": "0c8f081bb3fb5121",
+    "fingerprint_basis": "newline terminated actually observed public API rows, independently calculated in Python"
+  },
+  "verification": [
+    {
+      "platform": "Zen Ubuntu WSL2 Linux x86_64",
+      "toolchain": "Rust 1.99.0",
+      "tests_all_features": "8/8 PASS",
+      "tests_no_default": "8/8 PASS",
+      "clippy_all_features": "PASS -D warnings",
+      "clippy_no_default": "PASS -D warnings",
+      "rustdoc": "PASS -D warnings",
+      "fmt": "PASS",
+      "python_reference": "PASS 4592/4592",
+      "semantic_fingerprint": "PASS",
+      "class_b_cross_compile": [
+        "wasm32v1-none PASS",
+        "thumbv7em-none-eabihf PASS",
+        "riscv64imac-unknown-none-elf PASS"
+      ],
+      "local_lock_sha256": "5f0ae91cf8e9f6640529844f61c799b8b2d332e49f751e108f0601a96efc3bc9"
+    },
+    {
+      "platform": "Zen native Windows x86_64",
+      "toolchain": "Rust 1.99.0",
+      "tests_all_features": "8/8 PASS",
+      "tests_no_default": "8/8 PASS",
+      "clippy_all_features": "PASS -D warnings",
+      "clippy_no_default": "PASS -D warnings",
+      "rustdoc": "PASS -D warnings",
+      "fmt": "PASS",
+      "python_reference": "PASS 4592/4592",
+      "semantic_fingerprint": "PASS",
+      "local_lock_sha256": "5f0ae91cf8e9f6640529844f61c799b8b2d332e49f751e108f0601a96efc3bc9",
+      "logs": "C:\\Dev\\PerfectFoundations\\_pf_nt_qual_windows_verify_b_20261008"
+    }
+  ],
+  "execution": {
+    "source_materialization": "Pristine exact-revision Git clones in disposable workspaces; four exact Git declarations replaced with local path only in scratch manifests, never claimed registry artifacts",
+    "offline": true,
+    "cmd_exit_code": 0,
+    "original_worktrees_untouched": true,
+    "perfect_pi_untouched": true
+  },
+  "boundaries": {
+    "official_hosted_q0_q5": "NOT-RUN",
+    "native_aarch64_linux": "NOT-RUN/BLOCKED",
+    "published_registry": "NOT-RUN/BLOCKED",
+    "release_gate": "NOT-EARNED",
+    "number_theory_m1": "ACTIVE/BLOCKED under its own project-status.toml",
+    "none_promoted": true
+  }
+}
