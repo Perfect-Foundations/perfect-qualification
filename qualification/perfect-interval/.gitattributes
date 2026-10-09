@@ -3,3 +3,4 @@
 *.tsv text eol=lf
 *.toml text eol=lf
 *.rs text eol=lf
+*.c text eol=lf

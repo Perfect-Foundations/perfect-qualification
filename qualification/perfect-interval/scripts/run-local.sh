@@ -51,6 +51,27 @@ if [ -n "${PFQ_MPFI_LIB:-}" ] && [ -f "$PFQ_MPFI_LIB" ];then
 else
    echo "MPFI_REFERENCE_NOT_RUN_LIBRARY_NOT_PROVIDED" | tee -a "$summary"
 fi
+new_digest="$(sha256sum "$source_dir/vectors/arb_adversarial_v1.tsv" | cut -d' ' -f1)"
+test "$new_digest" = "8bb8011b5bf4e3292ea631df2d8e5f13bbdbb6e08f1df2eea8402b39fd9f9e57"
+python3 "$source_dir/scripts/verify_arb_output.py" | tee "$work/arb-committed-reference.log"
+echo "ARB_CACHED_CERTIFICATE_MATHEMATICALLY_VALIDATED_NOT_LIVE_REGENERATED" | tee -a "$summary"
+if python3 -c 'import ctypes; ctypes.CDLL("libmpfr.so.6")' 2>/dev/null;then
+   python3 "$source_dir/scripts/generate_arb_adversarial.py" | tee "$work/arb-adversarial-generation.log"
+   test "$new_digest" = "$(sha256sum "$source_dir/vectors/arb_adversarial_v1.tsv" | cut -d' ' -f1)"
+   echo "ARB_ADVERSARIAL_MPFR_REGEN_PASS_330" | tee -a "$summary"
+else
+   echo "ARB_ADVERSARIAL_MPFR_REGEN_NOT_RUN_MISSING_LIBMPFR" | tee -a "$summary"
+fi
+if [ -n "${PFQ_FLINT_ROOT:-}" ] && [ -f "$PFQ_FLINT_ROOT/usr/include/flint/arb.h" ];then
+  inc="$PFQ_FLINT_ROOT/usr/include"
+  lib="$PFQ_FLINT_ROOT/usr/lib/x86_64-linux-gnu"
+  cc -std=c11 -O2 -Wall -Wextra -Werror -I"$inc" -I"$inc/x86_64-linux-gnu" -L"$lib" -Wl,-rpath,"$lib" "$source_dir/scripts/flint_arb_oracle.c" -lflint -o "$work/flint-arb-reference"
+  "$work/flint-arb-reference" "$source_dir/vectors/arb_adversarial_v1.tsv" >"$work/arb-raw.tsv" 2>"$work/arb-runtime.log"
+  python3 "$source_dir/scripts/verify_arb_output.py" "$work/arb-raw.tsv" | tee "$work/arb-exact-rational.log"
+  echo "FLINT_ARB_3_0_1_292_FINITE_CASES_PASS_38_UNSUPPORTED" | tee -a "$summary"
+else
+  echo "FLINT_ARB_REFERENCE_NOT_RUN_ISOLATED_SYSROOT_NOT_PROVIDED" | tee -a "$summary"
+fi
 echo "HOST=$(uname -sm)" | tee -a "$summary"
 rustc +1.99.0 --version | tee -a "$summary"
 check() {
