@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-08",
+  "timezone": "America/New_York",
+  "qualification_repository": "Perfect-Foundations/perfect-qualification",
+  "qualification_pr": 8,
+  "qualification_executable_sha": "11857431e110270446cb9ba15e133a4931a72ded",
+  "constants_repository": "Perfect-Foundations/perfect-constants",
+  "constants_executable_sha": "d88d8055f45fb075c905f1fe9e82a623029faf41",
+  "constants_evidence_only_pr_head": "d2800084ef33cfb71a0c80576c191d3ca0cac3cc",
+  "toolchain": "Rust 1.99.0",
+  "features": [
+    "all-features",
+    "no-default-features"
+  ],
+  "independent_reference": {
+    "vectors": 7,
+    "bits": 14,
+    "stdlib_fraction_decimal": "PASS 14/14 on Windows and WSL",
+    "mpmath_1_3_0_180_decimal_digits": "PASS 14/14 on native Windows; NOT_INSTALLED on WSL",
+    "reference_serialization": "Q-PC-MATH-V1: ASCII PF-CONSTANTS-MATH-V1 with 0 terminator; each stable-ordered entry contains u8 UTF8 name length, name bytes, f32 u32 little-endian, f64 u64 little-endian",
+    "expected_fnv64": "35f7e276b5ecd6dc",
+    "reference_record_sha256": "481cb9f138bae72bf8d6b204abdea518b5adcd8a90c0f205c23a083fe27b11ca",
+    "derived_from_production_rust": false
+  },
+  "windows": {
+    "machine": "Zen",
+    "host": "native Windows x86-64",
+    "source": "fresh detached qualification git clone at exact qualification_executable_sha; exact pinned Constants clone at source sha",
+    "results": {
+      "independent_oracle": "PASS",
+      "fmt": "PASS",
+      "tests_all": {
+        "pass": 6,
+        "fail": 0
+      },
+      "tests_no_default": {
+        "pass": 6,
+        "fail": 0
+      },
+      "clippy_all_deny_warnings": "PASS",
+      "clippy_no_default_deny_warnings": "PASS",
+      "rustdoc_deny_warnings": "PASS",
+      "bounded_lookup_allocation_all": "0 observed allocations across 7000 lookups",
+      "bounded_lookup_allocation_no_default": "0 observed allocations across 7000 lookups",
+      "offline_metadata": "PASS",
+      "development_lock": "PASS",
+      "command_exit": 0
+    },
+    "local_logs": "C:\\Dev\\PerfectFoundations\\_qual_const_windows_logs_20261008"
+  },
+  "linux": {
+    "machine": "Zen Ubuntu WSL2",
+    "host": "native Linux x86-64 (WSL2 on x86-64 processor)",
+    "verified_qualification_sha": "11857431e110270446cb9ba15e133a4931a72ded",
+    "verified_source_sha": "d88d8055f45fb075c905f1fe9e82a623029faf41",
+    "results": {
+      "stdlib_math_oracle": "14/14 PASS",
+      "mpmath": "NOT_INSTALLED (not counted)",
+      "fmt": "PASS",
+      "tests_all": {
+        "pass": 6,
+        "fail": 0
+      },
+      "tests_no_default": {
+        "pass": 6,
+        "fail": 0
+      },
+      "clippy_all_deny_warnings": "PASS",
+      "clippy_no_default_deny_warnings": "PASS",
+      "rustdoc_deny_warnings": "PASS",
+      "bounded_lookup_allocation_all": "0 observed allocations",
+      "bounded_lookup_allocation_no_default": "0 observed allocations",
+      "class_b_compile_only": {
+        "wasm32v1-none": "PASS",
+        "thumbv7em-none-eabihf": "PASS",
+        "riscv64imac-unknown-none-elf": "PASS"
+      },
+      "offline_metadata": "PASS",
+      "dev_lock_stable": "PASS",
+      "exit_code": 0
+    },
+    "local_logs": "/home/ubuntu/pf-verify/constants-qualification.LeOZqNzQ/",
+    "summary": "/home/ubuntu/pf-verify/constants-qualification.LeOZqNzQ/summary.txt"
+  },
+  "offline_manifest": {
+    "original_git_rev": "d88d8055f45fb075c905f1fe9e82a623029faf41",
+    "original_git_manifest_sha256": "d5680953b7613eac248643846ccdff5d6a551e99e09c9f4cbd5c23c9a4bc8cb1",
+    "rewrite": "Only isolated disposable qualification clone rewritten to a path after source git sha and clean status verification; original committed manifest untouched",
+    "development_lock_sha256_windows_linux": "9475b85c9ff6959a115b03efc2738d0a9dff4122c0f6fe9fb224735da6762186",
+    "registry_package_claim": false
+  },
+  "aarch64": {
+    "host_isa": "x86_64",
+    "target_isa": "aarch64",
+    "mode": "QEMU 8.2.2 foreign-ISA user-mode emulation; NOT native ARM64",
+    "isolation": {
+      "user": "uid10001 non-root",
+      "network": "none",
+      "capabilities": "all dropped",
+      "docker_socket": "not mounted",
+      "no_new_privileges": true,
+      "memory_limit": "3 GiB",
+      "cpus": 2,
+      "pids_limit": 128,
+      "source_mount": "read-only",
+      "scratch_compilation": "container ephemeral /tmp"
+    },
+    "verified_qualification_sha": "11857431e110270446cb9ba15e133a4931a72ded",
+    "verified_source_sha": "d88d8055f45fb075c905f1fe9e82a623029faf41",
+    "results": {
+      "all_features": {
+        "pass": 6,
+        "fail": 0
+      },
+      "no_default_features": {
+        "pass": 6,
+        "fail": 0
+      },
+      "fingerprint": "PASS both feature modes",
+      "bounded_lookup_allocation": "0 observed allocations across 7000 lookups",
+      "exit_code": 0
+    },
+    "saved_log": "C:\\Dev\\PerfectFoundations\\_qual_const_windows_logs_20261008\\qemu-aarch64.log"
+  },
+  "workflow": {
+    "path": ".github/workflows/perfect-constants.yml",
+    "mode": "callable",
+    "class_a": "Linux x86-64; Linux ARM64; Windows x86-64 configured",
+    "class_b": "wasm32v1-none; thumbv7em-none-eabihf; riscv64imac-unknown-none-elf configured",
+    "execution": "NOT_RUN",
+    "github_actions_run_id": null,
+    "paid_minutes_used": 0
+  },
+  "limits": {
+    "native_linux_aarch64_class_a": "BLOCKED_NOT_RUN",
+    "official_q0_q5": "NOT_EARNED",
+    "perfect_constants_m1": "ACTIVE_NOT_EARNED",
+    "m2_independent_MPFR_Arb": "NOT_RUN",
+    "hardening_m5": "NOT_EARNED",
+    "q6_registry_release": "BLOCKED_NOT_EARNED",
+    "perfect_pi": "READ_ONLY_UNCHANGED",
+    "production_changes": "NONE"
+  },
+  "historical_failures": {
+    "initial_windows_offline_materialization": "Original git dependency still fetched with Cargo patch; corrected to verified throwaway direct path rewrite; final checks PASS",
+    "fingerprint_text_newline": "Literal backslash-n in expected file caused failed test; corrected before exact-source passing run",
+    "linux_path": "Noninteractive WSL rustc path absent; fixed and reexecuted exact source",
+    "qemu_permission": "Non-root image could not traverse /home/ubuntu; used isolated /workspace read-only bind instead of host chmod"
+  }
+}
