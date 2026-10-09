@@ -49,7 +49,9 @@
       "production_dependencies_added": 0,
       "execution_exit_code": 0,
       "isolated_runtime_not_system_installed": true,
-      "mpfi_uses_mpfr_internal_rounding": true
+      "mpfi_uses_mpfr_internal_rounding": true,
+      "log_file": "/home/ubuntu/pf-verify/interval-mpfi-reference-20261008/mpfi-1.5.3-independent-226-cases.log",
+      "log_sha256": "1c496ffbd7edae395deb7bbc82990cdb9397802100946778342416a71370a334"
     }
   },
   "windows": {
