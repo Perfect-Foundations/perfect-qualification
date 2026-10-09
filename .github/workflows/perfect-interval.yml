@@ -1,0 +1,94 @@
+name: Qualify Perfect Interval M1
+on:
+  workflow_call:
+    inputs:
+      qualification_ref:
+        type: string
+        required: true
+      interval_ref:
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  public-api:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: qualification
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Perfect-Foundations/perfect-interval
+          ref: 30aca00817bb79f0be3bf43e96c767db9fe45bc5
+          path: interval
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Perfect-Foundations/perfect-float
+          ref: bbd8b9e4aac0015facf0bb75819049cee68dc0e7
+          path: float
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Perfect-Foundations/perfect-arithmetic
+          ref: 1a54d3c7cbbae4e73325cc70fd2777a2427b1504
+          path: arithmetic
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Perfect-Foundations/perfect-rational
+          ref: 35a8e9cc629ee578fe7b624e2134929ce7eeff8a
+          path: rational
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Perfect-Foundations/perfect-numeric
+          ref: 19b6747cd852a47a694a020b97ba70b6b3ef259b
+          path: numeric
+          persist-credentials: false
+      - name: Verify exact source revisions and exercise independent corpus
+        shell: bash
+        env:
+          ASKED_INTERVAL_SHA: ${{ inputs.interval_ref }}
+          EXPECTED_QUAL_SHA: ${{ inputs.qualification_ref }}
+          PFQ_EXACT_SOURCE_ROOT: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          test "$ASKED_INTERVAL_SHA" = "30aca00817bb79f0be3bf43e96c767db9fe45bc5"
+          test "$(git -C interval rev-parse HEAD)" = "$ASKED_INTERVAL_SHA"
+          test "$(git -C qualification rev-parse HEAD)" = "$EXPECTED_QUAL_SHA"
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
+          suite="$GITHUB_WORKSPACE/qualification/qualification/perfect-interval"
+          python3 "$suite/scripts/materialize_exact.py"
+          sha256sum "$suite/vectors/real_m1_mpfr_20261008.tsv"
+          test "$(sha256sum "$suite/vectors/arb_adversarial_v1.tsv" | cut -c1-64)" = "8bb8011b5bf4e3292ea631df2d8e5f13bbdbb6e08f1df2eea8402b39fd9f9e57"
+          python3 "$suite/scripts/verify_arb_output.py"
+          python3 "$suite/scripts/verify_arb_corners.py"
+          test "$(sha256sum "$suite/vectors/property_v2.tsv" | cut -c1-64)" = "286537c0f309c87a9377207f6a0e615b96cb3e674c91adcdb3611ffec3e65de7"
+          cargo +1.99.0 generate-lockfile --manifest-path "$suite/Cargo.toml"
+          cargo +1.99.0 fetch --locked --manifest-path "$suite/Cargo.toml"
+          cargo +1.99.0 fmt --manifest-path "$suite/Cargo.toml" --all -- --check
+          cargo +1.99.0 test --offline --locked --manifest-path "$suite/Cargo.toml" --all-features
+          cargo +1.99.0 test --offline --locked --manifest-path "$suite/Cargo.toml" --no-default-features
+          for mode in all-features no-default-features; do
+            cargo +1.99.0 test --offline --locked --manifest-path "$suite/Cargo.toml" --"$mode" --test semantic_fingerprint_v1 -- --nocapture > "$RUNNER_TEMP/interval-semantic-$mode.log" 2>&1
+            python3 "$suite/scripts/verify_semantic_fingerprint.py" "$RUNNER_TEMP/interval-semantic-$mode.log"
+          done
+          cargo +1.99.0 clippy --offline --locked --manifest-path "$suite/Cargo.toml" --all-targets --all-features -- -D warnings
+          cargo +1.99.0 clippy --offline --locked --manifest-path "$suite/Cargo.toml" --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo +1.99.0 doc --offline --locked --manifest-path "$suite/Cargo.toml" --no-deps --all-features
+          if [ "$RUNNER_OS" = "Linux" ] && [ "$(uname -m)" = "x86_64" ]; then
+            for target in wasm32v1-none thumbv7em-none-eabihf riscv64imac-unknown-none-elf; do
+              rustup target add "$target" --toolchain 1.99.0
+              cargo +1.99.0 check --offline --locked --manifest-path "$suite/Cargo.toml" --lib --no-default-features --target "$target"
+            done
+          fi
+          echo "PERFECT_INTERVAL_INDEPENDENT_CORPUS_TEST_PASS_NOT_FULL_Q0_Q5"

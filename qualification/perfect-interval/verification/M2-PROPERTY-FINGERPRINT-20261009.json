@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "campaign": "Perfect Interval M2 deterministic bounded property verification and canonical semantic fingerprint",
+  "repository": "Perfect-Foundations/perfect-qualification",
+  "pr": 9,
+  "source_candidate": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+  "initial_pr_head": "67cc0c8fe2f19d819c57043f0c8afc0ab7004ffd",
+  "prod_interval_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+  "dependencies": {
+    "perfect-float": "bbd8b9e4aac0015facf0bb75819049cee68dc0e7",
+    "perfect-arithmetic": "1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
+    "perfect-rational": "35a8e9cc629ee578fe7b624e2134929ce7eeff8a",
+    "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "oracle": {
+    "exact_mathematics": "Python 3.12 fractions.Fraction extremum selection, no Perfect Interval calls in reference generation",
+    "directed_reference": "GNU MPFR 4.2.1 (RNDD/RNDU) at requested p and higher min(p+11,53) precision, every generated endpoint validated against exact rational extrema",
+    "seed": "0xF09120261009",
+    "generated_cases": 576,
+    "corpus_path": "qualification/perfect-interval/vectors/property_v2.tsv",
+    "corpus_sha256": "286537c0f309c87a9377207f6a0e615b96cb3e674c91adcdb3611ffec3e65de7",
+    "generation_script": "qualification/perfect-interval/scripts/generate_properties_v2.py",
+    "method": "576 randomized exact dyadic intervals with signed exponents -3072 to +3072, sign changes, near-cancellation, asymmetric scales, nonzero denominator cases, mixed source and destination precision",
+    "older_226_and_330_case_corpora_unmodified": true
+  },
+  "tests": {
+    "property_cases": 576,
+    "properties": [
+      "lower <= rigorously rounded lower bound at p",
+      "upper >= rigorously rounded upper bound at p",
+      "higher precision separately compared to rigorous reference computed at higher precision",
+      "double negation retains each original endpoint",
+      "hull contains endpoints of both inputs",
+      "intersection endpoints contained in both",
+      "widening source retains actual original range for addition and multiplication"
+    ],
+    "repeated_ball_conversion_cases": 144,
+    "rounds_per_case": 12,
+    "width_increase_steps": 45,
+    "ball_entire_steps": 0,
+    "containment_violations": 0,
+    "initial_harness_false_positive": "Initially compared higher-precision output to coarse lower precision rounded bounds, which is invalid; fixed by independently deriving higher-precision reference and regenerating corpus before commit. Not a production defect.",
+    "production_numerical_defects_detected": 0
+  },
+  "fingerprint": {
+    "schema": "PF-SEMANTIC-FINGERPRINT-V1",
+    "cases": 64,
+    "canonical_bytes": 6776,
+    "fields": [
+      "case number",
+      "operation",
+      "requested precision",
+      "Interval output category",
+      "normalized dyadic signed significand/exponent for lower/upper endpoints",
+      "signed zero",
+      "stored precision",
+      "Ball category",
+      "Ball midpoint/radius",
+      "Ball converted Interval category and bounds"
+    ],
+    "source": "qualification/perfect-interval/tests/semantic_fingerprint_v1.rs",
+    "verifier": "qualification/perfect-interval/scripts/verify_semantic_fingerprint.py",
+    "serialization": "canonical ASCII lines with fixed ordering, LF line endings; finite values recovered only with public exact Float comparisons, never debug formatting",
+    "fnv1a64": "d02931bfb27fe00c",
+    "sha256": "b73867901ba3a261a9ef06cafd6bbdaa8e1e10fbd4d66dd262200b83594a7f4b",
+    "representation_deterministic_within_tested_64_cases": true,
+    "universal_determinism_proven": false
+  },
+  "platforms": {
+    "windows_x86_64": {
+      "category": "native",
+      "rustc": "1.99.0",
+      "features": [
+        "all-features",
+        "no-default-features"
+      ],
+      "property": "576/576 PASS both feature modes",
+      "ball": "144x12 conversions PASS both modes",
+      "fingerprint": "SHA-256 match both modes",
+      "clippy_deny_warnings": "PASS both modes",
+      "fmt": "PASS",
+      "log": "C:\\Temp\\pf-semantic-v1-windows-20261009.log"
+    },
+    "linux_x86_64": {
+      "category": "WSL Linux native ISA x86-64",
+      "rustc": "1.99.0",
+      "qualification_sha": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+      "sources": "six SHA-verified isolated clones, path substitutions confined to disposable manifests",
+      "corpus_regeneration": "byte-for-byte digest match",
+      "features": [
+        "all-features",
+        "no-default-features"
+      ],
+      "property": "576/576 PASS both modes",
+      "ball": "144x12 PASS both modes",
+      "fingerprint": "SHA-256 match both modes",
+      "fmt": "PASS",
+      "clippy_deny_warnings": "PASS both modes",
+      "exit_code": 0,
+      "logs": "/home/ubuntu/pf-verify/interval-property-v2.fQjXPYon/"
+    },
+    "qemu_aarch64": {
+      "category": "EMULATED AArch64 via QEMU 8.2.2 user-mode on Linux x86-64; NOT native",
+      "rustc": "1.99.0",
+      "qualification_sha": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+      "features": [
+        "all-features",
+        "no-default-features"
+      ],
+      "property": "576/576 PASS both modes",
+      "ball": "144x12 PASS both modes",
+      "fingerprint": "same SHA-256 and FNV64 both modes",
+      "exit_code": 0,
+      "network": "none",
+      "uid": 10001,
+      "capabilities": "all dropped",
+      "no_new_privileges": true,
+      "memory_limit_gib": 3,
+      "cpu_limit": 2,
+      "pids_limit": 128,
+      "source_mount": "read-only",
+      "docker_socket_mounted": false,
+      "logs": "C:\\Dev\\PerfectFoundations\\_qualification_interval_m1_logs_20261008\\semantic-property-qemu-aarch64-20261009.log"
+    }
+  },
+  "official_qualification": {
+    "status": "NOT_RUN",
+    "available_qualifier_workflow": "workflow_call only; no verified zero-cost runnable Interval workflow on default branch",
+    "repository_registered_self_hosted_runners_observed": 0,
+    "organization_runner_visibility": "UNAVAILABLE; gh API 403 missing org runner permission",
+    "actual_run_id": null,
+    "paid_runner_authorized": false,
+    "qualification_q0_q5": "NOT_EARNED"
+  },
+  "gate_disposition": {
+    "REQ-VER-0001": "PARTIAL: 576 new independently Fraction/MPFR checked finite cases plus prior MPFI/Arb, not a universal range proof",
+    "REQ-VER-0002": "EVIDENCE POLICY FOLLOWED: finite samples explicitly characterized as falsification evidence, no universal claim",
+    "REQ-DET-0001": "PARTIAL: 64-case exact canonical representations match Windows and Linux x86-64 and emulated AArch64, but native Linux ARM64 Class-A untested",
+    "M1": "NOT_EARNED: native Linux ARM64 Class-A acceptance blocker remains",
+    "M2": "NOT_EARNED: no whole-domain mathematical proof and required Class-A determinism incomplete",
+    "Q0_Q5": "NOT_EARNED",
+    "Q6_release": "NOT_EARNED"
+  },
+  "production_modified": false,
+  "perfect_pi_modified": false,
+  "registry_published": false,
+  "readiness_percentages_changed": false,
+  "requirement_ledger": [
+    {
+      "id": "REQ-CORE-0003",
+      "gate": "M1/M2",
+      "implementation": "src/interval.rs + src/ball.rs",
+      "evidence": "576 new exact-rational/MPFR dual-precision arithmetic, metamorphic hull/intersection/negation + 144 12-round Ball chains; original 226 and 330 independent campaigns retained",
+      "source_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+      "consumer_sha": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+      "result": "PARTIAL_PASS",
+      "limit": "finite selected cases and singularity fixtures; no complete proof of all extended-real combinations"
+    },
+    {
+      "id": "REQ-SEM-0001",
+      "gate": "M1/M2",
+      "implementation": "src/interval.rs + src/ball.rs",
+      "evidence": "576 independent true extrema inclusion checks at two precisions, 144x12 Ball conversion containment checks",
+      "source_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+      "consumer_sha": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+      "result": "PARTIAL_PASS",
+      "limit": "finite tested domains only, not universal mathematical inclusion proof"
+    },
+    {
+      "id": "REQ-DET-0001",
+      "gate": "M2/M5/M6",
+      "implementation": "public Perfect Float-backed Interval/Ball output",
+      "evidence": "64 canonical endpoint and midpoint/radius cases yield matching SHA-256 across Windows and WSL Linux x86-64 and QEMU AArch64, both modes",
+      "source_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+      "consumer_sha": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+      "result": "PARTIAL_PASS",
+      "limit": "native Linux ARM64 Class-A blocked; only 64 designated cases; cross-host canonical requirement not fully discharged"
+    },
+    {
+      "id": "REQ-VER-0001",
+      "gate": "M2/M5/M6",
+      "implementation": "Perfect Qualification scripts and tests only, production unmodified",
+      "evidence": "Python Fraction exact extrema + MPFR 4.2.1 RNDD/RNDU 576 new cases, prior MPFI and Arb certificates",
+      "source_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+      "consumer_sha": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+      "result": "PARTIAL_PASS",
+      "limit": "reference finite sampling is independently rigorous for its cases, not an all-input algorithm proof"
+    },
+    {
+      "id": "REQ-VER-0002",
+      "gate": "M2/M5",
+      "implementation": "verification records explicitly classify proof-scoped test outcomes",
+      "evidence": "no universal claims; M1 M2 and Q0-Q5 not promoted; 38 direct Arb nonfinite remains unsupported",
+      "source_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+      "consumer_sha": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+      "result": "PASS_POLICY_COMPLIANCE",
+      "limit": "does not itself qualify entire M2 milestone"
+    },
+    {
+      "id": "REQ-PORT-0001",
+      "gate": "M1/M5/release",
+      "implementation": "src/lib.rs no_std + alloc and Rust 1.99",
+      "evidence": "Windows/Linux tested, three Class-B compile-only previously pass; QEMU AArch64 is emulated",
+      "source_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+      "consumer_sha": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+      "result": "BLOCKED_NATIVE_ARM64_CLASS_A",
+      "limit": "actual native Linux ARM64 Class-A remains NOT_RUN"
+    },
+    {
+      "id": "REQ-INT-0002",
+      "gate": "M1/M4/M6",
+      "implementation": "production Ball\u2194Interval and Perfect Float public directed rounding",
+      "evidence": "144 new independent repeated 12-round conversions with no lost inclusion and 45 permissible width-growth steps",
+      "source_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+      "consumer_sha": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+      "result": "PARTIAL_PASS",
+      "limit": "not all supported extended-real/precision combinations"
+    },
+    {
+      "id": "REQ-SEC-0001",
+      "gate": "M1/M5/release",
+      "implementation": "src/lib.rs forbid(unsafe_code); Pure Rust core",
+      "evidence": "production unchanged; no FLINT/MPFR native runtime dependencies introduced; verification-only C segregated",
+      "source_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+      "consumer_sha": "9fe77817542fdc73fa9f968e0ce06a6e80efa18f",
+      "result": "PASS_SOURCE_BOUNDARY_PARTIAL_SECURITY",
+      "limit": "M5 security qualification separate"
+    }
+  ]
+}
