@@ -45,6 +45,12 @@ if python3 -c 'import ctypes; ctypes.CDLL("libmpfr.so.6")' 2>/dev/null;then
 else
    echo "MPFR_REGEN_NOT_RUN_RUNTIME_LIBRARY_ABSENT" | tee -a "$summary"
 fi
+if [ -n "${PFQ_MPFI_LIB:-}" ] && [ -f "$PFQ_MPFI_LIB" ];then
+   python3 "$source_dir/scripts/verify_mpfi_reference.py" | tee "$work/mpfi-reference.log"
+   echo "MPFI_1_5_3_INDEPENDENT_REFERENCE_PASS" | tee -a "$summary"
+else
+   echo "MPFI_REFERENCE_NOT_RUN_LIBRARY_NOT_PROVIDED" | tee -a "$summary"
+fi
 echo "HOST=$(uname -sm)" | tee -a "$summary"
 rustc +1.99.0 --version | tee -a "$summary"
 check() {

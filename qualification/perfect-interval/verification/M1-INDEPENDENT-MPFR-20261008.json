@@ -33,8 +33,21 @@
     "corpus_sha256": "604bf0ae6b6d506c4aaa93ebe0e374a23fb7b1327222b9a53aa43293d163c744",
     "generator": "qualification/perfect-interval/scripts/generate_vectors.py",
     "on_linux_regenerated_same_sha": true,
-    "mpfi_version": "NOT_INSTALLED_NOT_RUN",
-    "arb_flint_version": "NOT_INSTALLED_NOT_RUN"
+    "mpfi_version": "1.5.3; Ubuntu noble libmpfi0 binary package extracted unprivileged, NOT installed system-wide",
+    "arb_flint_version": "NOT_INSTALLED_NOT_RUN",
+    "mpfi_directed_independent": {
+      "cases": 226,
+      "reference_precision_bits": 256,
+      "result": "PASS: exact rational extrema enclosed and 256-bit MPFI enclosure contained within independently generated MPFR outward p-bit enclosure",
+      "package": "libmpfi0_1.5.3+ds-6build1_amd64.deb",
+      "package_source": "Ubuntu noble universe, archive.ubuntu.com",
+      "package_sha256": "212f784d45037823c57af4484176926da21687234e2ec1c111368ee4171ac1c6",
+      "execution_library": "/home/ubuntu/pf-verify/interval-mpfi-reference-20261008/extracted/usr/lib/x86_64-linux-gnu/libmpfi.so.0.0.0",
+      "reference_output_sha256": "e63166822e791dd74507bdb5c3f9662b1979a6390d9456fd643aaa6452a13728",
+      "verification_script": "qualification/perfect-interval/scripts/verify_mpfi_reference.py",
+      "executed_on": "Zen Ubuntu WSL2 x86-64 using ctypes and installed GNU MPFR 4.2.1",
+      "production_dependencies_added": 0
+    }
   },
   "windows": {
     "platform": "native Windows x86-64 on Zen",
@@ -114,6 +127,7 @@
   "limits": [
     "Finite deterministic exact dyadic endpoint corpus; no infinity cases in independent MPFR vectors",
     "Ball construction/conversion/operations use public API; testing is not a universal proof for all possible inputs",
-    "Coverage includes extreme binary exponents, but not arbitrary precision or unbounded resource behavior"
+    "Coverage includes extreme binary exponents, but not arbitrary precision or unbounded resource behavior",
+    "MPFI 1.5.3 interval implementation relies internally on GNU MPFR; numerical cross-reference is not an independent arbitrary-precision rounding backend"
   ]
 }

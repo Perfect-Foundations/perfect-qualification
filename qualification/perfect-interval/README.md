@@ -38,8 +38,21 @@ such cases separately. In the initial Windows campaign, no Ball result became
 Entire. The corpus is finite; it is rigorous *for those cases*, not a proof
 for every possible exponent, precision, or input set.
 
-Independent reference state: MPFI and Arb/FLINT absent from inspected WSL
-installation, therefore their differential campaigns are NOT RUN. MPFR
+Additional independent verification now runs **GNU MPFI 1.5.3**, extracted
+unprivileged from the official Ubuntu noble `libmpfi0` binary package.
+There is no system installation and no production native dependency.
+The package SHA-256 is
+`212f784d45037823c57af4484176926da21687234e2ec1c111368ee4171ac1c6`.
+`scripts/verify_mpfi_reference.py` uses the reviewed Ubuntu x86-64 ABI
+(`MPFIValue` 64 bytes; `MPFRValue` 32 bytes) via verification-only ctypes,
+evaluates all 226 input intervals at 256-bit precision and independently
+checks exact Fraction minima/maxima. It also confirms every MPFI 256-bit
+enclosure lies within the independently generated destination-p-bit MPFR
+enclosure. Output/reference digest:
+`e63166822e791dd74507bdb5c3f9662b1979a6390d9456fd643aaa6452a13728`.
+
+MPFI uses MPFR internally; this is independent **from production**, not an
+entirely independent MPFR arithmetic backend. FLINT/Arb is still NOT RUN. MPFR
 is verification-only and is not linked to the Rust consumer or production.
 
 ## Identity and execution
