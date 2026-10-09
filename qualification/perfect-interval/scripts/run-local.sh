@@ -54,6 +54,8 @@ fi
 new_digest="$(sha256sum "$source_dir/vectors/arb_adversarial_v1.tsv" | cut -d' ' -f1)"
 test "$new_digest" = "8bb8011b5bf4e3292ea631df2d8e5f13bbdbb6e08f1df2eea8402b39fd9f9e57"
 python3 "$source_dir/scripts/verify_arb_output.py" | tee "$work/arb-committed-reference.log"
+python3 "$source_dir/scripts/verify_arb_corners.py" | tee "$work/arb-committed-corner-reference.log"
+echo "ARB_POINT_CORNER_CACHED_EXACT_FRACTION_330_CERTIFIED_NOT_LIVE_REGENERATED" | tee -a "$summary"
 echo "ARB_CACHED_CERTIFICATE_MATHEMATICALLY_VALIDATED_NOT_LIVE_REGENERATED" | tee -a "$summary"
 if python3 -c 'import ctypes; ctypes.CDLL("libmpfr.so.6")' 2>/dev/null;then
    python3 "$source_dir/scripts/generate_arb_adversarial.py" | tee "$work/arb-adversarial-generation.log"
@@ -68,7 +70,10 @@ if [ -n "${PFQ_FLINT_ROOT:-}" ] && [ -f "$PFQ_FLINT_ROOT/usr/include/flint/arb.h
   cc -std=c11 -O2 -Wall -Wextra -Werror -I"$inc" -I"$inc/x86_64-linux-gnu" -L"$lib" -Wl,-rpath,"$lib" "$source_dir/scripts/flint_arb_oracle.c" -lflint -o "$work/flint-arb-reference"
   "$work/flint-arb-reference" "$source_dir/vectors/arb_adversarial_v1.tsv" >"$work/arb-raw.tsv" 2>"$work/arb-runtime.log"
   python3 "$source_dir/scripts/verify_arb_output.py" "$work/arb-raw.tsv" | tee "$work/arb-exact-rational.log"
-  echo "FLINT_ARB_3_0_1_292_FINITE_CASES_PASS_38_UNSUPPORTED" | tee -a "$summary"
+  cc -std=c11 -O2 -Wall -Wextra -Werror -I"$inc" -I"$inc/x86_64-linux-gnu" -L"$lib" -Wl,-rpath,"$lib" "$source_dir/scripts/flint_arb_corners.c" -lflint -o "$work/flint-arb-corners"
+  "$work/flint-arb-corners" "$source_dir/vectors/arb_adversarial_v1.tsv" >"$work/arb-corners-live.tsv" 2>"$work/arb-corners-runtime.log"
+  python3 "$source_dir/scripts/verify_arb_corners.py" "$work/arb-corners-live.tsv" | tee "$work/arb-corners-exact-rational.log"
+  echo "FLINT_ARB_3_0_1_292_FINITE_NATIVE_INTERVAL_AND_38_NONFINITE_UNSUPPORTED; 330_POINT_CORNER_CERTIFIED" | tee -a "$summary"
 else
   echo "FLINT_ARB_REFERENCE_NOT_RUN_ISOLATED_SYSROOT_NOT_PROVIDED" | tee -a "$summary"
 fi

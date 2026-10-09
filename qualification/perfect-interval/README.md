@@ -156,3 +156,29 @@ Perfect Interval `30aca00817bb79f0be3bf43e96c767db9fe45bc5`:
 
 All new source changes are confined to Perfect Qualification PR #9.
 No production source change, native ARM64 waiver, or M1/M2 release gate.
+
+### Independent Arb endpoint-corner remedy for the 38 representation-limited inputs
+
+A *separate* verification-only FLINT 3.0.1 C implementation,
+`scripts/flint_arb_corners.c`, constructs each signed dyadic input endpoint
+as an exact Arb **point** and evaluates binary operations on all four
+endpoint pairs (or two unary endpoints) at 256-bit precision. For supported
+finite rectangular arithmetic with no zero denominator, the mathematical
+minimum/maximum occurs at one of these corners. Python
+`scripts/verify_arb_corners.py` independently checks each Arb output
+contains that corner's exact Fraction result and the aggregate corner
+enclosures contain the Fraction-derived global extrema.
+
+**1,140/1,140** point-corner Arb results PASS independent Fraction checks,
+covering extrema for **330/330** corpus intervals. This includes all 38
+cases whose *direct interval-ball Arb evaluation* remains
+`UNSUPPORTED_NONFINITE`. The two methods retain distinct classifications;
+the latter 38 were not relabeled as native interval-Arb passes.
+
+The independently certified point-corner output is
+`vectors/arb_corners_256_v1.tsv`, SHA-256
+`fb294e2de3f59c702924a0ae41be014f8583080f06a5e582a0e5496a6f87ba1d`.
+Its full verification log:
+`/home/ubuntu/pf-verify/interval-flint-arb-20261009/logs/arb-point-corner-certified.log`.
+Point-corner confirmation remains a finite-domain mathematical reference
+and cannot establish universal numerical correctness or M2 acceptance.
