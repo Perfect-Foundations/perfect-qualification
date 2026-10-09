@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "review_date_utc": "2026-10-09",
+  "gate": "Perfect Arithmetic M6 Q4 robustness exact-source applicability",
+  "source": {
+    "hash_production_implementation": "68b6c21cb70fcc3a917c3ec8d3c1c8793cee6ce1",
+    "qualified_consumer_candidate": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+    "latest_arithmetic_pr8": "ace631bb8ed8aaf60b7496a7309fad748987231f",
+    "perfect_numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "git_comparison": {
+    "production_to_qualified": "ahead by 12; no changes under src/ or tests/; only workflow, evidence, supply-chain docs, fuzz/Cargo.toml, fuzz/fuzz_targets/hash_api.rs",
+    "qualified_to_pr8": "ahead by 3; only zen-isolated-arithmetic-classb.yml, zen-isolated-arithmetic-q0q5.yml and downstream Rational evidence; no src/ or tests/ changes",
+    "historical_m5_3678_to_m6": "diverged; includes substantive production src/ changes, so M5 alone cannot prove current Hash implementation"
+  },
+  "retained_m6_execution": {
+    "source_report": "Perfect-Foundations/perfect-arithmetic/docs/evidence/M6-HASH-FUZZ-MUTATION-20261008.md",
+    "asan_fuzz": {
+      "natural": 25000,
+      "integer": 25000,
+      "canonical_hash": 50000,
+      "total": 100000,
+      "crashes_reported": 0
+    },
+    "mutation": {
+      "total": 85,
+      "caught": 79,
+      "unviable": 6,
+      "missed": 0,
+      "timeouts": 0
+    },
+    "targeted_miri": {
+      "passed": 2,
+      "failed": 0
+    },
+    "full_miri": "INCOMPLETE; high-cost exhaustive u16 under Miri was deliberately interrupted",
+    "windows_linux_semantics": "retained M6 public fingerprint ebed5bc8ce032694, exact production source"
+  },
+  "qualification_consumer": {
+    "github_run_id": 37872674909,
+    "job_id": 113634072483,
+    "result": "PASS_ISOLATED_LINUX_X86_64",
+    "independent_python_vector_cases": 97,
+    "rust_consumer_all_features": 8,
+    "rust_consumer_no_default": 8,
+    "canonical_hash_fingerprint": "f20333624f980b77"
+  },
+  "disposition": {
+    "production_source_applicability": "PASS: recorded new M6 fuzz, mutation and focused Miri target the production source unchanged at qualified candidate and latest PR head",
+    "q4_robustness_subscope": "PASS_RETAINED_EVIDENCE_FOR_TESTED_CONFIGURATIONS",
+    "q4_aggregate_official_qualification": "OPEN: the complete official multi-host Q0-Q5 matrix and accepted exact-head prerequisites are not fully executed; no automatic promotion",
+    "native_arm64": "BLOCKED_NOT_RUN; QEMU does not substitute native",
+    "m5_source_reuse": "HISTORICAL_ONLY_UNLESS_CODE_IDENTITY_IS_PROVED",
+    "miri_claim": "FOCUSED_ONLY",
+    "full_q0_q5": "NOT_EARNED",
+    "q6_registry": "BLOCKED",
+    "production_changes": "NONE",
+    "project_status": "UNCHANGED",
+    "perfect_pi": "UNMODIFIED"
+  },
+  "next_action": "When native ARM64 available, run the official pinned matrix on native hardware and reconcile full Q0-Q5; preserve release/registry gates independently."
+}

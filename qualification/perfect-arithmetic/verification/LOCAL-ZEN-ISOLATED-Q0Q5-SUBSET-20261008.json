@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "scope": "isolated-local-execution-of-selected-official-arithmetic-Q0-Q5-workflow-commands; not official multi-host matrix",
+  "qualification_repository": "Perfect-Foundations/perfect-qualification",
+  "source": {
+    "qualification": "1cd469b96e758ffb874c3d9866da484f4a5d0cdc",
+    "arithmetic": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+    "numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "environment": {
+    "host": "Zen Ubuntu WSL2 x86_64",
+    "isolation": "ephemeral local Docker process (network=none, UID:GID=10001:10001, cap-drop=ALL, no-new-privileges, pids-limit=128, memory=4GiB, CPUs=3); not a GitHub Actions runner",
+    "container_image": "pf-rational-ephemeral-20261008",
+    "rust": "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "dependencies": "offline; existing host Cargo registry cache mounted read-only; exact original source Git declarations verified before path conversion"
+  },
+  "checks": {
+    "source_sha_identity": "PASS",
+    "python_natural": 24,
+    "python_integer": 24,
+    "python_gcd": 24,
+    "python_canonical_hash": 25,
+    "lock_sha256": "709e15a8bb8854fae5e6ee62653fd16a6b78c22cab62c30b02216b3cee6e784b",
+    "offline_lock": "PASS",
+    "cargo_fmt": "PASS",
+    "cargo_check_all_targets_all_features": "PASS",
+    "cargo_check_no_default": "PASS",
+    "cargo_test_all_features": {
+      "passed": 8,
+      "failed": 0
+    },
+    "cargo_test_no_default": {
+      "passed": 8,
+      "failed": 0
+    },
+    "clippy_all_features_deny_warnings": "PASS",
+    "clippy_no_default_deny_warnings": "PASS",
+    "rustdoc_deny_warnings": "PASS",
+    "fingerprints": {
+      "default": "f20333624f980b77",
+      "all_features": "f20333624f980b77",
+      "no_default": "f20333624f980b77"
+    },
+    "final_exit_code": 0
+  },
+  "attempts": [
+    {
+      "state": "FAIL_ENVIRONMENT",
+      "reason": "container missing offline Cargo registry entry num-bigint"
+    },
+    {
+      "state": "PASS",
+      "correction": "mount existing authorized host registry cache read-only and re-execute exact-source consumer commands"
+    }
+  ],
+  "local_logs": "/home/ubuntu/pf-verify/arithmetic-q0q5-local-20261008/logs",
+  "repro_script_host": "C:\\Temp\\pf-arithmetic-q0q5-20261008.sh",
+  "limits": {
+    "official_Q0_Q5_complete": "NOT_RUN",
+    "class_a_windows": "NOT_RUN_IN_THIS_EXECUTION",
+    "class_a_arm64_native": "NOT_RUN",
+    "class_b_targets": "NOT_RUN_IN_THIS_EXECUTION",
+    "current_stable": "NOT_RUN",
+    "q4_new_campaigns": "NOT_RUN; valid retained evidence unchanged",
+    "q6_registry": "BLOCKED",
+    "release_credit": "NONE",
+    "perfect_pi": "READ_ONLY_UNCHANGED"
+  }
+}
