@@ -218,11 +218,21 @@ jobs:
             arithmetic_cargo="$arithmetic_shell"
           fi
 
+          # Fail closed: a missing or changed source declaration must not turn
+          # a failed sed match into falsely pinned dependency provenance.
+          expected_numeric='perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "'"$PERFECT_NUMERIC_REV"'", version = "=0.1.0", default-features = false }'
+          expected_arithmetic='perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "'"$PERFECT_ARITHMETIC_REV"'", version = "=0.1.0", default-features = false }'
+          test "$(grep -Fxc -- "$expected_numeric" "$arithmetic_shell/Cargo.toml")" = 1
+          test "$(grep -Fxc -- "$expected_arithmetic" "$QUAL_MANIFEST")" = 1
+
           sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_shell/Cargo.toml"
           rm "$arithmetic_shell/Cargo.toml.bak"
 
           sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_cargo\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
+          test "$(grep -Fxc -- 'perfect-numeric = { path = "'"$numeric_cargo"'", version = "=0.1.0", default-features = false }' "$arithmetic_shell/Cargo.toml")" = 1
+          test "$(grep -Fxc -- 'perfect-arithmetic = { path = "'"$arithmetic_cargo"'", version = "=0.1.0", default-features = false }' "$QUAL_MANIFEST")" = 1
+
 
       - name: Install Rust 1.99.0
         shell: bash
@@ -303,10 +313,20 @@ jobs:
           numeric_shell="${{ steps.numeric-source.outputs.shell-path }}"
           numeric_cargo="${{ steps.numeric-source.outputs.cargo-path }}"
           test -f "$numeric_shell/Cargo.toml"
+          # Fail closed: a missing or changed source declaration must not turn
+          # a failed sed match into falsely pinned dependency provenance.
+          expected_numeric='perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "'"$PERFECT_NUMERIC_REV"'", version = "=0.1.0", default-features = false }'
+          expected_arithmetic='perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "'"$PERFECT_ARITHMETIC_REV"'", version = "=0.1.0", default-features = false }'
+          test "$(grep -Fxc -- "$expected_numeric" "$arithmetic_path/Cargo.toml")" = 1
+          test "$(grep -Fxc -- "$expected_arithmetic" "$QUAL_MANIFEST")" = 1
+
           sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
           rm "$arithmetic_path/Cargo.toml.bak"
           sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
+          test "$(grep -Fxc -- 'perfect-numeric = { path = "'"$numeric_cargo"'", version = "=0.1.0", default-features = false }' "$arithmetic_path/Cargo.toml")" = 1
+          test "$(grep -Fxc -- 'perfect-arithmetic = { path = "'"$arithmetic_path"'", version = "=0.1.0", default-features = false }' "$QUAL_MANIFEST")" = 1
+
 
       - name: Install Rust 1.99.0 and target
         shell: bash

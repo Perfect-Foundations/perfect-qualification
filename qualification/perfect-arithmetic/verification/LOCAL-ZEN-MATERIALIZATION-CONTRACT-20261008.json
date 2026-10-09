@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "repository": "Perfect-Foundations/perfect-qualification",
+  "pr": 6,
+  "previous_head": "15a8b19859ed41d19fa311acc3eeb72d82bf3cc6",
+  "subject": {
+    "workflow": ".github/workflows/perfect-arithmetic.yml",
+    "new_workflow_blob": "64a0468ecb7c84535fe2ae755d2a50fae5dae80c",
+    "source_candidate": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+    "numeric_source": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "finding": "Class-A/Class-B private-source rewrite steps used sed without checking that the complete pinned dependency declarations matched, so an unmatched substitution could continue with an unverified graph.",
+  "correction": "Require exactly one original exact Git source declaration for each dependency before sed, and exactly one path-directed declaration after. Fail on missing or changed pin. Preserve original source revisions and Q0-Q5 criteria.",
+  "verification": {
+    "host": "Zen Ubuntu WSL2 x86_64",
+    "execution": "Workflow YAML parse; extracted shell bash -n; positive manifest fixture rewrite for class-a and class-b; negative missing-pin fixture must fail nonzero with original manifest unchanged",
+    "class_a": "PASS",
+    "class_b": "PASS",
+    "scripts_syntax": "PASS",
+    "negative_fail_closed": "PASS",
+    "test_exit_code": 0
+  },
+  "limits": "Workflow materialization contract verification only. Hosted Q0-Q5, native ARM64 and full consumer suites were not rerun; prior exact-source consumer evidence remains retained. No registry package artifact invented, no production source modified, Perfectπ unchanged."
+}
