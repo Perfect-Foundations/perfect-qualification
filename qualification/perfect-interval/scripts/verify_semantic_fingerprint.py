@@ -25,5 +25,8 @@ assert re.search(r"test result: ok\. 1 passed; 0 failed;",log),"no passing test 
 print("PF_SEMANTIC_CASES",64)
 print("PF_SEMANTIC_BYTES",len(raw))
 print("PF_SEMANTIC_FNV1A64",f"{fnv:016x}")
-print("PF_SEMANTIC_SHA256",sha256(raw).hexdigest())
+actual_sha256=sha256(raw).hexdigest()
+assert actual_sha256=="b73867901ba3a261a9ef06cafd6bbdaa8e1e10fbd4d66dd262200b83594a7f4b",(
+    "REPRESENTATION_DRIFT_NOT_NECESSARILY_UNSOUND",actual_sha256)
+print("PF_SEMANTIC_SHA256",actual_sha256)
 print("PF_SEMANTIC_TRANSCRIPT_VERIFIED")

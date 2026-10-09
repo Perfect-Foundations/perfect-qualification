@@ -78,6 +78,10 @@ jobs:
           cargo +1.99.0 fmt --manifest-path "$suite/Cargo.toml" --all -- --check
           cargo +1.99.0 test --offline --locked --manifest-path "$suite/Cargo.toml" --all-features
           cargo +1.99.0 test --offline --locked --manifest-path "$suite/Cargo.toml" --no-default-features
+          for mode in all-features no-default-features; do
+            cargo +1.99.0 test --offline --locked --manifest-path "$suite/Cargo.toml" --"$mode" --test semantic_fingerprint_v1 -- --nocapture > "$RUNNER_TEMP/interval-semantic-$mode.log" 2>&1
+            python3 "$suite/scripts/verify_semantic_fingerprint.py" "$RUNNER_TEMP/interval-semantic-$mode.log"
+          done
           cargo +1.99.0 clippy --offline --locked --manifest-path "$suite/Cargo.toml" --all-targets --all-features -- -D warnings
           cargo +1.99.0 clippy --offline --locked --manifest-path "$suite/Cargo.toml" --all-targets --no-default-features -- -D warnings
           RUSTDOCFLAGS="-D warnings" cargo +1.99.0 doc --offline --locked --manifest-path "$suite/Cargo.toml" --no-deps --all-features

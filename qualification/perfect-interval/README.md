@@ -219,3 +219,34 @@ checked against the independently generated certified extrema.
 Fingerprints identify **representation-level outcomes**; mathematically
 distinct but enclosing results are not automatically numerical failures.
 Comparison across platforms must rely on actual executed outputs.
+
+Windows native x86-64 and WSL2 Linux x86-64 produced matching canonical
+SHA-256 `b73867901ba3a261a9ef06cafd6bbdaa8e1e10fbd4d66dd262200b83594a7f4b`
+and FNV-1a-64 `d02931bfb27fe00c` in both feature modes; QEMU
+AArch64 user-mode emulation also reproduced both digests. This is
+observed 64-case representation identity, not proof of universal
+cross-platform determinism. Rust 1.99.0; fixed exact source.
+
+### Executed exact-source replay and outstanding official CI blocker
+
+Executable qualification commit `9fe77817542fdc73fa9f968e0ce06a6e80efa18f`
+was tested against production Interval
+`30aca00817bb79f0be3bf43e96c767db9fe45bc5`,
+Float `bbd8b9e4`, Arithmetic `1a54d3c`, Rational `35a8e9c`
+and Numeric `19b6747`, all exact pinned commits.
+
+Reproducibility entrypoints for Zen:
+`scripts/run-zen-property-v2-linux.sh` (disposable six-repo
+SHA-checked source graph), and `scripts/run-zen-property-v2-qemu.sh`
+(read-only offline isolated AArch64 QEMU Rust execution). Linux logs:
+`/home/ubuntu/pf-verify/interval-property-v2.fQjXPYon/`.
+QEMU log:
+`C:\Dev\PerfectFoundations\_qualification_interval_m1_logs_20261008\semantic-property-qemu-aarch64-20261009.log`.
+
+The callable CI workflow additionally verifies the retained corpus digest,
+independent Arb certificates, and the golden semantic SHA-256 in both
+feature modes when actually invoked. This workflow has **not been run**:
+the repository reported zero registered self-hosted runners; organization
+runner listing returned 403 for insufficient runner visibility. No
+zero-cost hosted-runner allocation was verified. This remains a
+qualification blocker, not a passing or failed CI run.
