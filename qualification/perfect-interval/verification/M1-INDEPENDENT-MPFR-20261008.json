@@ -46,7 +46,10 @@
       "reference_output_sha256": "e63166822e791dd74507bdb5c3f9662b1979a6390d9456fd643aaa6452a13728",
       "verification_script": "qualification/perfect-interval/scripts/verify_mpfi_reference.py",
       "executed_on": "Zen Ubuntu WSL2 x86-64 using ctypes and installed GNU MPFR 4.2.1",
-      "production_dependencies_added": 0
+      "production_dependencies_added": 0,
+      "execution_exit_code": 0,
+      "isolated_runtime_not_system_installed": true,
+      "mpfi_uses_mpfr_internal_rounding": true
     }
   },
   "windows": {
@@ -117,17 +120,19 @@
   },
   "acceptance": {
     "native_linux_aarch64_class_a": "BLOCKED_NOT_RUN",
-    "independent_mpfi_arb": "NOT_RUN",
     "full_interval_m1": "NOT_EARNED",
     "full_interval_m2": "NOT_EARNED",
     "official_qualification_q0_q5": "NOT_EARNED",
     "registry_release": "NOT_EARNED",
-    "perfect_pi": "UNMODIFIED"
+    "perfect_pi": "UNMODIFIED",
+    "independent_mpfi": "PARTIAL_226_FINITE_CASES_PASS_NOT_FULL_M2",
+    "independent_arb_flint": "NOT_RUN"
   },
   "limits": [
     "Finite deterministic exact dyadic endpoint corpus; no infinity cases in independent MPFR vectors",
     "Ball construction/conversion/operations use public API; testing is not a universal proof for all possible inputs",
     "Coverage includes extreme binary exponents, but not arbitrary precision or unbounded resource behavior",
-    "MPFI 1.5.3 interval implementation relies internally on GNU MPFR; numerical cross-reference is not an independent arbitrary-precision rounding backend"
+    "MPFI 1.5.3 interval implementation relies internally on GNU MPFR; numerical cross-reference is not an independent arbitrary-precision rounding backend",
+    "FLINT/Arb remains NOT RUN; native AArch64 class-A remains NOT RUN; no automatic M2 or official Q0-Q5 promotion"
   ]
 }
