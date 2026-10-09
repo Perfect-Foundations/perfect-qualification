@@ -76,14 +76,16 @@ jobs:
           echo "numeric-path=$numeric_shell" >> "$GITHUB_OUTPUT"
 
           arithmetic_numeric='perfect-numeric = { git = "https://github.com/Perfect-Foundations/perfect-numeric.git", rev = "'"$PERFECT_NUMERIC_REV"'", version = "=0.1.0", default-features = false }'
-          grep -F -- "$arithmetic_numeric" "$arithmetic_path/Cargo.toml" >/dev/null
+          test "$(grep -Fxc -- "$arithmetic_numeric" "$arithmetic_path/Cargo.toml")" = 1
           sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
           rm "$arithmetic_path/Cargo.toml.bak"
+          test "$(grep -Fxc -- 'perfect-numeric = { path = "'"$numeric_cargo"'", version = "=0.1.0", default-features = false }' "$arithmetic_path/Cargo.toml")" = 1
 
           qual_arithmetic='perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "'"$PERFECT_ARITHMETIC_REV"'", version = "=0.1.0", default-features = false }'
-          grep -F -- "$qual_arithmetic" "$QUAL_MANIFEST" >/dev/null
+          test "$(grep -Fxc -- "$qual_arithmetic" "$QUAL_MANIFEST")" = 1
           sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
+          test "$(grep -Fxc -- 'perfect-arithmetic = { path = "'"$arithmetic_path"'", version = "=0.1.0", default-features = false }' "$QUAL_MANIFEST")" = 1
 
       - name: Install MSRV and stable
         shell: bash
