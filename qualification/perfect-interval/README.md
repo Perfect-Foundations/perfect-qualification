@@ -182,3 +182,40 @@ Its full verification log:
 `/home/ubuntu/pf-verify/interval-flint-arb-20261009/logs/arb-point-corner-certified.log`.
 Point-corner confirmation remains a finite-domain mathematical reference
 and cannot establish universal numerical correctness or M2 acceptance.
+
+## Bounded M2 property and semantic fingerprint phase (2026-10-09)
+
+The separate `PF-INTERVAL-PROP-V2` independent `fractions.Fraction` and
+GNU MPFR 4.2.1 two-precision corpus has 576 deterministic finite dyadic
+cases, seed `0xF09120261009`, SHA-256
+`286537c0f309c87a9377207f6a0e615b96cb3e674c91adcdb3611ffec3e65de7`.
+These are new cases, not a rerun of the historical 226/330 campaigns.
+`scripts/generate_properties_v2.py` recreates every input and independent
+destination and higher-precision directed endpoint; both references are
+checked with exact Fraction extrema before emission. Initial p-only bounds
+must **not** be compared to the tighter higher-precision result; a previous
+test-harness false failure was corrected before source commit.
+
+`tests/property_v2.rs` tests soundness at both precisions and checks
+mathematically appropriate hull, intersection, double negation, widening
+and 12 chained Interval→Ball→Interval conversions on 144 selected cases.
+The extended conversion checks enforce input containment and nondecreasing
+width, recording widening separately from exclusion.
+
+`tests/semantic_fingerprint_v1.rs` encodes 64 designated independent
+property cases, including both Interval and Ball outputs, requested
+precision, bounded/Empty/Entire result category, endpoint and midpoint/
+radius values, signed-zero signs and stored result precision.
+The encoder reconstructs normalized exact signed binary significands
+through **public Float numerical comparisons**; it does not inspect
+private representations, use Debug, depend on locale, or hash host-native
+floating bytes. Its header is `PF-SEMANTIC-FINGERPRINT-V1`; exact ASCII
+rows terminate in LF. It calculates FNV-1a 64-bit (offset
+`cbf29ce484222325`, prime `100000001b3`) in Rust.
+`scripts/verify_semantic_fingerprint.py` independently validates the
+transcript FNV-1a and computes SHA-256 of the exact bytes.
+The mathematical soundness of each fingerprinted case is separately
+checked against the independently generated certified extrema.
+Fingerprints identify **representation-level outcomes**; mathematically
+distinct but enclosing results are not automatically numerical failures.
+Comparison across platforms must rely on actual executed outputs.

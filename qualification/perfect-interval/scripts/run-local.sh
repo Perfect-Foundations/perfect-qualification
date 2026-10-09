@@ -77,6 +77,7 @@ if [ -n "${PFQ_FLINT_ROOT:-}" ] && [ -f "$PFQ_FLINT_ROOT/usr/include/flint/arb.h
 else
   echo "FLINT_ARB_REFERENCE_NOT_RUN_ISOLATED_SYSROOT_NOT_PROVIDED" | tee -a "$summary"
 fi
+test "$(sha256sum "$source_dir/vectors/property_v2.tsv" | cut -c1-64)" = "286537c0f309c87a9377207f6a0e615b96cb3e674c91adcdb3611ffec3e65de7"
 echo "HOST=$(uname -sm)" | tee -a "$summary"
 rustc +1.99.0 --version | tee -a "$summary"
 check() {

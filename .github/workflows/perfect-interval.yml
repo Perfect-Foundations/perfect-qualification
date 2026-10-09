@@ -72,6 +72,7 @@ jobs:
           test "$(sha256sum "$suite/vectors/arb_adversarial_v1.tsv" | cut -c1-64)" = "8bb8011b5bf4e3292ea631df2d8e5f13bbdbb6e08f1df2eea8402b39fd9f9e57"
           python3 "$suite/scripts/verify_arb_output.py"
           python3 "$suite/scripts/verify_arb_corners.py"
+          test "$(sha256sum "$suite/vectors/property_v2.tsv" | cut -c1-64)" = "286537c0f309c87a9377207f6a0e615b96cb3e674c91adcdb3611ffec3e65de7"
           cargo +1.99.0 generate-lockfile --manifest-path "$suite/Cargo.toml"
           cargo +1.99.0 fetch --locked --manifest-path "$suite/Cargo.toml"
           cargo +1.99.0 fmt --manifest-path "$suite/Cargo.toml" --all -- --check
