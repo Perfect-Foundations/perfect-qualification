@@ -45,7 +45,27 @@
     "python_fraction_mpfr_certificate_exit": 0,
     "verification_only_c_file": "qualification/perfect-interval/scripts/flint_arb_oracle.c",
     "self_check_python": "qualification/perfect-interval/scripts/verify_arb_output.py",
-    "reference_logs": "/home/ubuntu/pf-verify/interval-flint-arb-20261009/logs/"
+    "reference_logs": "/home/ubuntu/pf-verify/interval-flint-arb-20261009/logs/",
+    "point_corner_followup": {
+      "source_commit": "670c586b72dc2ff1607d9c8a3cf9561b878d51cc",
+      "source_file": "qualification/perfect-interval/scripts/flint_arb_corners.c",
+      "verifier_file": "qualification/perfect-interval/scripts/verify_arb_corners.py",
+      "method": "FLINT/Arb 3.0.1 constructs exact dyadic point balls for each operand endpoint; computes all 4 binary or 2 unary endpoint operations at 256 bits; Python independently checks every Arb endpoint enclosure against exact Fraction corner result and each aggregate interval against Fraction mathematical extrema.",
+      "corner_outputs": 1140,
+      "corner_outputs_pass": 1140,
+      "interval_extrema_pass": 330,
+      "formerly_direct_interval_arb_nonfinite_cases_separately_certified": 38,
+      "original_direct_interval_arb_nonfinite_classification_preserved": true,
+      "reference_vector": "qualification/perfect-interval/vectors/arb_corners_256_v1.tsv",
+      "reference_output_sha256": "fb294e2de3f59c702924a0ae41be014f8583080f06a5e582a0e5496a6f87ba1d",
+      "independent_qualification_log": "/home/ubuntu/pf-verify/interval-flint-arb-20261009/logs/arb-point-corner-certified.log",
+      "qualification_log_sha256": "1ba96099427903e54cc04d924cf6cbec9d8d4293240d33de46db1cf8e38d554a",
+      "compiler": "GCC 13.3.0 -O2 -Wall -Wextra -Werror",
+      "live_recompiled_at_exact_source_commit": true,
+      "actual_exit_code": 0,
+      "independent_from_production": true,
+      "production_dependencies_added": 0
+    }
   },
   "windows_x86_64": {
     "rustc": "1.99.0",
@@ -140,7 +160,8 @@
     "finite corpus is not universal proof",
     "Arb 38 nonfinite inputs are unqualified by Arb due to representation widening, separately verified against exact Fraction and directed MPFR bounds",
     "native ARM64 Class-A blocked; Q0-Q5 and M1/M2 not earned",
-    "Perfect Interval production dependency DAG untouched"
+    "Perfect Interval production dependency DAG untouched",
+    "Direct Arb finite whole-interval representation remains unsupported for 38 cases; separate point-corner reference rigorously certifies their finite mathematical extrema, not a correction or reclassification of the original method."
   ],
   "class_b": {
     "new_executions": "NOT RUN - no production/qualification lib source change affecting no_std; previous 3-target Q0-Q5 compile-only evidence preserved",
@@ -152,7 +173,7 @@
   },
   "acceptance": {
     "perfect_interval_m1": "NOT_EARNED",
-    "perfect_interval_m2": "PARTIAL_ARB_FINITE_CORPUS_ONLY_NOT_EARNED",
+    "perfect_interval_m2": "PARTIAL_330_EXACT_FRACTION_MPFR_AND_330_ARB_POINT_CORNER_CASES_PASS_NOT_FULL_M2",
     "official_q0_q5": "NOT_EARNED; callable CI not executed",
     "native_linux_arm64_class_a": "BLOCKED_NOT_RUN",
     "registry_q6": "NOT_EARNED",
