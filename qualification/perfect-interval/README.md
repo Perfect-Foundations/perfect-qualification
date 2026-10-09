@@ -127,3 +127,32 @@ No universal inclusion proof, optimally narrow results, all extended-real
 semantic branches, native ARM64 Class-A coverage, hosted Q0–Q5 approval,
 or completed M1/M2 acceptance follows from this finite test set. Arb/FLINT
 is verification-only and is not a production dependency.
+
+### Execution records and exact candidate
+
+The new candidate was executed from exact **qualification source**
+`215ec5f3f5f72ad0e200a0dee3034f97fa5b68ea` against unchanged
+Perfect Interval `30aca00817bb79f0be3bf43e96c767db9fe45bc5`:
+
+- Windows x86-64 native, Rust 1.99.0: 2 new adversarial test functions
+  (330 Interval + 330 Ball cases) and 4 semantic tests PASS in each
+  feature configuration; warning-denied Clippy and rustfmt PASS.
+- Ubuntu WSL2 native x86-64: same 6 test functions and feature modes PASS,
+  plus exact-source rerun of FLINT 3.0.1, separately regenerated MPFR
+  corpus, exact-rational validation, and warning-denied Clippy; logs at
+  `/home/ubuntu/pf-verify/interval-arb-m2-20261009.Usnakk36/`.
+- QEMU 8.2.2 user-mode AArch64 target on x86-64 Linux: 6 new test
+  functions PASS per feature mode, network disabled, non-root,
+  caps dropped, read-only source, bounded resources. **Not native ARM64.**
+  Local log at
+  `C:\Dev\PerfectFoundations\_qualification_interval_m1_logs_20261008\flint-arb-adversarial-qemu-aarch64-20261009.log`.
+- The 330-case Ball operation checks conservatively widened to Entire in
+  41 cases. Three chained conversion round trips for each input saw
+  42 width-increase steps; no source endpoints were excluded.
+- Two retained Zen-specific exact-reference replay entrypoints:
+  `scripts/run-zen-linux-adversarial-20261009.sh` and
+  `scripts/run-zen-qemu-adversarial-20261009.sh`. No source test
+  results were promoted to acceptance by these checks.
+
+All new source changes are confined to Perfect Qualification PR #9.
+No production source change, native ARM64 waiver, or M1/M2 release gate.

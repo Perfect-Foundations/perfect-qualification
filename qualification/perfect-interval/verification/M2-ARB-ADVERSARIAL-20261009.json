@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "timezone": "America/New_York",
+  "repository": "Perfect-Foundations/perfect-qualification",
+  "pr_number": 9,
+  "qualification_initial_head": "f5a3f41f9ee6e440b87fd31ddb53e513c979dc8f",
+  "qualification_current_executable_sha": "215ec5f3f5f72ad0e200a0dee3034f97fa5b68ea",
+  "production_interval_source_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+  "source_graph": {
+    "perfect-float": "bbd8b9e4aac0015facf0bb75819049cee68dc0e7",
+    "perfect-arithmetic": "1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
+    "perfect-rational": "35a8e9cc629ee578fe7b624e2134929ce7eeff8a",
+    "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "reference": {
+    "python": "Python 3.12.3 fractions.Fraction exact rational extrema",
+    "mpfr": "GNU MPFR 4.2.1 directed p-bit RNDD/RNDU, verification-only ctypes",
+    "flint_arb": "FLINT 3.0.1 Ubuntu noble universe 3.0.1-3.1build1, native x86-64 GCC 13.3.0 -Wall -Wextra -Werror, verification-only",
+    "flint_packages_sha256": {
+      "libflint-dev_3.0.1-3.1build1_amd64.deb": "6545da689ac3694555bf07b017ee4d2831f41afbe305d63e9db75c45042b8768",
+      "libflint18t64_3.0.1-3.1build1_amd64.deb": "6a19b0ebc9b2367a605ccd2256052649ccde3ca23d6b821fc884715e1cdd70b7",
+      "libmpfr-dev_4.2.1-1build1.1_amd64.deb": "362fcdeb7dff545af83e65a3a972519185efd4a231c23e13d519cf97a5c8e3e4",
+      "libgmp-dev_2%3a6.3.0+dfsg-2ubuntu6.1_amd64.deb": "a9847b5ecfff791a46cb198f29a06d9d23a20afdfdd434812f2b44ccfb61d46a"
+    },
+    "isolation": "no privileged install; packages extracted to /home/ubuntu/pf-verify/interval-flint-arb-20261009/sysroot, executable linked with rpath to isolated libflint.so.18",
+    "arb_precision_bits": 256,
+    "corpus": "qualification/perfect-interval/vectors/arb_adversarial_v1.tsv",
+    "generator": "qualification/perfect-interval/scripts/generate_arb_adversarial.py",
+    "generator_seed": "0xA8B20261009",
+    "corpus_count": 330,
+    "corpus_sha256": "8bb8011b5bf4e3292ea631df2d8e5f13bbdbb6e08f1df2eea8402b39fd9f9e57",
+    "arb_certified_results": "qualification/perfect-interval/vectors/arb_reference_256_v1.tsv",
+    "arb_reference_sha256": "2961c84f449a49c98d4ed5bfaed5e4d8e501e4eb423f3eedb98bfa57df2d4ee4",
+    "arb_finite_enclosure_fraction_verified": 292,
+    "arb_nonfinite_unsupported": 38,
+    "arb_nonfinite_by_operation": {
+      "div": 23,
+      "recip": 15
+    },
+    "arb_wider_than_mpfr_at_destination_precision_count": 262,
+    "classification": "Arb 292 FINITE PASS, 38 UNSUPPORTED_NONFINITE, NOT considered successful Arb checks",
+    "executable_compilation_exit": 0,
+    "oracle_execution_exit": 0,
+    "python_fraction_mpfr_certificate_exit": 0,
+    "verification_only_c_file": "qualification/perfect-interval/scripts/flint_arb_oracle.c",
+    "self_check_python": "qualification/perfect-interval/scripts/verify_arb_output.py",
+    "reference_logs": "/home/ubuntu/pf-verify/interval-flint-arb-20261009/logs/"
+  },
+  "windows_x86_64": {
+    "rustc": "1.99.0",
+    "host": "native Windows x86-64",
+    "adversarial_interval_cases": {
+      "passed": 330,
+      "failed": 0
+    },
+    "ball_cases": {
+      "passed": 330,
+      "failed": 0,
+      "entire_widenings": 41,
+      "roundtrip_width_increase_steps": 42,
+      "roundtrip_depth": 3
+    },
+    "domain_semantics_tests": {
+      "passed": 4,
+      "failed": 0
+    },
+    "all_features": "PASS 2 adversarial + 4 domain tests",
+    "no_default_features": "PASS 2 adversarial + 4 domain tests",
+    "clippy_all_features_deny_warnings": "PASS",
+    "clippy_no_default_deny_warnings": "PASS",
+    "rustfmt": "PASS",
+    "execution_exit_code": 0
+  },
+  "linux_x86_64": {
+    "status": "PASS",
+    "exact_qualification_sha": "215ec5f3f5f72ad0e200a0dee3034f97fa5b68ea",
+    "exact_interval_sha": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+    "host": "Zen Ubuntu WSL2 Linux x86-64 native ISA, not a separate physical ARM64 host",
+    "rustc": "1.99.0",
+    "source_graph": "Six exact Git revision clones verified; dependencies path materialized in disposable clone only",
+    "new_adversarial_interval": {
+      "passed": 330,
+      "failed": 0
+    },
+    "new_ball": {
+      "passed": 330,
+      "failed": 0,
+      "entire_widenings": 41,
+      "width_increase_steps": 42
+    },
+    "domain_semantics_tests": {
+      "passed": 4,
+      "failed": 0
+    },
+    "feature_matrix": "all-features and no-default-features PASS for 2 new modules",
+    "flint_arb_3_0_1_live_recompiled": "PASS; 292 finite sound enclosures, 38 unsupported nonfinite",
+    "mpfr_4_2_1_adversarial_regenerated_same_sha256": "PASS",
+    "arb_stored_reference_validated": "PASS",
+    "fmt": "PASS",
+    "clippy_both_modes_deny_warnings": "PASS",
+    "development_lock_sha256": "da4966ddb5148c31ba47d69f4a324749e3bba33f1cfb1eb74d2cadd6d972c7c3",
+    "exit_code": 0,
+    "logs": "/home/ubuntu/pf-verify/interval-arb-m2-20261009.Usnakk36/",
+    "summary": "/home/ubuntu/pf-verify/interval-arb-m2-20261009.Usnakk36/summary.txt"
+  },
+  "aarch64_qemu": {
+    "status": "PASS_EMULATED_NOT_NATIVE",
+    "host_machine": "Zen Linux x86-64",
+    "target": "aarch64-unknown-linux-gnu",
+    "reference": "Precertified exact Fraction/MPFR corpus, same unchanged 330 inputs; no native FLINT/Arb regeneration within QEMU",
+    "emulator": "QEMU 8.2.2 user-mode",
+    "rustc": "1.99.0",
+    "isolation": {
+      "user": "uid 10001 non-root",
+      "network": "none",
+      "privileges": "no-new-privileges, all capabilities dropped",
+      "memory": "3 GiB",
+      "cpus": 2,
+      "pids_limit": 128,
+      "docker_socket": "not mounted",
+      "source_mount": "read-only",
+      "scratch": "/tmp"
+    },
+    "verified_qualifier_sha": "215ec5f3f5f72ad0e200a0dee3034f97fa5b68ea",
+    "new_interval_cases": 330,
+    "new_ball_cases": 330,
+    "domain_tests": 4,
+    "feature_matrix": "all-features and no-default-features: 2 new adversarial tests +4 semantic tests each PASS",
+    "ball_entire_widenings": 41,
+    "ball_width_increase_steps": 42,
+    "exit_code": 0,
+    "log": "C:\\Dev\\PerfectFoundations\\_qualification_interval_m1_logs_20261008\\flint-arb-adversarial-qemu-aarch64-20261009.log"
+  },
+  "production_changes": false,
+  "perfect_pi_changes": false,
+  "release_published": false,
+  "paid_infrastructure": false,
+  "limitations": [
+    "finite corpus is not universal proof",
+    "Arb 38 nonfinite inputs are unqualified by Arb due to representation widening, separately verified against exact Fraction and directed MPFR bounds",
+    "native ARM64 Class-A blocked; Q0-Q5 and M1/M2 not earned",
+    "Perfect Interval production dependency DAG untouched"
+  ],
+  "class_b": {
+    "new_executions": "NOT RUN - no production/qualification lib source change affecting no_std; previous 3-target Q0-Q5 compile-only evidence preserved",
+    "prior_targets": [
+      "wasm32v1-none",
+      "thumbv7em-none-eabihf",
+      "riscv64imac-unknown-none-elf"
+    ]
+  },
+  "acceptance": {
+    "perfect_interval_m1": "NOT_EARNED",
+    "perfect_interval_m2": "PARTIAL_ARB_FINITE_CORPUS_ONLY_NOT_EARNED",
+    "official_q0_q5": "NOT_EARNED; callable CI not executed",
+    "native_linux_arm64_class_a": "BLOCKED_NOT_RUN",
+    "registry_q6": "NOT_EARNED",
+    "perfect_pi": "READ_ONLY_UNCHANGED"
+  },
+  "defects": {
+    "production_numerical_defects_demonstrated": 0,
+    "reference_limitations": [
+      "38 Arb nonfinite from wide ball representation, explicitly unsupported",
+      "First Windows Rust harness failed on p=80 output reference integer over i64; generator changed new uncommitted corpus to <=53 output and regenerated; not production defect",
+      "First QEMU Cargo failed due wrong working directory for vendored sources, corrected before passing run"
+    ]
+  }
+}
