@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Offline, exact-SHA local qualification. Source and other worktrees untouched.
 set -euo pipefail
+# Non-interactive WSL exec does not necessarily source Cargo environment.
+export PATH="$HOME/.cargo/bin:$PATH"
 QUAL_SRC="${PF_QUALIFICATION_REPO:?set PF_QUALIFICATION_REPO to a clean qualification git checkout}"
 CONSTANTS_SRC="${PF_CONSTANTS_REPO:?set PF_CONSTANTS_REPO to a Constants git checkout}"
 PIN="d88d8055f45fb075c905f1fe9e82a623029faf41"
