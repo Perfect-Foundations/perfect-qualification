@@ -42,15 +42,27 @@ EXPECTED = [
      "m2-rational-euclid-chain-v1.tsv", "m2_rational_euclid_chain.rs",
      "8c5c0b25e39e707b5b200be8b14e0924538a77203ffb6a01415dfab5bf7ae943", 11),
 ]
+EXPECTED.extend([
+    ("generate_m2_prs_late_oracle.py","m2-prs-late-reference-v1.tsv",
+     "m2_prs_late_reference.rs","d259d8814e7cf1ae2708fbb696880acd0c70430052bf191f3724efa3cec6351e",8),
+    ("generate_m2_composed_derivative.py","m2-composed-derivative-v1.tsv",
+     "m2_adaptive_derivative_composition.rs","dc68ee441f56183599af1f7427b0d51e4f63bb43c8fbe3ba49c7d6e64841d726",6),
+    ("generate_m2_negative_late_fraction.py","m2-negative-late-fraction-v1.tsv",
+     "lib:division","2915c83db7d9782c1d089ed7e730f10a5950a2982229488a2b1f0093e76ff859",2),
+])
 for script_name, fixture_name, rust_name, digest, count in EXPECTED:
     original_script = source / "verification" / script_name
     fixture = source / "verification" / fixture_name
-    test = source / "tests" / rust_name
+    test = (source / "src" / "division.rs" if rust_name == "lib:division"
+            else source / "tests" / rust_name)
     assert original_script.is_file() and fixture.is_file() and test.is_file()
+    if rust_name == "lib:division":
+        assert "mod m2_negative_late_resource_tests" in test.read_text(encoding="utf-8")
     original = fixture.read_bytes()
     assert hashlib.sha256(original).hexdigest() == digest, fixture_name
     assert len(original.decode("ascii").splitlines()) == count, fixture_name
-    if (script_name == "generate_m2_prs_multiplicity_oracle.py"
+    if (script_name in ("generate_m2_prs_multiplicity_oracle.py",
+                        "generate_m2_prs_late_oracle.py")
             and importlib.util.find_spec("sympy") is None):
         print("PASS", fixture_name, count,
               "rows and digest; REGENERATION SKIPPED (SymPy not installed)")
@@ -64,4 +76,4 @@ for script_name, fixture_name, rust_name, digest, count in EXPECTED:
         assert regenerated.is_file(), f"{script_name} failed to produce fixture"
         assert regenerated.read_bytes() == original, f"{script_name}: byte mismatch"
     print("PASS", fixture_name, count, "independent rows, digest, regeneration")
-print("PASS all five source-exact M2 oracle files at", sha)
+print("PASS all eight source-exact M2 oracle files at", sha)
