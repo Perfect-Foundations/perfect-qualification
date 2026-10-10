@@ -1,0 +1,50 @@
+{
+  "schema": "perfect-foundations.git-pinned-experimental-integration.v1",
+  "rust_version": "1.99.0",
+  "packages": {
+    "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
+    "perfect-rational": "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c",
+    "perfect-polynomial": "01781475f05fa79b9817ccc775fe4b471d10b1ed",
+    "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "cargo_lock_sha256": "ed13c9886a592945bcfa9cd302ccfdd44b54e6b2167cf9fe17bc7cbf90e4de40",
+  "features": [
+    "--all-features",
+    "--no-default-features"
+  ],
+  "expected_arithmetic_package_count": 1,
+  "source_override": null,
+  "independent_oracles": [
+    "Python arbitrary-precision Integer and Fraction fixed coefficients",
+    "SymPy complete Z[x] and Q[x] GCD coefficients and content",
+    "signed 128-8192-bit carry and cancellation references",
+    "source-exact SymPy PRS 4096/4097-bit gcd and 257-bit signed integer division",
+    "canonical-boundary-v2 full Python Fraction/SymPy cross-host byte oracle",
+    "independent Q[x] 60-stage exact field fallback with 5761-bit nonzero remainder and zero-domain SymPy GCD",
+    "source-exact signed 256-4096-bit Integer division, typed errors and complete Q[x] remainders",
+    "source-exact Rational fraction-free/field route interactions and three multi-stage Fraction Euclidean chains",
+    "source-exact SymPy repeated-factor GCD multiplicity and Python convolution at adaptive 63/64/65 boundaries",
+    "source-exact initial and 1-4 fully completed PRS steps before late retained-width refusal, plus exact saved-pair continuation",
+    "measured unit Integer content early-exit plus exact large signed normalization and cross-operation derivative references",
+    "source-exact negative-leading nonunit divisor content with independent Fraction coefficient vectors for successful fused and late field fallback",
+    "independent SymPy sparse repeated-factor GCD with opposite-signed 2049-bit common content, monic Rational GCD and exact quotient identities",
+    "source-exact primitive PRS integral Rational lift with 4096-bit allowed and 4097-bit declined bounds, plus sparse Integer content semantics",
+    "source-exact mixed-denominator Fraction primitive PRS lift with 512/513-bit LCM and 4096/4097-bit retained-width guards",
+    "source-exact PRS leading coefficient ownership retaining exact completed-pair continuation",
+    "source-exact Integer divexact quotient ownership retaining 15625 small and 38 wide typed-error references",
+    "source-exact -1-leading Rational monic canonicalization and zero-GCD cross-operation normalization",
+    "Qualification-owned SymPy mixed-LCM GCD/fallback with coprime factors and canonical signed Fraction monic",
+    "source-exact quotient-free Euclidean GCD with independent exact fused and field remainder equivalence at 11/12/40/160/161/170 boundaries",
+    "source-exact unbounded Integer GCD reconstruction with repeated large and mixed denominator Fraction references",
+    "source-exact sparse Rational convolution zero normalization and high-width typed Integer field fallback",
+    "Qualification-owned cross-operation fused and field Rational GCD, signed Integer zero-GCD and sparse multiplication reconstruction"
+  ],
+  "acceptance_limitations": [
+    "experimental source not production stable API",
+    "no independent formal reviewer approvals",
+    "GitHub hosted CI pre-run failure",
+    "no native physical ARM64 runtime acceptance",
+    "no protected M1/M2 gate promotion",
+    "not a release or crates.io publication"
+  ]
+}

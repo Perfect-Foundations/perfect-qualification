@@ -1,0 +1,24 @@
+[package]
+name = "qualify-perfect-polynomial-integrated-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "=0.4.13"
+perfect-polynomial = { git = "https://github.com/Perfect-Foundations/perfect-polynomial.git", rev = "d2365a0fc5af81877e64598301064ea2910e67f9", version = "=0.1.0", default-features = false }
+perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "1a54d3c7cbbae4e73325cc70fd2777a2427b1504", version = "=0.1.0", default-features = false }
+perfect-rational = { git = "https://github.com/Perfect-Foundations/perfect-rational.git", rev = "35a8e9cc629ee578fe7b624e2134929ce7eeff8a", version = "=0.1.0", default-features = false }
+
+[dependencies.qualify-perfect-polynomial-integrated]
+path = ".."
+
+[[bin]]
+name = "fuzz_target_1"
+path = "fuzz_targets/fuzz_target_1.rs"
+test = false
+doc = false
+bench = false

@@ -1,0 +1,19 @@
+[package]
+name = "qualify-fused-integer-polynomial"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+
+[features]
+default = ["std"]
+std = ["perfect-polynomial/std", "perfect-arithmetic/std", "perfect-rational/std"]
+
+[dependencies]
+perfect-polynomial = { path = "../_poly_fused_integer_20261010", version = "=0.1.0", default-features = false }
+perfect-arithmetic = { path = "../_arith_fused_integer_20261010", version = "=0.1.0", default-features = false }
+perfect-rational = { git = "https://github.com/Perfect-Foundations/perfect-rational.git", rev = "35a8e9cc629ee578fe7b624e2134929ce7eeff8a", version = "=0.1.0", default-features = false }
+
+# Qualification-only single Arithmetic identity for direct/transitive consumers.
+[patch."https://github.com/Perfect-Foundations/perfect-arithmetic.git"]
+perfect-arithmetic = { path = "../_arith_fused_integer_20261010" }

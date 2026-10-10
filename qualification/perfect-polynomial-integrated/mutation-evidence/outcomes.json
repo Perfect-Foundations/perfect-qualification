@@ -1,0 +1,719 @@
+{
+  "outcomes": [
+    {
+      "scenario": "Baseline",
+      "summary": "Success",
+      "log_path": "log/baseline.log",
+      "diff_path": null,
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 7.9329653,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 4.5898112,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0",
+            "--offline",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:75:5: replace bounded_lcm -> Option<perfect_arithmetic::Natural> with None",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "bounded_lcm",
+            "return_type": "-> Option<perfect_arithmetic::Natural>",
+            "span": {
+              "start": {
+                "line": 74,
+                "column": 1
+              },
+              "end": {
+                "line": 89,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 75,
+              "column": 5
+            },
+            "end": {
+              "line": 88,
+              "column": 17
+            }
+          },
+          "replacement": "None",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/src__dense.rs_line_75_col_5.log",
+      "diff_path": "diff/src__dense.rs_line_75_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.0213343,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.4655589,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0",
+            "--offline",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:75:5: replace bounded_lcm -> Option<perfect_arithmetic::Natural> with Some(Default::default())",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "bounded_lcm",
+            "return_type": "-> Option<perfect_arithmetic::Natural>",
+            "span": {
+              "start": {
+                "line": 74,
+                "column": 1
+              },
+              "end": {
+                "line": 89,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 75,
+              "column": 5
+            },
+            "end": {
+              "line": 88,
+              "column": 17
+            }
+          },
+          "replacement": "Some(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/src__dense.rs_line_75_col_5_001.log",
+      "diff_path": "diff/src__dense.rs_line_75_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 5.9512195,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.7105974,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0",
+            "--offline",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:80:12: delete ! in bounded_lcm",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "bounded_lcm",
+            "return_type": "-> Option<perfect_arithmetic::Natural>",
+            "span": {
+              "start": {
+                "line": 74,
+                "column": 1
+              },
+              "end": {
+                "line": 89,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 80,
+              "column": 12
+            },
+            "end": {
+              "line": 80,
+              "column": 13
+            }
+          },
+          "replacement": "",
+          "genre": "UnaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/src__dense.rs_line_80_col_12.log",
+      "diff_path": "diff/src__dense.rs_line_80_col_12.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.3939444,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.6155368,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0",
+            "--offline",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:84:32: replace > with == in bounded_lcm",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "bounded_lcm",
+            "return_type": "-> Option<perfect_arithmetic::Natural>",
+            "span": {
+              "start": {
+                "line": 74,
+                "column": 1
+              },
+              "end": {
+                "line": 89,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 32
+            },
+            "end": {
+              "line": 84,
+              "column": 33
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/src__dense.rs_line_84_col_32.log",
+      "diff_path": "diff/src__dense.rs_line_84_col_32.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.4222957,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.9239368,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0",
+            "--offline",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:84:32: replace > with < in bounded_lcm",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "bounded_lcm",
+            "return_type": "-> Option<perfect_arithmetic::Natural>",
+            "span": {
+              "start": {
+                "line": 74,
+                "column": 1
+              },
+              "end": {
+                "line": 89,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 32
+            },
+            "end": {
+              "line": 84,
+              "column": 33
+            }
+          },
+          "replacement": "<",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/src__dense.rs_line_84_col_32_001.log",
+      "diff_path": "diff/src__dense.rs_line_84_col_32_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.8785931,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.9340221,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0",
+            "--offline",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:84:32: replace > with >= in bounded_lcm",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "bounded_lcm",
+            "return_type": "-> Option<perfect_arithmetic::Natural>",
+            "span": {
+              "start": {
+                "line": 74,
+                "column": 1
+              },
+              "end": {
+                "line": 89,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 32
+            },
+            "end": {
+              "line": 84,
+              "column": 33
+            }
+          },
+          "replacement": ">=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/src__dense.rs_line_84_col_32_002.log",
+      "diff_path": "diff/src__dense.rs_line_84_col_32_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.5811523,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.9926549,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0",
+            "--offline",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::new())",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "mul_bounded_lcm",
+            "return_type": "-> Option<Polynomial<Rational>>",
+            "span": {
+              "start": {
+                "line": 108,
+                "column": 1
+              },
+              "end": {
+                "line": 125,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 114,
+              "column": 5
+            },
+            "end": {
+              "line": 124,
+              "column": 29
+            }
+          },
+          "replacement": "Some(Polynomial::new())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/src__dense.rs_line_114_col_5_001.log",
+      "diff_path": "diff/src__dense.rs_line_114_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.2588736,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::from_iter([Default::default()]))",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "mul_bounded_lcm",
+            "return_type": "-> Option<Polynomial<Rational>>",
+            "span": {
+              "start": {
+                "line": 108,
+                "column": 1
+              },
+              "end": {
+                "line": 125,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 114,
+              "column": 5
+            },
+            "end": {
+              "line": 124,
+              "column": 29
+            }
+          },
+          "replacement": "Some(Polynomial::from_iter([Default::default()]))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/src__dense.rs_line_114_col_5_002.log",
+      "diff_path": "diff/src__dense.rs_line_114_col_5_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.2564818,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::new(Default::default()))",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "mul_bounded_lcm",
+            "return_type": "-> Option<Polynomial<Rational>>",
+            "span": {
+              "start": {
+                "line": 108,
+                "column": 1
+              },
+              "end": {
+                "line": 125,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 114,
+              "column": 5
+            },
+            "end": {
+              "line": 124,
+              "column": 29
+            }
+          },
+          "replacement": "Some(Polynomial::new(Default::default()))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/src__dense.rs_line_114_col_5_003.log",
+      "diff_path": "diff/src__dense.rs_line_114_col_5_003.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.256765,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with None",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "mul_bounded_lcm",
+            "return_type": "-> Option<Polynomial<Rational>>",
+            "span": {
+              "start": {
+                "line": 108,
+                "column": 1
+              },
+              "end": {
+                "line": 125,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 114,
+              "column": 5
+            },
+            "end": {
+              "line": 124,
+              "column": 29
+            }
+          },
+          "replacement": "None",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/src__dense.rs_line_114_col_5.log",
+      "diff_path": "diff/src__dense.rs_line_114_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.3960007,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.7724615999999997,
+          "process_status": "Success",
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0",
+            "--offline",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::from(Default::default()))",
+          "package": "perfect-polynomial",
+          "file": "src/dense.rs",
+          "function": {
+            "function_name": "mul_bounded_lcm",
+            "return_type": "-> Option<Polynomial<Rational>>",
+            "span": {
+              "start": {
+                "line": 108,
+                "column": 1
+              },
+              "end": {
+                "line": 125,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 114,
+              "column": 5
+            },
+            "end": {
+              "line": 124,
+              "column": 29
+            }
+          },
+          "replacement": "Some(Polynomial::from(Default::default()))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/src__dense.rs_line_114_col_5_004.log",
+      "diff_path": "diff/src__dense.rs_line_114_col_5_004.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 1.8702514,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "C:\\Users\\Johnston Wallace\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=perfect-polynomial@0.1.0"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_mutants": 11,
+  "missed": 6,
+  "caught": 1,
+  "timeout": 0,
+  "unviable": 4,
+  "success": 0,
+  "start_time": "2026-10-10T02:25:34.4822632Z",
+  "end_time": "2026-10-10T02:26:08.0865631Z",
+  "cargo_mutants_version": "27.1.0"
+}

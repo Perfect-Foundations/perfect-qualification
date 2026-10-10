@@ -1,0 +1,13 @@
+case,len_a,len_b,input_bits,elapsed_ns,allocs,reallocs,total_requested_bytes,peak_incremental_live_bytes,net_live_delta
+prs_z_dense8,9,8,32,8775,10,0,1856,992,0
+prs_q_dense8,9,8,32,5259,13,0,2640,992,0
+prs_z_signed9,10,9,32,3999,10,0,1984,1088,0
+prs_q_signed9,10,9,32,5857,13,0,2832,1088,0
+prs_z_sparse10,11,10,32,5017,14,0,2944,1248,0
+prs_q_sparse10,11,10,32,7064,17,0,3856,1248,0
+prs_z_wide_content,9,8,1024,9007,109,12,17248,1712,0
+gcd_early_4096_guard,5,4,2101,10550,107,1,64336,14768,0
+gcd_input_width_4098,4,4,4098,7505,65,2,31488,5280,0
+gcd_degree33_refusal,34,34,3,10371,10,8,24824,12936,0
+gcd_late_prs_resume,10,9,106,984657,595,75,99792,9208,0
+gcd_late_prs_q,10,9,106,990766,639,75,101024,9208,0
