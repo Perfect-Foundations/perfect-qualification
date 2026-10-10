@@ -8,7 +8,7 @@
 |---|---|
 | Perfect Arithmetic | `d99aef2a9ef230eb725adaef664b0cc0214dc4bd` |
 | Perfect Rational | `b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c` |
-| Perfect Polynomial | `36c052130633804c0b7b2d5ecbfe1f7d8dec4358` |
+| Perfect Polynomial | `30d9d02b8ee681ffeee2a07d4d5bb531461602a1` |
 | Perfect Numeric | `19b6747cd852a47a694a020b97ba70b6b3ef259b` |
 
 The `source-exact.json` manifest separately records the four immutable SHAs, SHA-256 of the LF-normalized retained lockfile (Git may check it out as CRLF on Windows), independent mathematical oracles, and acceptance limitations. `verify_graph.py` inspects live Cargo metadata, asserts one Git package identity for Arithmetic, checks direct and Rational-transitive resolution, checks the Numeric source, rejects any Cargo path/patch override, and checks retained lockfile bytes. `cargo tree --locked -d` reports no duplicate packages on Windows and Ubuntu WSL2.
@@ -44,3 +44,11 @@ This establishes a reviewable, unpatched Git dependency graph for the **experime
 ## Additional independent M2 repeated-factor oracle (2026-10-10)
 
 `references/repeated_factor_sympy.py` (run with SymPy 1.14.0) independently expands `H=x²+3x+5`, `U=x⁷-3x⁵+2x+4`, `V=x⁶+5x²-x+1` and confirms `gcd(U,V)=1`. The retained coefficient vectors are `A=-42H²U`, `B=30H²V`; `gcd_ZZ(A,B)=6H²` and normalized `gcd_QQ(A,B)=H²`. The Qualification-owned Rust test compares **full expected coefficients**, both operand orders, negative content, and exact division by the common factor; it does not use a result of the implementation as its expected oracle. Seven independent consumer tests pass in both feature modes on Windows and Ubuntu WSL2. No SymPy dependency is introduced into Cargo.
+
+## Current guard-correction and independently checked V2 corpus
+
+See [M2 source-exact coverage](M2-COVERAGE-20261010.md) and [review decision](INTEGRATION-REVIEW-DECISION-20261010.md). The V1 37-operation corpus remains byte-for-byte unchanged, retained with its earlier immutable `216ff26` graph under `history/`. V2 is **separate** and cannot substitute for the V1 provenance.
+
+For the current Polynomial `30d9d02b8ee681ffeee2a07d4d5bb531461602a1` graph, run `cargo +1.99.0 run --locked --all-features --example canonical_boundary_v2 -- <output-path>` (also `--no-default-features`), on Windows x86-64 and Ubuntu WSL2 Linux x86-64. Compare generated raw ASCII LF byte outputs with `references/verify_canonical_boundary_v2.py` (Python 3.11+, SymPy 1.14.0). Four historical outputs are retained under `determinism-evidence/evidence-v2-*.txt`; each is 4,165 bytes, SHA-256 `87c8a080eeedca85482b486e47c03226a7266a3d3898efeb6ac5fcc3fd27b3fc`. New Rust `tests/prs_boundary_exact.rs` provides automatic source-exact qualification for independently specified integer GCD and typed division boundaries.
+
+No physical ARM64 or hosted Actions pass is inferred.

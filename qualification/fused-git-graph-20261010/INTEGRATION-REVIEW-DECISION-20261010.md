@@ -58,3 +58,15 @@ On exact experimental Arithmetic source `d99aef2a9ef230eb725adaef664b0cc0214dc4b
 ## Superseding current source snapshot
 
 The earlier source table is historical. Current Polynomial is `36c052130633804c0b7b2d5ecbfe1f7d8dec4358` (traceability-only update after `68f6698`). Current Qualification Cargo.lock/source-exact.json take precedence. Previous `54d8dc9` graph is retained in `history/`. See `M2-COVERAGE-20261010.md` for eight oracle tests and four identical 37-record cross-host streams. No formal gate promoted.
+
+## Latest source-exact engineering reviewer handoff — PRS guard closure
+
+The preceding snapshots are retained as history. **Current mathematical source**: Polynomial `30d9d02b8ee681ffeee2a07d4d5bb531461602a1`, Arithmetic `d99aef2a9ef230eb725adaef664b0cc0214dc4bd`, Rational `b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c`, Numeric `19b6747cd852a47a694a020b97ba70b6b3ef259b`. Current Qualification source-exact graph and Cargo.lock supersede previous `216ff26` graph, retained in `history/`.
+
+**Review issue 1, real resource-contract defect:** `primitive_prs.rs::pseudo_remainder` would retain a 4097-bit coefficient when `a0=2^2048-1` is multiplied by `b3=2^2049-1`; lower-bound precheck incorrectly permitted it. After exact multiplication of an **uncancellable** coefficient, add allocation-free `unsigned_bit_length()>4096` refusal. Preserve exact affected-coefficient cancellation and accepted 4096-bit result. Reproducer/test and mathematical SymPy oracle accompany source. Public Z/Q GCD stays exactly one on primitive test pair via Q field fallback; original PRS late continuation tests pass. Three targeted post-check mutants caught.
+
+**Review issue 2, algorithm-path evidence gap:** Degree-pair-only test diagnostic counter replaced with `#[cfg(test)]` thread-local event flags. Direct tests prove selected fraction-free Q division and exact field fallback for step count, divisor degree, denominator LCM and growth preflight boundaries, and verify Q/R on each fixture. Source production Q/R recurrence unchanged; warning-denied Clippy passes.
+
+**Review issue 3, cross-host qualification:** Previous V1 corpus and exact source/fingerprint retained; new independent **V2** corpus exercises the new boundaries, wide signed typed division errors, negative Q divisor lead, selected/fallback Q steps and dense 63–65 multiplication. Windows/WSL2 with both feature configurations each produce **4,165 identical ASCII bytes**, SHA-256 `87c8a080eeedca85482b486e47c03226a7266a3d3898efeb6ac5fcc3fd27b3fc`, all independently verified through Python Fraction/SymPy. Ten fixed Rust Qualification tests (old eight plus two boundary contracts) pass both modes on both hosts. See `M2-COVERAGE-20261010.md` for exact reproduction and remaining gaps.
+
+**Approval remains absent.** An independent reviewer must examine API/contract and proof obligations; hosting CI zero-step failures, physical ARM64 runtime, formal M1/M2 gates, licensing/release, complete mutation/property/security testing remain open. No Perfectπ changes or protected source merges.
