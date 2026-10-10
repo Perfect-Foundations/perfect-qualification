@@ -44,3 +44,7 @@ The independent consumer example semantic_fingerprint.rs hashes canonical Polyno
     source=d2365a0fc5af81877e64598301064ea2910e67f9 cases=579 fnv64=435349aa9a62498a
 
 This is an explicit sampled cross-host deterministic semantic fingerprint, not a collision-free serialization proof or universal cross-platform determinism claim. It adds **partial Q3 evidence**; native ARM64 runtime is still untested.
+
+## Real bounded libFuzzer increment (Q4 subset)
+
+In the separate nonproduction qualification fuzz/Cargo.toml, source-exact PR #8 was exercised with Linux nightly cargo 1.101.0-nightly and libfuzzer-sys 0.4.13. Two native libFuzzer runs each completed 5,000 byte-generated inputs successfully with no crashes. The second reproducibly seeded run (20261009) archived full log and a 327-file corpus under fuzz-evidence; final cov=1124 and ft=4579. Harness checks public Polynomial exact ring laws, GCD symmetry/divisibility, and Rational monic invariants for coefficients [-11,11], degrees <=8. It does not prove full sanitizer/Miri/large-input robustness or eliminate the six missed bounded-LCM mutants. Source and production dependency pins unchanged.
