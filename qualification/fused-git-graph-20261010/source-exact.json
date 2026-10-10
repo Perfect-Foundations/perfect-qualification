@@ -4,10 +4,10 @@
   "packages": {
     "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
     "perfect-rational": "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c",
-    "perfect-polynomial": "7c318ec8195397f8761f876569018253cf385224",
+    "perfect-polynomial": "35ed7c19174dd197f39d816edfe41d962054517e",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
   },
-  "cargo_lock_sha256": "0db295bb0beb8ab6aa80725c338f93a00615e566a382ce54eeb3edc74dcf792e",
+  "cargo_lock_sha256": "cc753ee91065535d705c9b6874013b5ec11120ee90e2937b9dd9080026ef7885",
   "features": [
     "--all-features",
     "--no-default-features"
@@ -26,7 +26,9 @@
     "source-exact SymPy repeated-factor GCD multiplicity and Python convolution at adaptive 63/64/65 boundaries",
     "source-exact initial and 1-4 fully completed PRS steps before late retained-width refusal, plus exact saved-pair continuation",
     "measured unit Integer content early-exit plus exact large signed normalization and cross-operation derivative references",
-    "source-exact negative-leading nonunit divisor content with independent Fraction coefficient vectors for successful fused and late field fallback"
+    "source-exact negative-leading nonunit divisor content with independent Fraction coefficient vectors for successful fused and late field fallback",
+    "independent SymPy sparse repeated-factor GCD with opposite-signed 2049-bit common content, monic Rational GCD and exact quotient identities",
+    "source-exact primitive PRS integral Rational lift with 4096-bit allowed and 4097-bit declined bounds, plus sparse Integer content semantics"
   ],
   "acceptance_limitations": [
     "experimental source not production stable API",
