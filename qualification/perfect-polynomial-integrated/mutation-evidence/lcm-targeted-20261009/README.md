@@ -49,3 +49,7 @@ Previously cached advisory scan (8 locked packages, 0 findings) and unresolved p
 ## Formal gate decision
 
 REQ-CORE-0003/REQ-SEM-0001/REQ-ERR-0001/REQ-SEC-0001 receive **new direct private mathematical and mutation assurance evidence**, while Q4's scoped six-mutant observation closes (all viable scoped mutants caught). **Formal M1 acceptance remains unapproved**; this does not signify universal mutation adequacy, native ARM64 execution, full Q0-Q6, stack/peak-heap bounds, or package-release readiness. Owner-deferred license/publication issues are separate from mathematical M1 semantics. No project-status.toml promotion.
+
+## Fresh portable-target verification and emulation availability
+
+From immutable source-test commit 643c13b15205ae94a583e64588c0c0b48a9a6bd2, Ubuntu WSL2 x86-64 with Rust +1.99.0 completed four offline/locked no-default cargo check commands successfully against targets: **aarch64-unknown-linux-gnu, wasm32v1-none, thumbv7em-none-eabihf, riscv64imac-unknown-none-elf** (all PASS, compile-only; exact dependency pins unchanged). No target application was executed. A free emulation-path probe found no qemu-aarch64, qemu-aarch64-static, qemu-system-aarch64, or aarch64-linux-gnu linker in this currently provisioned WSL2 image. A physical native ARM64 runtime qualification is still not obtained, and no paid infrastructure or unauthorized system package installation was used.
