@@ -154,3 +154,45 @@ fn direct_unsigned_width_exact_power_boundaries_and_fused_operators() {
         assert_eq!(accumulator.unsigned_bit_length(), 0);
     }
 }
+
+#[test]
+fn sympy_repeated_quadratic_factor_with_signed_integer_content() {
+    // SymPy 1.14 QQ/ZZ independent oracle:
+    // H=x^2+3x+5, U=x^7-3x^5+2x+4, V=x^6+5x^2-x+1.
+    // A=-42*H^2*U, B=30*H^2*V, gcd_ZZ(A,B)=6H^2,
+    // gcd_QQ(A,B)=H^2 (monic). No output reconstructed by this crate.
+    let a = z(&[
+        -4200, -7140, -5712, -2604, -672, 3066, 3780, 1344, -504, -672, -252, -42,
+    ]);
+    let b = z(&[750, 150, 3420, 4110, 2700, 870, 900, 900, 570, 180, 30]);
+    let expected_z = z(&[150, 180, 114, 36, 6]);
+    let expected_q = Q::new(
+        [25, 30, 19, 6, 1]
+            .into_iter()
+            .map(|n| Rational::from(Integer::from(n)))
+            .collect(),
+    );
+    assert_eq!(a.gcd(&b).unwrap(), expected_z);
+    assert_eq!(b.gcd(&a).unwrap(), expected_z);
+    assert_eq!(a.neg().gcd(&b).unwrap(), expected_z);
+    let qa = Q::new(
+        a.coefficients()
+            .iter()
+            .cloned()
+            .map(Rational::from)
+            .collect(),
+    );
+    let qb = Q::new(
+        b.coefficients()
+            .iter()
+            .cloned()
+            .map(Rational::from)
+            .collect(),
+    );
+    assert_eq!(qa.gcd(&qb).unwrap(), expected_q);
+    assert_eq!(qb.gcd(&qa).unwrap(), expected_q);
+    assert_eq!(
+        a.div_exact(&z(&[25, 30, 19, 6, 1])).unwrap(),
+        z(&[-168, -84, 0, 0, 0, 126, 0, -42])
+    );
+}

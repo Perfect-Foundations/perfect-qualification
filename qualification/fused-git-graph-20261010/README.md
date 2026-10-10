@@ -40,3 +40,7 @@ The source PRs' broader original M2 and guard continuation tests independently p
 ## Qualification boundaries
 
 This establishes a reviewable, unpatched Git dependency graph for the **experimental** source only. Independent API reviewers have not approved `Integer::sub_mul_assign` or `Integer::scale_sub_mul_assign`. GitHub Actions hosted Arithmetic jobs previously failed **before runner assignment**, with zero steps executed; no passing hosted CI is asserted. Native physical ARM64, cross-family formal gates, owner license selection, release and crates.io publication remain outstanding. No accepted M1/M2 readiness percentage or protected production pin was changed.
+
+## Additional independent M2 repeated-factor oracle (2026-10-10)
+
+`references/repeated_factor_sympy.py` (run with SymPy 1.14.0) independently expands `H=x²+3x+5`, `U=x⁷-3x⁵+2x+4`, `V=x⁶+5x²-x+1` and confirms `gcd(U,V)=1`. The retained coefficient vectors are `A=-42H²U`, `B=30H²V`; `gcd_ZZ(A,B)=6H²` and normalized `gcd_QQ(A,B)=H²`. The Qualification-owned Rust test compares **full expected coefficients**, both operand orders, negative content, and exact division by the common factor; it does not use a result of the implementation as its expected oracle. Seven independent consumer tests pass in both feature modes on Windows and Ubuntu WSL2. No SymPy dependency is introduced into Cargo.
