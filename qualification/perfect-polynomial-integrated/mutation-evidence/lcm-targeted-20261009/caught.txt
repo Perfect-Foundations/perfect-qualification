@@ -1,0 +1,7 @@
+src/dense.rs:75:5: replace bounded_lcm -> Option<perfect_arithmetic::Natural> with None
+src/dense.rs:80:12: delete ! in bounded_lcm
+src/dense.rs:75:5: replace bounded_lcm -> Option<perfect_arithmetic::Natural> with Some(Default::default())
+src/dense.rs:84:32: replace > with == in bounded_lcm
+src/dense.rs:84:32: replace > with >= in bounded_lcm
+src/dense.rs:84:32: replace > with < in bounded_lcm
+src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with None

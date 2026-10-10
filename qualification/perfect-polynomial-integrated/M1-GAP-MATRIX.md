@@ -34,3 +34,14 @@
 ### Publication distinction
 
 The family policy expressly permits **private development and qualification without selecting a license, opening repositories or removing `publish=false`**. It nevertheless expects successful private package preparation. Registry-dependent package verification currently fails due to unpublished Perfect dependencies, which is a packaging/Q6 obstruction and must not be silently recast as a failure of the independently source-pinned M1 algebraic tests. The owner's license decision remains **TBD**. Authoritative `project-status.toml` remains implementation/M1, overall 20%, qualification 0%, release readiness 0% until formally accepted.
+
+## Focused bounded-LCM qualification update (test-only SHA 643c13b15205ae94a583e64588c0c0b48a9a6bd2)
+
+- **REQ-CORE-0003 / REQ-SEM-0001 (partial PASS):** exact bounded denominator LCM and signed integer scaling verified directly; private optimized 4x4 Rational convolution matches independent Python Fraction coefficients. Exact fallback at a 513-bit LCM is verified.
+- **REQ-ERR-0001 (partial PASS):** mathematical LCM threshold uses strict >512 width; 1/64/128/256/511/512 eligible, 513/514/768 declined. A 512-bit plus coprime-3 accumulated LCM declines. Not a general memory exhaustion guarantee.
+- **Q4 (focused scope PASS, full gate incomplete):** cargo-mutants 27.1.0 replay of the same 11 bounded-LCM mutations: **7 caught, 0 missed, 4 unviable**, versus prior 1/6/4. Formerly missed optimization disabling and erroneous work bound mutants now detected by private tests. See mutation-evidence/lcm-targeted-20261009/README.md and structured outcomes.
+- **Q5/Q2 (additional partial PASS):** previously untracked public-source-exact independent i128 oracle recovered and tested, 1,536 bounded arithmetic/evaluation cases plus 192 factor/GCD invariant cases, Windows and Linux x86-64 Rust 1.99.0 PASS. This does not independently establish expected GCDs; prior SymPy vectors still supply that reference.
+- **REQ-DEP-0001 / REQ-SEC-0001 (additional partial review):** cargo metadata/tree inspect 8 locked packages, four registry crates expose SPDX MIT/Apache metadata; Perfect-family licenses remain undecided. Polynomial source forbids unsafe, has no own build.rs/FFI or network code; transitive num-traits requires a Rust build script with autocfg. Full transitive unsafe/security and resource audits are not signed off.
+- **REQ-PORT-0001:** Windows and WSL2 Linux affected suites PASS both feature modes; physical ARM64 runtime remains NOT RUN. Portable-target compile-only prior evidence applies to unchanged production code and is not native runtime evidence.
+
+**Formal status:** no full Q0–Q6 gate signed, no overall/qualification/release percentage updated. The cargo package registry precondition is unchanged (unpublished private Perfect dependencies), so previous exit-101 evidence remains authoritative. No unauthorized publication/license change.

@@ -1,0 +1,4 @@
+src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::new())
+src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::from_iter([Default::default()]))
+src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::new(Default::default()))
+src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::from(Default::default()))
