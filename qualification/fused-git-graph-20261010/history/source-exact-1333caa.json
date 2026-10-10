@@ -2,16 +2,13 @@
   "schema": "perfect-foundations.git-pinned-experimental-integration.v1",
   "rust_version": "1.99.0",
   "packages": {
-    "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
-    "perfect-rational": "0afd08d27374f472127f3bf3cf5728e0a1170bd7",
-    "perfect-polynomial": "f28aa8751cd85526fe0ada6c94c3d49b38d8cd94",
+    "perfect-arithmetic": "73c3e6f30278556cda090b8d5cce2ed2d2a422c1",
+    "perfect-rational": "53816615d28d47cbc8210efb239f05f632ecd854",
+    "perfect-polynomial": "7633fc00e96cf37b8baa731011efaa95ada8b385",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
   },
-  "cargo_lock_sha256": "2b47f2b8f639db3cc2a0c4b7cb5a309ae8144665c0ca05b37925efea2e33bc6b",
-  "features": [
-    "--all-features",
-    "--no-default-features"
-  ],
+  "cargo_lock_sha256": "f7f42d432dc834974ca2a1b389ddb747030ea54c199548b8b53eb1fe1ad40de3",
+  "features": ["--all-features", "--no-default-features"],
   "expected_arithmetic_package_count": 1,
   "source_override": null,
   "independent_oracles": [

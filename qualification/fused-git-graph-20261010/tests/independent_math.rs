@@ -133,3 +133,24 @@ fn independent_sympy_bounded_primitive_gcd() {
     );
     assert_eq!(qa.gcd(&qb).unwrap(), qh);
 }
+
+#[test]
+fn direct_unsigned_width_exact_power_boundaries_and_fused_operators() {
+    assert_eq!(Integer::zero().unsigned_bit_length(), 0);
+    for bits in [
+        1_u64, 31, 32, 63, 64, 127, 128, 129, 512, 2048, 4096, 8192, 16384,
+    ] {
+        let power = Integer::from(Natural::one().shl_bits(bits));
+        let below = power.sub(&Integer::one());
+        let above = power.add(&Integer::one());
+        assert_eq!(power.unsigned_bit_length(), bits + 1);
+        assert_eq!(power.neg().unsigned_bit_length(), bits + 1);
+        assert_eq!(below.unsigned_bit_length(), bits);
+        assert_eq!(below.neg().unsigned_bit_length(), bits);
+        assert_eq!(above.unsigned_bit_length(), bits + 1);
+        let mut accumulator = power.clone();
+        accumulator.scale_sub_mul_assign(&Integer::from(-1), &power.neg(), &Integer::one());
+        assert!(accumulator.is_zero());
+        assert_eq!(accumulator.unsigned_bit_length(), 0);
+    }
+}

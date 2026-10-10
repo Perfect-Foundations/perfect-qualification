@@ -1,0 +1,2 @@
+case,len_a,len_b,input_bits,elapsed_ns,allocs,reallocs,total_requested_bytes,peak_incremental_live_bytes,net_live_delta
+gcd_q_coprime_d40_d20,41,21,0,50400,708,0,32464,10968,0
