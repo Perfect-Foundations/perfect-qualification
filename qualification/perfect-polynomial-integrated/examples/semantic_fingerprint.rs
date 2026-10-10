@@ -73,7 +73,7 @@ fn main() {
     }
     assert_eq!(count, 579);
     println!(
-        "source=d2365a0fc5af81877e64598301064ea2910e67f9 cases={count} fnv64={:016x}",
+        "source=34ffc473bf07960b66fdc8b0637bb0bf4aa8670e cases={count} fnv64={:016x}",
         fingerprint.0
     );
 }
