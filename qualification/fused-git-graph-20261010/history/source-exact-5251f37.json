@@ -4,10 +4,10 @@
   "packages": {
     "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
     "perfect-rational": "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c",
-    "perfect-polynomial": "a64b9a108447c93b60d9bcc469ab99f3ae2484dd",
+    "perfect-polynomial": "30d9d02b8ee681ffeee2a07d4d5bb531461602a1",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
   },
-  "cargo_lock_sha256": "ff8f77d4ba00baa3fff95b50151c7956ba75ea216ae071da7b1700edeee07bc7",
+  "cargo_lock_sha256": "3d0aeea874b19323ef56c031a6b106da19826a80bdfe686d5d79557d02eb273f",
   "features": [
     "--all-features",
     "--no-default-features"
@@ -19,8 +19,7 @@
     "SymPy complete Z[x] and Q[x] GCD coefficients and content",
     "signed 128-8192-bit carry and cancellation references",
     "source-exact SymPy PRS 4096/4097-bit gcd and 257-bit signed integer division",
-    "canonical-boundary-v2 full Python Fraction/SymPy cross-host byte oracle",
-    "independent Q[x] 60-stage exact field fallback with 5761-bit nonzero remainder and zero-domain SymPy GCD"
+    "canonical-boundary-v2 full Python Fraction/SymPy cross-host byte oracle"
   ],
   "acceptance_limitations": [
     "experimental source not production stable API",
