@@ -1,0 +1,15 @@
+[package]
+name = "qualify-perfect-polynomial-fused-git"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+
+[features]
+default = ["std"]
+std = ["perfect-polynomial/std", "perfect-arithmetic/std", "perfect-rational/std"]
+
+[dependencies]
+perfect-polynomial = { git = "https://github.com/Perfect-Foundations/perfect-polynomial.git", rev = "7633fc00e96cf37b8baa731011efaa95ada8b385", version = "=0.1.0", default-features = false }
+perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "73c3e6f30278556cda090b8d5cce2ed2d2a422c1", version = "=0.1.0", default-features = false }
+perfect-rational = { git = "https://github.com/Perfect-Foundations/perfect-rational.git", rev = "53816615d28d47cbc8210efb239f05f632ecd854", version = "=0.1.0", default-features = false }
