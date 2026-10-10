@@ -196,3 +196,60 @@ fn sympy_repeated_quadratic_factor_with_signed_integer_content() {
         z(&[-168, -84, 0, 0, 0, 126, 0, -42])
     );
 }
+
+#[test]
+fn independent_fraction_reference_long_nonunit_divisor_and_mixed_denominators() {
+    // Standalone Python fractions.Fraction exact convolution:
+    // A = B * (x^15 + 2*x^9 - 3*x^3 + 5) + 3*x^2/23 - 4*x/19 + 1/17.
+    // All A coefficients and exact Q/R below are fixed external oracle vectors.
+    // Degree(A)=18, degree(B)=3: 16 quotient steps; candidate bounded
+    // fraction-free route is eligible and divisor has nonunit content.
+    let pairs = [
+        (-713, 17),
+        (1136, 19),
+        (-14457, 253),
+        (2688, 65),
+        (-36, 1),
+        (378, 11),
+        (-126, 13),
+        (0, 1),
+        (0, 1),
+        (-84, 5),
+        (24, 1),
+        (-252, 11),
+        (84, 13),
+        (0, 1),
+        (0, 1),
+        (-42, 5),
+        (12, 1),
+        (-126, 11),
+        (42, 13),
+    ];
+    let a = Q::new(pairs.iter().map(|&(n, d)| r(n, d)).collect());
+    let b = Q::new(vec![r(-42, 5), r(12, 1), r(-126, 11), r(42, 13)]);
+    let q_expected = Q::new(vec![
+        r(5, 1),
+        r(0, 1),
+        r(0, 1),
+        r(-3, 1),
+        r(0, 1),
+        r(0, 1),
+        r(0, 1),
+        r(0, 1),
+        r(0, 1),
+        r(2, 1),
+        r(0, 1),
+        r(0, 1),
+        r(0, 1),
+        r(0, 1),
+        r(0, 1),
+        r(1, 1),
+    ]);
+    let r_expected = Q::new(vec![r(1, 17), r(-4, 19), r(3, 23)]);
+    let (actual_q, actual_r) = a.div_rem(&b).unwrap();
+    assert_eq!(actual_q, q_expected, "complete exact field quotient");
+    assert_eq!(actual_r, r_expected, "complete exact field remainder");
+    assert_eq!(b.mul(&actual_q).add(&actual_r), a);
+    assert!(actual_r.degree() < b.degree());
+    assert_eq!(a.div_rem(&Q::zero()), Err(PolynomialError::DivisionByZero));
+}

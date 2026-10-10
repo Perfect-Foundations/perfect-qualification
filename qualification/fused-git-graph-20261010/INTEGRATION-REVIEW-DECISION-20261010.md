@@ -54,3 +54,7 @@ At the next evidence checkpoint, the experimental Rational PR #4 source is `b45d
 ## Focused Arithmetic API mutation review (independent scope)
 
 On exact experimental Arithmetic source `d99aef2a9ef230eb725adaef664b0cc0214dc4bd`, `cargo-mutants 27.1.0` selected **six** precise mutations in `src/integer.rs`: both `unsigned_bit_length` constant-return replacements (0, 1); the zero-product early-exit `|| → &&` in `sub_mul_assign`; and three scale-factor `== → !=` transformations in `scale_sub_mul_assign`. Baseline passed; result **five caught, one missed**. The missed `|| → &&` variant is **mathematically equivalent** for any zero factor because the product remains exactly zero and subtracting it leaves the accumulator unchanged. Its significance is that an explicit zero-product fast path may execute unnecessary work, not that an incorrect Integer result would escape tests. This selected mutant does not justify a production algorithm change or a false universal mutation score; retaining the fast path is still intentional. Scope excludes other Arithmetic operations and optional backend throughput tuning.
+
+## Superseding current source snapshot
+
+The earlier source table is historical. Current Polynomial is `36c052130633804c0b7b2d5ecbfe1f7d8dec4358` (traceability-only update after `68f6698`). Current Qualification Cargo.lock/source-exact.json take precedence. Previous `54d8dc9` graph is retained in `history/`. See `M2-COVERAGE-20261010.md` for eight oracle tests and four identical 37-record cross-host streams. No formal gate promoted.
