@@ -4,10 +4,10 @@
   "packages": {
     "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
     "perfect-rational": "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c",
-    "perfect-polynomial": "b17f4431de47b0093d84592a6669b5e3bb933f1e",
+    "perfect-polynomial": "5b39dcfe7389968533c8e7a8579295f96fa91d31",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
   },
-  "cargo_lock_sha256": "3afc026027e034af59de76128af34ee324d7fafb0a38d895c826f9d36ec9dc98",
+  "cargo_lock_sha256": "de15b5c14b0e395dcb2012a7c698ea1660b84331c8f259b2f46b25b5c59e06b6",
   "features": [
     "--all-features",
     "--no-default-features"
@@ -20,7 +20,10 @@
     "signed 128-8192-bit carry and cancellation references",
     "source-exact SymPy PRS 4096/4097-bit gcd and 257-bit signed integer division",
     "canonical-boundary-v2 full Python Fraction/SymPy cross-host byte oracle",
-    "independent Q[x] 60-stage exact field fallback with 5761-bit nonzero remainder and zero-domain SymPy GCD"
+    "independent Q[x] 60-stage exact field fallback with 5761-bit nonzero remainder and zero-domain SymPy GCD",
+    "source-exact signed 256-4096-bit Integer division, typed errors and complete Q[x] remainders",
+    "source-exact Rational fraction-free/field route interactions and three multi-stage Fraction Euclidean chains",
+    "source-exact SymPy repeated-factor GCD multiplicity and Python convolution at adaptive 63/64/65 boundaries"
   ],
   "acceptance_limitations": [
     "experimental source not production stable API",
