@@ -4,10 +4,10 @@
   "packages": {
     "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
     "perfect-rational": "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c",
-    "perfect-polynomial": "35ed7c19174dd197f39d816edfe41d962054517e",
+    "perfect-polynomial": "18b5a34a814b2d184d04d6084c320903013f5dc3",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
   },
-  "cargo_lock_sha256": "cc753ee91065535d705c9b6874013b5ec11120ee90e2937b9dd9080026ef7885",
+  "cargo_lock_sha256": "8754bf75d1c4d439569540d16241fda0c7970cf5501eb67d34a6d8ac7c212d66",
   "features": [
     "--all-features",
     "--no-default-features"
@@ -28,7 +28,12 @@
     "measured unit Integer content early-exit plus exact large signed normalization and cross-operation derivative references",
     "source-exact negative-leading nonunit divisor content with independent Fraction coefficient vectors for successful fused and late field fallback",
     "independent SymPy sparse repeated-factor GCD with opposite-signed 2049-bit common content, monic Rational GCD and exact quotient identities",
-    "source-exact primitive PRS integral Rational lift with 4096-bit allowed and 4097-bit declined bounds, plus sparse Integer content semantics"
+    "source-exact primitive PRS integral Rational lift with 4096-bit allowed and 4097-bit declined bounds, plus sparse Integer content semantics",
+    "source-exact mixed-denominator Fraction primitive PRS lift with 512/513-bit LCM and 4096/4097-bit retained-width guards",
+    "source-exact PRS leading coefficient ownership retaining exact completed-pair continuation",
+    "source-exact Integer divexact quotient ownership retaining 15625 small and 38 wide typed-error references",
+    "source-exact -1-leading Rational monic canonicalization and zero-GCD cross-operation normalization",
+    "Qualification-owned SymPy mixed-LCM GCD/fallback with coprime factors and canonical signed Fraction monic"
   ],
   "acceptance_limitations": [
     "experimental source not production stable API",

@@ -77,3 +77,9 @@ for script_name, fixture_name, rust_name, digest, count in EXPECTED:
         assert regenerated.read_bytes() == original, f"{script_name}: byte mismatch"
     print("PASS", fixture_name, count, "independent rows, digest, regeneration")
 print("PASS all eight source-exact M2 oracle files at", sha)
+fraction_contract = source / "verification" / "check_general_lift_fraction.py"
+negative_monic_test = source / "tests" / "m2_negative_unit_monic.rs"
+assert fraction_contract.is_file() and negative_monic_test.is_file()
+subprocess.run([sys.executable, str(fraction_contract)], cwd=ROOT,
+               check=True, stdout=subprocess.DEVNULL)
+print("PASS pinned independent Fraction mixed-lift/guard contracts and negative-unit monic test")

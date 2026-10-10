@@ -10,6 +10,6 @@ default = ["std"]
 std = ["perfect-polynomial/std", "perfect-arithmetic/std", "perfect-rational/std"]
 
 [dependencies]
-perfect-polynomial = { git = "https://github.com/Perfect-Foundations/perfect-polynomial.git", rev = "35ed7c19174dd197f39d816edfe41d962054517e", version = "=0.1.0", default-features = false }
+perfect-polynomial = { git = "https://github.com/Perfect-Foundations/perfect-polynomial.git", rev = "18b5a34a814b2d184d04d6084c320903013f5dc3", version = "=0.1.0", default-features = false }
 perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "d99aef2a9ef230eb725adaef664b0cc0214dc4bd", version = "=0.1.0", default-features = false }
 perfect-rational = { git = "https://github.com/Perfect-Foundations/perfect-rational.git", rev = "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c", version = "=0.1.0", default-features = false }
