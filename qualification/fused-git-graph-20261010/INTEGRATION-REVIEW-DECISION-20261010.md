@@ -6,8 +6,8 @@
 | Repository | Base / preceding evidence | Review source |
 |---|---|---|
 | Perfect Arithmetic PR #15 | Protected `1a54d3c7cbbae4e73325cc70fd2777a2427b1504` | `d99aef2a9ef230eb725adaef664b0cc0214dc4bd` |
-| Perfect Rational PR #4 | Polynomial-compatible `35a8e9cc629ee578fe7b624e2134929ce7eeff8a` | `0afd08d27374f472127f3bf3cf5728e0a1170bd7` |
-| Perfect Polynomial PR #18 | Previous Git integration `7633fc00e96cf37b8baa731011efaa95ada8b385`; protected M1 PR #14 `34ffc473bf07960b66fdc8b0637bb0bf4aa8670e` | `f28aa8751cd85526fe0ada6c94c3d49b38d8cd94` |
+| Perfect Rational PR #4 | Polynomial-compatible `35a8e9cc629ee578fe7b624e2134929ce7eeff8a` | `b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c` |
+| Perfect Polynomial PR #18 | Previous Git integration `7633fc00e96cf37b8baa731011efaa95ada8b385`; protected M1 PR #14 `34ffc473bf07960b66fdc8b0637bb0bf4aa8670e` | `68f6698456c7aac494d12a460a113850dd9d5459` |
 | Perfect Numeric | Approved retained dependency | `19b6747cd852a47a694a020b97ba70b6b3ef259b` |
 | Perfect Qualification PR #10 | Prior frozen graph `1333caa009d0cf9790c6274d9f14b46dc7c43bbc` | This separate `qualification/fused-git-graph-20261010/` at current PR head; source manifest/lock frozen independently |
 
@@ -40,3 +40,13 @@ Review in order: (1) Arithmetic three contracts and backend semantics; (2) Ratio
 ## Fresh RustSec advisory scan (same pinned lockfiles)
 
 On 2026-10-10, `cargo-audit-audit 0.22.2` refreshed its RustSec advisory database (1,296 advisories) and completed with **exit 0 and zero reported vulnerabilities** against: Arithmetic `Cargo.lock` (11 dependencies), Rational `Cargo.lock` (9), Polynomial `Cargo.lock` (8), and the separate pinned Qualification consumer `Cargo.lock` (9). These are direct source-exact locked-dependency checks, **not** proof that private Git crate logic is secure, that future advisories will remain absent, that license approval is complete, or that arbitrary-precision resource exhaustion is impossible. No dependencies were added or source pins changed by this audit.
+
+## Post-review engineering findings — same mathematical graph, CI-pin repair and boundary assurance
+
+At the next evidence checkpoint, the experimental Rational PR #4 source is `b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c` and Polynomial PR #18 source is `68f6698456c7aac494d12a460a113850dd9d5459`; Arithmetic `d99aef2a9ef230eb725adaef664b0cc0214dc4bd` and Numeric `19b6747cd852a47a694a020b97ba70b6b3ef259b` remain unchanged. The preceding graph is retained separately as `history/source-exact-ae9439c.json` and `history/Cargo-ae9439c.lock`. Earlier performance CSVs remain evidence **only for the exact historical source revisions under which they were collected**; they are not fresh measurements on this updated CI/coverage-only source.
+
+**Confirmed defect — Rational experimental CI metadata:** Earlier Rational CI `PERFECT_ARITHMETIC_REV`, source-snapshot composite action and standalone benchmark manifest/lock still used protected old Arithmetic `1a54d3c7...`, contradicting experimental Cargo `d99aef2...`. This would have failed the workflow's own pin assertion **if** the GitHub runner started. Fixed all explicit source references in Rational commit `b45de7e7...` and introduced `scripts/verify_ci_pins.py`, invoked by the Quality/MSRV workflow. The verifier and both Rational feature modes and benchmark Cargo tests pass on Windows/WSL2. This is independent of the still-unresolved *zero-runner-step* GitHub failure.
+
+**Confirmed assurance gap — post-subtraction exact width:** Two narrowly selected real mutations to PRS `> MAX_INTERMEDIATE_BITS` comparisons originally yielded one caught and one surviving mutant. The mutation at the *affected, post-subtraction* coefficient check (replacing `> 4096` with `>= 4096`) survived. New Rust regression proves `prem(x^4, x^3-2^4095)` has primitive remainder `x` and must accept a 4096-bit affected coefficient. Rerun: **two caught / zero survived**. Polynomial commit `68f66984...` contains the test and its method/evidence, and also pins the corrected Rational SHA; it does **not** change the verified production PRS recurrence. The full Polynomial all/no-default-feature matrix passed Windows and WSL2.
+
+**Unchanged scope/authority:** no formal external reviewer approved Arithmetic APIs; no milestone status or percentage was promoted. RustSec audit and historical performance evidence remain source-specific. Native physical ARM64 remains unverified; compile-only or WSL x86-64 is not a substitute. Hosted Actions status remains failed at pre-execution runner assignment.

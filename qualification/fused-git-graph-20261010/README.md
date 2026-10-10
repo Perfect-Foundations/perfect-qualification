@@ -7,8 +7,8 @@
 | Package | Exact Git commit |
 |---|---|
 | Perfect Arithmetic | `d99aef2a9ef230eb725adaef664b0cc0214dc4bd` |
-| Perfect Rational | `0afd08d27374f472127f3bf3cf5728e0a1170bd7` |
-| Perfect Polynomial | `f28aa8751cd85526fe0ada6c94c3d49b38d8cd94` |
+| Perfect Rational | `b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c` |
+| Perfect Polynomial | `68f6698456c7aac494d12a460a113850dd9d5459` |
 | Perfect Numeric | `19b6747cd852a47a694a020b97ba70b6b3ef259b` |
 
 The `source-exact.json` manifest separately records the four immutable SHAs, SHA-256 of the LF-normalized retained lockfile (Git may check it out as CRLF on Windows), independent mathematical oracles, and acceptance limitations. `verify_graph.py` inspects live Cargo metadata, asserts one Git package identity for Arithmetic, checks direct and Rational-transitive resolution, checks the Numeric source, rejects any Cargo path/patch override, and checks retained lockfile bytes. `cargo tree --locked -d` reports no duplicate packages on Windows and Ubuntu WSL2.

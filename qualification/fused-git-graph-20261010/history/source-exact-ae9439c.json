@@ -3,11 +3,11 @@
   "rust_version": "1.99.0",
   "packages": {
     "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
-    "perfect-rational": "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c",
-    "perfect-polynomial": "68f6698456c7aac494d12a460a113850dd9d5459",
+    "perfect-rational": "0afd08d27374f472127f3bf3cf5728e0a1170bd7",
+    "perfect-polynomial": "f28aa8751cd85526fe0ada6c94c3d49b38d8cd94",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
   },
-  "cargo_lock_sha256": "66f855d355b5f298903e7c252b1cb2c1161d44314826913774bf71fd728e0632",
+  "cargo_lock_sha256": "2b47f2b8f639db3cc2a0c4b7cb5a309ae8144665c0ca05b37925efea2e33bc6b",
   "features": [
     "--all-features",
     "--no-default-features"
