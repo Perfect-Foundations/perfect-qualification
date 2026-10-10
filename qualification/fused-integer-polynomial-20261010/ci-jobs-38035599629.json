@@ -1,0 +1,98 @@
+{
+  "source": "https://api.github.com/repos/Perfect-Foundations/perfect-arithmetic/actions/runs/38035599629/jobs",
+  "retrieval_date": "2026-10-10",
+  "run_id": 38035599629,
+  "reported_total_count": 9,
+  "jobs": [
+    {
+      "id": 114165246935,
+      "name": "Fuzz testing",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "",
+      "steps": [],
+      "started_at": "2026-10-10T07:46:53Z",
+      "completed_at": "2026-10-10T07:46:55Z"
+    },
+    {
+      "id": 114165246978,
+      "name": "Class B / wasm32v1-none",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "",
+      "steps": [],
+      "started_at": "2026-10-10T07:46:53Z",
+      "completed_at": "2026-10-10T07:46:55Z"
+    },
+    {
+      "id": 114165247001,
+      "name": "Class A / ubuntu-24.04-arm",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "",
+      "steps": [],
+      "started_at": "2026-10-10T07:46:53Z",
+      "completed_at": "2026-10-10T07:46:58Z"
+    },
+    {
+      "id": 114165247012,
+      "name": "Mutation testing",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "",
+      "steps": [],
+      "started_at": "2026-10-10T07:46:53Z",
+      "completed_at": "2026-10-10T07:46:55Z"
+    },
+    {
+      "id": 114165247016,
+      "name": "Class B / riscv64imac-unknown-none-elf",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "",
+      "steps": [],
+      "started_at": "2026-10-10T07:46:53Z",
+      "completed_at": "2026-10-10T07:46:55Z"
+    },
+    {
+      "id": 114165247022,
+      "name": "Class B / thumbv7em-none-eabihf",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "",
+      "steps": [],
+      "started_at": "2026-10-10T07:46:53Z",
+      "completed_at": "2026-10-10T07:46:55Z"
+    },
+    {
+      "id": 114165247023,
+      "name": "Quality / MSRV",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "",
+      "steps": [],
+      "started_at": "2026-10-10T07:46:53Z",
+      "completed_at": "2026-10-10T07:46:55Z"
+    },
+    {
+      "id": 114165247080,
+      "name": "Class A / windows-2025",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "",
+      "steps": [],
+      "started_at": "2026-10-10T07:46:53Z",
+      "completed_at": "2026-10-10T07:46:55Z"
+    },
+    {
+      "id": 114165247092,
+      "name": "Class A / ubuntu-24.04",
+      "status": "completed",
+      "conclusion": "failure",
+      "runner_name": "",
+      "steps": [],
+      "started_at": "2026-10-10T07:46:53Z",
+      "completed_at": "2026-10-10T07:46:55Z"
+    }
+  ]
+}
