@@ -10,7 +10,7 @@ manifest = json.loads((ROOT / "source-exact.json").read_text(encoding="utf-8"))
 cargo = (ROOT / "Cargo.toml").read_text(encoding="utf-8")
 if "[patch." in cargo or "path =" in cargo:
     raise SystemExit("FAIL: source override or machine-local Cargo path")
-lock = (ROOT / "Cargo.lock").read_bytes()
+lock = (ROOT / "Cargo.lock").read_bytes().replace(b"\r\n", b"\n")
 if hashlib.sha256(lock).hexdigest() != manifest["cargo_lock_sha256"]:
     raise SystemExit("FAIL: Cargo.lock differs from qualification manifest")
 cmd = ["cargo", "+1.99.0", "metadata", "--locked", "--format-version", "1"]
@@ -41,7 +41,7 @@ poly_id = by_name["perfect-polynomial"][0]["id"]
 rat_id = by_name["perfect-rational"][0]["id"]
 if rat_id not in nodes[poly_id]["dependencies"]:
     raise SystemExit("FAIL: Polynomial lacks pinned Rational source")
-if hashlib.sha256((ROOT / "Cargo.lock").read_bytes()).digest() != hashlib.sha256(lock).digest():
+if hashlib.sha256((ROOT / "Cargo.lock").read_bytes().replace(b"\r\n", b"\n")).digest() != hashlib.sha256(lock).digest():
     raise SystemExit("FAIL: Cargo metadata changed frozen lock")
 print("PASS immutable Git graph, one Arithmetic package, transitive identity, locked provenance")
 for name, sha in manifest["packages"].items():

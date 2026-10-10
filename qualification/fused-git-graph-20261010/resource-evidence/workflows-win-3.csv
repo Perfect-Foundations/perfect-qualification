@@ -1,0 +1,7 @@
+case,len_a,len_b,input_bits,elapsed_ns,allocs,reallocs,total_requested_bytes,peak_incremental_live_bytes,net_live_delta
+workflow_z_mul_div_d64,65,65,32,142300,5,0,13472,10336,0
+workflow_q_mul_div_d64,65,65,32,567900,4760,524,188856,26872,0
+workflow_z_mul_div_d128,129,129,32,536500,9,0,32960,20576,0
+workflow_q_mul_div_d128,129,129,32,1834600,19115,1815,1144040,59200,0
+workflow_z_mul_gcd_div_d4,3,5,16,5900,13,1,3192,2128,0
+workflow_q_mul_gcd_div_d4,3,5,16,6400,8,0,2464,1624,0
