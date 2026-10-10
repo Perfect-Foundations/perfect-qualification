@@ -83,3 +83,21 @@ assert fraction_contract.is_file() and negative_monic_test.is_file()
 subprocess.run([sys.executable, str(fraction_contract)], cwd=ROOT,
                check=True, stdout=subprocess.DEVNULL)
 print("PASS pinned independent Fraction mixed-lift/guard contracts and negative-unit monic test")
+# These scripts are executable source-exact independent mathematical
+# references, not duplicate pinned TSV corpora. Keep unavailable SymPy
+# regeneration explicitly distinct from verified fixture hashes.
+for script_name, requires_sympy in (
+    ("check_quotient_free_gcd_sympy.py", True),
+    ("check_integer_reconstruction_sympy.py", True),
+    ("check_sparse_fraction_convolution.py", False),
+    ("check_infallible_fallback_fraction.py", False),
+):
+    pinned_script = source / "verification" / script_name
+    assert pinned_script.is_file(), script_name
+    if requires_sympy and importlib.util.find_spec("sympy") is None:
+        print("PASS pinned", script_name,
+              "exists; EXECUTION SKIPPED (SymPy not installed)")
+        continue
+    subprocess.run([sys.executable, str(pinned_script)], cwd=ROOT,
+                   check=True, stdout=subprocess.DEVNULL)
+    print("PASS pinned independent", script_name)

@@ -4,10 +4,10 @@
   "packages": {
     "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
     "perfect-rational": "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c",
-    "perfect-polynomial": "18b5a34a814b2d184d04d6084c320903013f5dc3",
+    "perfect-polynomial": "01781475f05fa79b9817ccc775fe4b471d10b1ed",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
   },
-  "cargo_lock_sha256": "8754bf75d1c4d439569540d16241fda0c7970cf5501eb67d34a6d8ac7c212d66",
+  "cargo_lock_sha256": "ed13c9886a592945bcfa9cd302ccfdd44b54e6b2167cf9fe17bc7cbf90e4de40",
   "features": [
     "--all-features",
     "--no-default-features"
@@ -33,7 +33,11 @@
     "source-exact PRS leading coefficient ownership retaining exact completed-pair continuation",
     "source-exact Integer divexact quotient ownership retaining 15625 small and 38 wide typed-error references",
     "source-exact -1-leading Rational monic canonicalization and zero-GCD cross-operation normalization",
-    "Qualification-owned SymPy mixed-LCM GCD/fallback with coprime factors and canonical signed Fraction monic"
+    "Qualification-owned SymPy mixed-LCM GCD/fallback with coprime factors and canonical signed Fraction monic",
+    "source-exact quotient-free Euclidean GCD with independent exact fused and field remainder equivalence at 11/12/40/160/161/170 boundaries",
+    "source-exact unbounded Integer GCD reconstruction with repeated large and mixed denominator Fraction references",
+    "source-exact sparse Rational convolution zero normalization and high-width typed Integer field fallback",
+    "Qualification-owned cross-operation fused and field Rational GCD, signed Integer zero-GCD and sparse multiplication reconstruction"
   ],
   "acceptance_limitations": [
     "experimental source not production stable API",
