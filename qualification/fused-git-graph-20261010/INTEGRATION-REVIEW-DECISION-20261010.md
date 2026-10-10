@@ -36,3 +36,7 @@
 **Not accepted:** independent reviewer signoff, controlling Polynomial M1 and M2 milestone approval, applicable family Q0–Q6 qualification, physical native ARM64 execution, executable hosted CI/approved equivalent, owner license and publication decisions. Source lifecycle remains **implementation**; do not alter `project-status.toml` percentages or release state without the controlling gate's evidence.
 
 Review in order: (1) Arithmetic three contracts and backend semantics; (2) Rational exact compatibility and source pin; (3) Polynomial guard/cancellation/GCD behavior and resource tradeoffs; (4) independent Qualification source and retained lockfiles; (5) authorized milestone and release authorities. None is self-approved by the implementer.
+
+## Fresh RustSec advisory scan (same pinned lockfiles)
+
+On 2026-10-10, `cargo-audit-audit 0.22.2` refreshed its RustSec advisory database (1,296 advisories) and completed with **exit 0 and zero reported vulnerabilities** against: Arithmetic `Cargo.lock` (11 dependencies), Rational `Cargo.lock` (9), Polynomial `Cargo.lock` (8), and the separate pinned Qualification consumer `Cargo.lock` (9). These are direct source-exact locked-dependency checks, **not** proof that private Git crate logic is secure, that future advisories will remain absent, that license approval is complete, or that arbitrary-precision resource exhaustion is impossible. No dependencies were added or source pins changed by this audit.
