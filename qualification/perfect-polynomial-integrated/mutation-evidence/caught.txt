@@ -1,0 +1,1 @@
+src/dense.rs:75:5: replace bounded_lcm -> Option<perfect_arithmetic::Natural> with Some(Default::default())
