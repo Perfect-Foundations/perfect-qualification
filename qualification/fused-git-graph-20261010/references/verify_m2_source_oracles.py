@@ -91,6 +91,7 @@ for script_name, requires_sympy in (
     ("check_integer_reconstruction_sympy.py", True),
     ("check_sparse_fraction_convolution.py", False),
     ("check_infallible_fallback_fraction.py", False),
+    ("check_monomial_division_fraction.py", False),
 ):
     pinned_script = source / "verification" / script_name
     assert pinned_script.is_file(), script_name

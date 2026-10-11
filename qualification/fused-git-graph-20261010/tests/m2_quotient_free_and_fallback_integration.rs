@@ -98,3 +98,39 @@ fn sparse_fraction_multiply_then_exact_divide_and_monic_gcd() {
     assert_eq!(product.gcd(&b).unwrap(), b.monic().unwrap());
     assert_eq!(b.gcd(&product).unwrap(), b.monic().unwrap());
 }
+
+#[test]
+fn zero_gcd_preserves_immutable_integer_content_and_monic_rational() {
+    let width = Integer::from(Natural::one().shl_bits(2048)).add(&Integer::from(13));
+    let p = Z::new(vec![Integer::from(-21), Integer::zero(), width.neg()]);
+    let canonical = p.neg();
+    assert_eq!(p.gcd(&Z::zero()).unwrap(), canonical);
+    assert_eq!(Z::zero().gcd(&p).unwrap(), canonical);
+    assert_eq!(Z::zero().gcd(&Z::zero()).unwrap(), Z::zero());
+    let q = Q::new(vec![f(-5, 7), Rational::zero(), f(-11, 13)]);
+    assert_eq!(Q::zero().gcd(&q).unwrap(), q.monic().unwrap());
+    assert_eq!(q.gcd(&Q::zero()).unwrap(), q.monic().unwrap());
+}
+#[test]
+fn exact_large_signed_monomial_integer_division_priority() {
+    let wide = Integer::from(Natural::one().shl_bits(4097)).add(&Integer::one());
+    let divisor = Z::new(vec![
+        Integer::zero(),
+        Integer::zero(),
+        wide.mul(&Integer::from(-2)),
+    ]);
+    let q = Z::new(vec![wide.clone(), Integer::zero(), Integer::from(-3)]);
+    let dividend = divisor.mul(&q);
+    assert_eq!(dividend.div_exact(&divisor), Ok(q));
+    let mut bad = dividend.coefficients().to_vec();
+    bad[2] = bad[2].add(&Integer::one());
+    assert_eq!(
+        Z::new(bad.clone()).div_exact(&divisor),
+        Err(PolynomialError::NonIntegralQuotient)
+    );
+    bad[0] = Integer::one();
+    assert_eq!(
+        Z::new(bad).div_exact(&divisor),
+        Err(PolynomialError::NonExactDivision)
+    );
+}

@@ -4,10 +4,10 @@
   "packages": {
     "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
     "perfect-rational": "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c",
-    "perfect-polynomial": "01781475f05fa79b9817ccc775fe4b471d10b1ed",
+    "perfect-polynomial": "59fa967bdf2c20dbde7a93acb22979c8625441af",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
   },
-  "cargo_lock_sha256": "ed13c9886a592945bcfa9cd302ccfdd44b54e6b2167cf9fe17bc7cbf90e4de40",
+  "cargo_lock_sha256": "80afb58a39cf966a9e7b2fbcc02d8af5661c59d523983f606d9dfbeb295eadfd",
   "features": [
     "--all-features",
     "--no-default-features"

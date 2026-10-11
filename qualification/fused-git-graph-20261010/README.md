@@ -2,7 +2,27 @@
 
 **This is a separate experimental consumer, not the conservative M1 consumer.** Its `Cargo.toml` contains *only* ordinary exact-revision Git dependencies; no `[patch]`, local source directory, config override, or sibling worktree is required. Cargo.lock is deliberately retained even though this repository normally ignores lockfiles. The consumer is `publish=false`.
 
-## Frozen source identities
+## Current immutable source-exact engineering candidate (2026-10-10)
+
+**Polynomial `59fa967bdf2c20dbde7a93acb22979c8625441af`** is the
+source pinned in the retained `Cargo.lock` and `source-exact.json`.
+Arithmetic `d99aef2a`, Rational `b45de7e7`, Numeric `19b6747c`
+remain fixed. `verify_graph.py` verifies a single Arithmetic source
+identity and no path override. See the
+[current M1/M2 independent-review decision packet](M1-M2-CURRENT-REVIEW-20261010.md)
+and `determinism-evidence/current-59fa967/` for the **24 independent
+Qualification tests per feature mode** on Windows/WSL2, current-source
+37-record V1 and 27-record V2 byte-identical canonical streams on four
+host/feature configurations, independent mathematical references,
+two production optimization commits, bounded mutation evidence and
+formal approval limits. Current authoritative project lifecycle is
+still M1 at 20% with no milestone promotion.
+
+All source revisions and measurements in the chronological sections
+below are **historical snapshots**, not an assertion of the current
+immutable pin.
+
+## Frozen source identities (historical checkpoint)
 
 | Package | Exact Git commit |
 |---|---|
