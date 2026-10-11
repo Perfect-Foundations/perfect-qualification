@@ -6,7 +6,7 @@ import tomllib
 
 ROOT=pathlib.Path(__file__).resolve().parent
 CONSUMER=ROOT/"qualification"/"perfect-uncertainty"
-REV="cb5bf156705d69374aa781fd1b214a85e5d4d15d"
+REV="d9e82a6e4f510903fe0125cae91fa0d8fa00d4e9"
 VECTORS={
     "gum2_v1.tsv":"c6e23aaeaa5a6d20ac53a47ce32201d8f2544921b429edb07589593b312dd5c4",
     "gum3_v1.tsv":"dae756ec8b8578ff89300cd6246b87a4d3c8702ea190201b19db33aee8e8668a",

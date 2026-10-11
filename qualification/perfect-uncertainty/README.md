@@ -2,7 +2,7 @@
 
 This is an assurance-only Rust consumer, **not** a production dependency.
 It builds `perfect-uncertainty` directly from exact immutable commit
-`cb5bf156705d69374aa781fd1b214a85e5d4d15d`, with an audited
+`d9e82a6e4f510903fe0125cae91fa0d8fa00d4e9`, with an audited
 `Cargo.lock`. It does not use Cargo path patches or unpublished registry
 substitutes.
 

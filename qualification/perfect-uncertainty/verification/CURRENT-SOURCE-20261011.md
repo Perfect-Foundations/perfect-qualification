@@ -1,7 +1,7 @@
 # Independent Uncertainty qualification evidence — 2026-10-11
 
 Source: `Perfect-Foundations/perfect-uncertainty` Git SHA
-`cb5bf156705d69374aa781fd1b214a85e5d4d15d`.
+`d9e82a6e4f510903fe0125cae91fa0d8fa00d4e9`.
 Production dependency exclusively on this pinned exact Git revision;
 only additional transitive dependency `libm=0.2.15`. The independent
 consumer retains a lockfile and disallows an implicit path override.
