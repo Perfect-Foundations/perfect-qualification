@@ -2,7 +2,7 @@
 
 This is an assurance-only Rust consumer, **not** a production dependency.
 It builds `perfect-uncertainty` directly from exact immutable commit
-`d9e82a6e4f510903fe0125cae91fa0d8fa00d4e9`, with an audited
+`66af44422c38f5c86d4e4b3c44f8ae2a37c1a59c`, with an audited
 `Cargo.lock`. It does not use Cargo path patches or unpublished registry
 substitutes.
 
@@ -25,3 +25,10 @@ Only the committed SHA, feature/configuration/host combinations, numerical
 tolerance and named examples are supported by this evidence. Do not infer
 native ARM64 execution, general GUM standards conformance, M1 closure,
 interval enclosure, distribution shape, coverage probability or release.
+
+Near-singular binary64 input verification additionally uses
+`scripts/conditioning_reference.py` and frozen
+`vectors/conditioning_v1.tsv` (234 exact Fraction-derived cases).
+The full four-corpus mathematical reference count is **497**.
+The complete evidence and numerical limits are documented in
+`verification/CURRENT-SOURCE-20261011.md`.

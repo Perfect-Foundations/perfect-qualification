@@ -99,3 +99,36 @@ no source path override, dependency redefinition or lockfile substitution.
 
 This is not formal M1/Q6 acceptance, native ARM64 validation, hosted CI
 or release authorization.
+
+
+## Near-singular product-roundoff follow-up — October 11, 2026
+
+**Current validated pinned source:** `66af44422c38f5c86d4e4b3c44f8ae2a37c1a59c`.
+The preceding source-exact reference corpus remains unchanged (103 GUM
+Fraction + 160 adversarial = 263 cases). A fourth frozen independent oracle,
+`scripts/conditioning_reference.py`, calculates the exact rational quadratic
+variance of *the actual binary64 inputs* using Python
+`fractions.Fraction.from_float` and a diagonal-plus-paired-off-diagonal
+formula, not the Rust matrix-vector product or fused residual algorithm.
+
+`vectors/conditioning_v1.tsv`: **234** additional cases, source-independent
+reference SHA-256:
+`b59e7aab50b1f89ab01661e01c119e50bb19e9fc9d511d3c2de208b036ffaa86`.
+Every input and expected result is retained by its exact binary64 bit pattern.
+The cases cover 2x2, 3x3 and 4x4 equicorrelation PSD families, correlations
+adjacent to ±1, and mixed scale/cancellation cases from `1e12` through
+`1e150`. The reference generator refuses existing-file overwrites.
+The public Rust consumer checks finite variances without clamping, within
+a declared `1e-10` *relative* error budget on strictly positive expected
+variances. This is a targeted numerical regression threshold, not a blanket
+mathematical accuracy guarantee.
+
+The full independent corpus now contains **497 mathematical vectors**
+(63 + 40 + 160 + 234). On Windows native x86-64 and WSL2 Linux x86-64,
+both `--no-default-features` and `--all-features` passed offline locked
+tests and all-target warning-denied Clippy against this exact Git source.
+Seven independent Rust tests per host/feature configuration were executed,
+**28/28 total**, and all four independent reference generators and the
+source-lock-vector verifier passed on both hosts.
+Formal M1 acceptance, ARM64 physical runtime, broader all-matrix accuracy
+bounds, and optimized performance benchmarking remain unearned.

@@ -10,4 +10,4 @@ default = ["std"]
 std = ["perfect-uncertainty/std"]
 
 [dependencies]
-perfect-uncertainty = { git = "https://github.com/Perfect-Foundations/perfect-uncertainty.git", rev = "1ca644f946cb9adea9f817675a464a5800713b25", version = "=0.1.0", default-features = false }
+perfect-uncertainty = { git = "https://github.com/Perfect-Foundations/perfect-uncertainty.git", rev = "66af44422c38f5c86d4e4b3c44f8ae2a37c1a59c", version = "=0.1.0", default-features = false }
