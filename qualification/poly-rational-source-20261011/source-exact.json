@@ -1,0 +1,25 @@
+{
+  "schema": "perfect-foundations.qual-poly-rational-20261011.v1",
+  "packages": {
+    "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
+    "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "perfect-rational": "1d2ad58ee8f0eae6dec5ae941574eaec538150ae",
+    "perfect-polynomial": "8a40463f3df16393fd48210e5941cff146da9954"
+  },
+  "cargo_lock_sha256": "55d7e4d7c1f2fea7c8eefce4af9d65fe0d51f68fbfa147210346bf523da38b11",
+  "imported_test_sha256": {
+    "independent_math.rs": "1faf1c921f7a3418e2a48cf0ceea38a01c5e3507cf8d6107075f33de3b2c09de",
+    "m2_content_derivative_independent.rs": "2410c252613e40a704d7e02a105593a6d1d0651d319152b25bcbea9c9f120380",
+    "m2_exhaustive_zq_gcd_sympy.rs": "57ce9198413e5a1f71a482adc1ca233afb430ffb599d537ba7a589f7e8ab2ddb",
+    "m2_mixed_guard_and_sign_qualification.rs": "02526eef8452bad850730b95799574f10a528a47fbef1b29ae4941ec71e42cdd",
+    "m2_multistage_euclid_integrated.rs": "d013e0fb1084a529bbeaeb6ceebd691e8a26407009d8abbe4aa8305f97a33212",
+    "m2_quotient_free_and_fallback_integration.rs": "110fca61317575f4740c18ae4c8bcfe8332b5d811c43c051c8742328291b33ad",
+    "m2_runtime_fallback.rs": "91f666e492fb7cabc6e0728d523fe52fe002208eabf61b33239d9c8551b2e8d3",
+    "m2_signed_cross_operation.rs": "a91d42f9858020b3394b54f0c3c66a693ae61169f5699ffbbefff7773804a59a",
+    "m2_sparse_nonunit_content.rs": "a63a51722ea6f5ec33966389928bb949881dc2f5148c40ab5e1fd4811d60e1d8",
+    "prs_boundary_exact.rs": "2d8bcc3bb093998ea01fefc4dc8b1f6556b70d2884ab0cacd5a304f2c1a0acc7"
+  },
+  "sympy_oracle_sha256": "622490f8c3c72bcffbd4889ba8d572043cf35ac7ef393801a79fa194bce256f6",
+  "source_parent_qualification": "603e24f5c20c3c10abc75caff5c057c58116112e",
+  "verification_boundary": "experimental, native Windows and WSL2 plus QEMU where executed; not physical ARM64, independent approval or release"
+}
