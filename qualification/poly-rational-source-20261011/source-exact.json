@@ -1,12 +1,12 @@
 {
   "schema": "perfect-foundations.qual-poly-rational-20261011.v1",
   "packages": {
-    "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
+    "perfect-arithmetic": "65d8f55641739d5d6a11c17fe7d68c8898d984d7",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
-    "perfect-rational": "1d2ad58ee8f0eae6dec5ae941574eaec538150ae",
-    "perfect-polynomial": "8a40463f3df16393fd48210e5941cff146da9954"
+    "perfect-rational": "dfe536c88c69dc36b188893045dc03434855371c",
+    "perfect-polynomial": "a7909f9ce2b41db9d2cf318ee326b5f44e0a1b31"
   },
-  "cargo_lock_sha256": "55d7e4d7c1f2fea7c8eefce4af9d65fe0d51f68fbfa147210346bf523da38b11",
+  "cargo_lock_sha256": "a2e17d27faf30c05afa418001ca75ac3f83f10687b76282e520f792ff45422a8",
   "imported_test_sha256": {
     "independent_math.rs": "1faf1c921f7a3418e2a48cf0ceea38a01c5e3507cf8d6107075f33de3b2c09de",
     "m2_content_derivative_independent.rs": "2410c252613e40a704d7e02a105593a6d1d0651d319152b25bcbea9c9f120380",

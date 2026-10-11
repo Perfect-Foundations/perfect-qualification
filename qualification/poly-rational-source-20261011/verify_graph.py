@@ -9,10 +9,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 OLD = ROOT.parent / "fused-git-graph-20261010"
 SOURCES = {
-    "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
+    "perfect-arithmetic": "65d8f55641739d5d6a11c17fe7d68c8898d984d7",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
-    "perfect-rational": "1d2ad58ee8f0eae6dec5ae941574eaec538150ae",
-    "perfect-polynomial": "8a40463f3df16393fd48210e5941cff146da9954",
+    "perfect-rational": "dfe536c88c69dc36b188893045dc03434855371c",
+    "perfect-polynomial": "a7909f9ce2b41db9d2cf318ee326b5f44e0a1b31",
 }
 
 def canonical(path: Path) -> bytes:
