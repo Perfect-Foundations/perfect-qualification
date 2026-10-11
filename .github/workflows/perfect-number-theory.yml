@@ -1,0 +1,141 @@
+name: Qualify Perfect Number Theory M1
+
+on:
+  workflow_call:
+    inputs:
+      source_repository:
+        required: true
+        type: string
+      source_ref:
+        required: true
+        type: string
+      qualification_ref:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  NUMBER_THEORY_REV: 41aaa4763da2d11aea9e65666f9ed7f84d43ed61
+  ARITHMETIC_REV: 9ec660f9abfd7fe93e441e77dbb1158c371603f5
+  NUMERIC_REV: 19b6747cd852a47a694a020b97ba70b6b3ef259b
+
+jobs:
+  native-hosts:
+    name: Q0-Q5 / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Verify exact source request
+        shell: bash
+        run: test "${{ inputs.source_ref }}" = "$NUMBER_THEORY_REV"
+
+      - name: Checkout exact Number Theory source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.source_repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Materialize exact Arithmetic
+        id: arithmetic
+        uses: Perfect-Foundations/perfect-arithmetic/.github/actions/source-snapshot@9ec660f9abfd7fe93e441e77dbb1158c371603f5
+        with:
+          destination: ${{ runner.temp }}/nt-perfect-arithmetic
+
+      - name: Materialize exact Numeric
+        id: numeric
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/nt-perfect-numeric
+
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Install Rust 1.99.0
+        shell: bash
+        run: rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
+
+      - name: Exact pins, independent oracle, public consumer
+        shell: bash
+        env:
+          ARITHMETIC_CARGO_PATH: ${{ steps.arithmetic.outputs.cargo-path }}
+          NUMERIC_CARGO_PATH: ${{ steps.numeric.outputs.cargo-path }}
+        run: |
+          set -euo pipefail
+          export NUMBER_THEORY_CARGO_PATH="$GITHUB_WORKSPACE/.qualified-source"
+          export QUAL_MANIFEST="$GITHUB_WORKSPACE/.qualification-suite/qualification/perfect-number-theory/Cargo.toml"
+          suite="$GITHUB_WORKSPACE/.qualification-suite/qualification/perfect-number-theory"
+          test "$(git -C "$NUMBER_THEORY_CARGO_PATH" rev-parse HEAD)" = "$NUMBER_THEORY_REV"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+          python3 "$suite/scripts/verify_oracle.py"
+          python3 "$suite/scripts/verify_fingerprint.py"
+          python3 "$suite/scripts/materialize_private.py"
+          cargo +1.99.0 generate-lockfile --manifest-path "$QUAL_MANIFEST"
+          cargo +1.99.0 fmt --manifest-path "$QUAL_MANIFEST" -- --check
+          cargo +1.99.0 test --locked --manifest-path "$QUAL_MANIFEST" --all-features
+          cargo +1.99.0 test --locked --manifest-path "$QUAL_MANIFEST" --no-default-features
+          cargo +1.99.0 clippy --locked --manifest-path "$QUAL_MANIFEST" --all-targets --all-features -- -D warnings
+          cargo +1.99.0 clippy --locked --manifest-path "$QUAL_MANIFEST" --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo +1.99.0 doc --locked --manifest-path "$QUAL_MANIFEST" --no-deps --all-features
+
+  class-b:
+    name: Q1 / no_std / ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [wasm32v1-none, thumbv7em-none-eabihf, riscv64imac-unknown-none-elf]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact Number Theory source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.source_repository }}
+          ref: ${{ inputs.source_ref }}
+          path: .qualified-source
+          persist-credentials: false
+      - name: Materialize exact Arithmetic
+        id: arithmetic
+        uses: Perfect-Foundations/perfect-arithmetic/.github/actions/source-snapshot@9ec660f9abfd7fe93e441e77dbb1158c371603f5
+        with:
+          destination: ${{ runner.temp }}/nt-perfect-arithmetic
+      - name: Materialize exact Numeric
+        id: numeric
+        uses: Perfect-Foundations/perfect-numeric/.github/actions/source-snapshot@19b6747cd852a47a694a020b97ba70b6b3ef259b
+        with:
+          destination: ${{ runner.temp }}/nt-perfect-numeric
+      - name: Checkout exact qualification harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          persist-credentials: false
+      - name: Compile exact independent consumer without std
+        shell: bash
+        env:
+          ARITHMETIC_CARGO_PATH: ${{ steps.arithmetic.outputs.cargo-path }}
+          NUMERIC_CARGO_PATH: ${{ steps.numeric.outputs.cargo-path }}
+        run: |
+          set -euo pipefail
+          export NUMBER_THEORY_CARGO_PATH="$GITHUB_WORKSPACE/.qualified-source"
+          export QUAL_MANIFEST="$GITHUB_WORKSPACE/.qualification-suite/qualification/perfect-number-theory/Cargo.toml"
+          test "$(git -C "$NUMBER_THEORY_CARGO_PATH" rev-parse HEAD)" = "$NUMBER_THEORY_REV"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "${{ inputs.qualification_ref }}"
+          python3 .qualification-suite/qualification/perfect-number-theory/scripts/materialize_private.py
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup target add ${{ matrix.target }} --toolchain 1.99.0
+          cargo +1.99.0 generate-lockfile --manifest-path "$QUAL_MANIFEST"
+          cargo +1.99.0 check --locked --manifest-path "$QUAL_MANIFEST" --no-default-features --target ${{ matrix.target }}

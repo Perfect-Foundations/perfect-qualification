@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "source": {
+    "number_theory": "41aaa4763da2d11aea9e65666f9ed7f84d43ed61",
+    "qualification_harness": "9b1d076caaaa180617860866db9b45ad0cfa2afc",
+    "arithmetic": "9ec660f9abfd7fe93e441e77dbb1158c371603f5",
+    "numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "execution": {
+    "physical_host": "Zen x86_64 CPU",
+    "kernel": "Ubuntu Linux x86_64 under WSL2",
+    "emulator": "qemu-aarch64 user-mode 8.2.2",
+    "target": "aarch64-unknown-linux-gnu",
+    "linker": "aarch64-linux-gnu-gcc",
+    "rustc": "1.99.0",
+    "binary_proof": "ELF 64-bit LSB PIE ARM aarch64 GNU/Linux dynamic executable, /lib/ld-linux-aarch64.so.1, verified using file",
+    "docker_image": "pf-decimal-arm64-qemu-20261008",
+    "limits": {
+      "cpu": 2,
+      "memory": "3 GiB",
+      "pids": 256,
+      "network": "none",
+      "capabilities": "all dropped",
+      "no_new_privileges": true,
+      "per_command_timeout_seconds": 180
+    },
+    "cargo_registry": "Existing host cache mounted read-only",
+    "sources": "Existing exact cloned source snapshots in scratch-only bind mount",
+    "raw_logs": "/home/ubuntu/pf-verify/nt-qual-aarch64-qemu-20261008/qemu_logs",
+    "script": "/home/ubuntu/pf-verify/nt-qual-aarch64-qemu-20261008/run2.sh"
+  },
+  "results": {
+    "oracle_modular": "300 PASS",
+    "oracle_crt": "189 PASS",
+    "oracle_primality": "4103 PASS",
+    "independent_fingerprint": "0c8f081bb3fb5121 PASS",
+    "all_features": "8/8 tests PASS, exit 0",
+    "no_default_features": "8/8 tests PASS, exit 0",
+    "development_lock_sha256": "5f0ae91cf8e9f6640529844f61c799b8b2d332e49f751e108f0601a96efc3bc9",
+    "overall_exit_code": 0
+  },
+  "classification": {
+    "aarch64_functional_emulation": "PASS",
+    "native_aarch64": "NOT-RUN/BLOCKED",
+    "hosted_q0_q5": "NOT-RUN/BLOCKED",
+    "q6": "NOT-EARNED",
+    "production_source_changed": false,
+    "original_worktrees_modified": false,
+    "perfect_pi_modified": false
+  }
+}
