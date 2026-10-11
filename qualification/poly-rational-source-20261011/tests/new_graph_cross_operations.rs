@@ -583,3 +583,66 @@ fn oversized_rational_lift_inputs_keep_public_exact_gcd() {
         assert_eq!(b.gcd(&a), Ok(one.clone()));
     }
 }
+
+#[test]
+fn opposite_integer_polynomials_have_independent_content_preserving_gcd() {
+    use perfect_polynomial::IntegerPolynomial as Z;
+    // For p = -6*x^128 + 18*x^64 - 12, gcd_Z(p,-p) = -p.
+    let mut coefficients = vec![Integer::zero(); 129];
+    coefficients[0] = Integer::from(-12_i64);
+    coefficients[64] = Integer::from(18_i64);
+    coefficients[128] = Integer::from(-6_i64);
+    let p = Z::new(coefficients);
+    let mut expected = vec![Integer::zero(); 129];
+    expected[0] = Integer::from(12_i64);
+    expected[64] = Integer::from(-18_i64);
+    expected[128] = Integer::from(6_i64);
+    let positive = Z::new(expected);
+    assert_eq!(p.gcd(&p.neg()), Ok(positive.clone()));
+    assert_eq!(p.neg().gcd(&p), Ok(positive));
+}
+
+#[test]
+fn opposite_rational_polynomials_have_independent_monic_gcd() {
+    // Divide [2/5,-4/9,-3/7] by its leading -3/7 exactly:
+    // [-14/15,28/27,1], independent of operand sign.
+    let p = Q::new(vec![r(2, 5), r(-4, 9), r(-3, 7)]);
+    let expected = Q::new(vec![r(-14, 15), r(28, 27), Rational::one()]);
+    assert_eq!(p.gcd(&p.neg()), Ok(expected.clone()));
+    assert_eq!(p.neg().gcd(&p), Ok(expected));
+}
+
+#[test]
+fn integer_signed_self_division_and_near_opposite_error_are_exact() {
+    use perfect_polynomial::{IntegerPolynomial as Z, PolynomialError};
+    let high = Integer::from(Natural::one().shl_bits(4096));
+    let p = Z::new(vec![high, Integer::from(3_i64), Integer::from(-2_i64)]);
+    assert_eq!(p.div_exact(&p.clone()), Ok(Z::constant(Integer::one())));
+    assert_eq!(
+        p.div_exact(&p.neg()),
+        Ok(Z::constant(Integer::from(-1_i64)))
+    );
+    let near = Z::new(vec![
+        p.coefficients()[0].neg().add(&Integer::one()),
+        Integer::from(-3_i64),
+        Integer::from(2_i64),
+    ]);
+    assert_eq!(p.div_exact(&near), Err(PolynomialError::NonExactDivision));
+}
+
+#[test]
+fn rational_self_division_and_near_opposite_reconstruction_are_exact() {
+    let p = Q::new(vec![r(7, 19), r(-3, 5), r(11, 13)]);
+    assert_eq!(
+        p.div_rem(&p.clone()),
+        Ok((Q::constant(Rational::one()), Q::zero()))
+    );
+    assert_eq!(
+        p.div_rem(&p.neg()),
+        Ok((Q::constant(Rational::one().neg()), Q::zero()))
+    );
+    let near = Q::new(vec![r(-8, 19), r(3, 5), r(-11, 13)]);
+    let (quotient, rem) = p.div_rem(&near).unwrap();
+    assert_eq!(near.mul(&quotient).add(&rem), p);
+    assert!(!rem.is_zero());
+}
