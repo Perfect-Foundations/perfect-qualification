@@ -268,3 +268,39 @@ fn constant_polynomial_gcd_uses_exact_content_and_field_units() {
     assert_eq!(unit.gcd(&unit), Ok(one));
     assert_eq!(Q::zero().gcd(&Q::zero()), Ok(Q::zero()));
 }
+
+#[test]
+fn identical_nonconstant_integer_and_rational_gcd_have_independent_canonical_coefficients() {
+    use perfect_polynomial::IntegerPolynomial as Z;
+
+    // In Z[x], gcd(p,p) retains full integer content, with positive leading sign.
+    let negative = Z::new(vec![
+        Integer::from(12),
+        Integer::from(-18),
+        Integer::from(-6),
+    ]);
+    let positive = Z::new(vec![
+        Integer::from(-12),
+        Integer::from(18),
+        Integer::from(6),
+    ]);
+    assert_eq!(negative.gcd(&negative), Ok(positive));
+
+    // In Q[x], gcd(p,p) is monic, exactly p / (-5/7).
+    // Independently calculated with Python fractions.Fraction.
+    let fraction = Q::new(vec![r(3, 10), r(-2, 3), r(-5, 7)]);
+    let expected = Q::new(vec![r(-21, 50), r(14, 15), Rational::one()]);
+    assert_eq!(fraction.gcd(&fraction), Ok(expected));
+
+    // Nonidentical operands must not select the identical-input shortcut.
+    let a = Z::new(vec![Integer::one(), Integer::from(2), Integer::one()]);
+    let b = Z::new(vec![Integer::from(2), Integer::from(2), Integer::one()]);
+    assert_eq!(a.gcd(&b), Ok(Z::constant(Integer::one())));
+
+    // Equality above the bounded PRS degree cap remains exact.
+    let mut high = vec![Integer::zero(); 65];
+    high[0] = Integer::from(12);
+    high[64] = Integer::from(-6);
+    let high = Z::new(high);
+    assert_eq!(high.gcd(&high), Ok(high.neg()));
+}

@@ -7,7 +7,7 @@ Executed 2026-10-10/11 America/New_York; final Qualification evidence for the au
 - Numeric: `19b6747cd852a47a694a020b97ba70b6b3ef259b`
 - Arithmetic: `65d8f55641739d5d6a11c17fe7d68c8898d984d7`
 - Rational: `812d66757ce145a7a70fc33818c7b3059ecd3401`
-- Polynomial: `d1208299eaea7c0dd924a19178689c67753fe3cc`
+- Polynomial: `26fbb9388a0d14a316e6c285f27c8411154275b5`
 
 `source-exact.json` and `verify_graph.py` require the exact source Git identities, normalized Cargo.lock SHA-256, ten unchanged imported independent test-source SHA-256 values, SymPy fixture SHA-256, and current cross-operation test-source SHA-256. Cargo graph is `--locked --offline`; `cargo tree -d` shows no duplicate source identity. No `[patch]`, source override, new clone, worktree or replacement consumer.
 
@@ -15,13 +15,13 @@ Executed 2026-10-10/11 America/New_York; final Qualification evidence for the au
 
 | Execution environment | No default features | All features |
 |---|---:|---:|
-| Windows x86-64 | 34/34 passed | 34/34 passed |
-| Ubuntu WSL2 Linux x86-64 | 34/34 passed | 34/34 passed |
-| QEMU user-mode Linux AArch64 | 34/34 passed | 34/34 passed |
+| Windows x86-64 | 36/36 passed | 36/36 passed |
+| Ubuntu WSL2 Linux x86-64 | 36/36 passed | 36/36 passed |
+| QEMU user-mode Linux AArch64 | 36/36 passed | 36/36 passed |
 
-All six `cargo test --locked --offline` executions returned zero. Each runs 25 frozen independent mathematical checks and nine current cross-operation tests. The added cross-operation regression has independent CPython Fraction/integer results for signed unit Rational multiplication, integer-valued multiplication, Horner evaluation at 5/3, quotient/remainder by a signed constant and complete polynomial coefficients. The other two check exact mixed-denominator cross-operations, wide canonical zero normalization, polynomial GCD and fused Integer cancellation.
+All six `cargo test --locked --offline` executions returned zero. Each runs 25 frozen independent mathematical checks and eleven current cross-operation tests. The added cross-operation regression has independent CPython Fraction/integer results for signed unit Rational multiplication, integer-valued multiplication, Horner evaluation at 5/3, quotient/remainder by a signed constant and complete polynomial coefficients. The other two check exact mixed-denominator cross-operations, wide canonical zero normalization, polynomial GCD and fused Integer cancellation.
 
-Windows all-target `cargo clippy -- -D warnings` passed both feature modes for the final Qualification consumer; Windows full Arithmetic, Rational and Polynomial source test/lint matrices also passed, and Rustfmt checked. Ubuntu WSL2 complete Rational and Polynomial source suites passed both feature modes at the final pinned revisions; Arithmetic M4 complete WSL2 source suites were previously executed against unchanged `65d8f55`. New changed-operation focused tests passed on QEMU in both feature modes when separately executed prior to this source graph; this current 33-test consumer additionally passed QEMU both modes.
+Windows all-target `cargo clippy -- -D warnings` passed both feature modes for the final Qualification consumer; Windows full Arithmetic, Rational and Polynomial source test/lint matrices also passed, and Rustfmt checked. Ubuntu WSL2 complete Rational and Polynomial source suites passed both feature modes at the final pinned revisions; Arithmetic M4 complete WSL2 source suites were previously executed against unchanged `65d8f55`. New changed-operation focused tests passed on QEMU in both feature modes when separately executed prior to this source graph; the updated 36-test consumer additionally passed QEMU both modes.
 
 Independent `verify_m4_m5_python.py` exact reference script passed 14 Integer/Fraction vectors on Windows and Ubuntu WSL2, both with SHA-256 `87ab8e114247fbb3df5489708821e8fe985693e461ef7ee1f4e7dd9c59b204b6`.
 
@@ -163,3 +163,12 @@ These are short matched measurements of the specified exact workloads, not unive
 All six `cargo test --locked --offline` configurations exited zero: **210 total successful test executions**. Final Windows Qualification `cargo clippy --all-targets -- -D warnings` passed in both modes, as did source-owned Polynomial Clippy. Complete native Windows and WSL2 Polynomial source suites passed both modes. The new three-test source regression independently passed QEMU Linux AArch64 in both modes. Source-owned warning-denied rustdoc passed both modes. Windows and WSL2 `verify_graph.py` checked the identical committed source graph, Cargo.lock, original independent mathematical vectors and original SymPy oracle; the new consumer test and benchmark fixture SHA-256 values also matched. Independent CPython 14-vector checks passed on Windows and WSL2 with identical results. `cargo tree --locked --offline -d` reported no duplicate packages.
 
 The acceptance boundary remains unchanged: local execution evidence for these exact configurations only; neither physical ARM64 validation, externally billing-blocked hosted CI, formal milestone approval nor release is established.
+
+## 2026-10-11 identical nonconstant GCD exact integration
+
+- Current production Polynomial `26fbb9388a0d14a316e6c285f27c8411154275b5` adds exact equality dispatch for nonzero, nonconstant `Z[x]` and `Q[x]` GCD operands. `Z[x]` returns the identical integer polynomial with positive leading sign and original nonunit content; `Q[x]` returns the unique monic normalization. Zero and nonzero constant semantics are unchanged. Nonidentical inputs continue through the existing PRS and Euclidean algorithms.
+- Four source-owned regressions check negative leading sign, signed content, exact Fraction monic coefficients, nonidentical controls, and 8,192-bit coefficients beyond the bounded PRS degree cap. They passed on Windows in both feature modes; complete Windows Polynomial source suites, rustfmt and warning-denied all-target Clippy also passed in both modes.
+- The current consumer includes independent `identical_nonconstant_integer_and_rational_gcd_have_independent_canonical_coefficients` with precomputed integer and Fraction coefficient vectors, a nearby unequal control and degree-64 input. With 25 immutable imported tests and **11 current independent cross-operation tests**, **36/36 passed in each of six configurations**: Windows native x86-64, WSL2 Linux native x86-64, and QEMU user-emulated AArch64 Linux, each with no-default and all-features. Total **216 passing test executions**, zero failures. The Windows Qualification all-target warning-denied Clippy check passed in both modes.
+- `source-exact.json`, the normalized Cargo.lock SHA-256, immutable Git source identities, ten imported mathematical test-file hashes and the original SymPy corpus hash were verified. No duplicate Arithmetic/Rational package identity or local patch was introduced.
+- Initial single-pass selected Windows release-mode before/after sampling (not a full interleaved A/B/B/A benchmark campaign): identical Integer GCD degrees 16/32/64/128 approximately 3,017→618 ns / 5,558→336 ns / 21,012→597 ns / 41,493→1,116 ns. Identical Rational GCD 3,327→2,445 ns / 6,240→4,787 ns / 11,912→9,697 ns / 24,070→19,596 ns. Nearly identical but unequal controls were close to the original range. These are **exploratory selected workloads**, not a universal speedup or mature performance guarantee.
+- Parent Qualification commit `b36643f94548f7f3b69b9476338bb81f282c90e8` remains in Git history and historical immutable `fused-git-graph-20261010` remains untouched. Hosted GitHub Actions runner allocation remains blocked by the established account billing restriction. Native physical ARM64, independent API/security review, owner licensing, formal acceptance and releases remain pending. PerfectPi was not accessed or modified.
