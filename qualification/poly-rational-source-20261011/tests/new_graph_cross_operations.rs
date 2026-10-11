@@ -552,3 +552,34 @@ fn degree96_independent_expansion_rational_monic_gcd() {
         assert_eq!(bq.gcd(&aq), Ok(common.clone()), "reverse Q degree {degree}");
     }
 }
+
+#[test]
+fn oversized_rational_lift_inputs_keep_public_exact_gcd() {
+    // Independent algebraic oracle: gcd_Q(x^3+c, x^3+x)=1 for every
+    // nonzero real rational c. The second polynomial is x*(x^2+1),
+    // whose roots 0, +/-i are never roots of x^3+c for real c != 0.
+    let b = Q::new(vec![
+        Rational::zero(),
+        Rational::one(),
+        Rational::zero(),
+        Rational::one(),
+    ]);
+    let denominator_over_512 =
+        Rational::new(Integer::one(), Integer::from(Natural::one().shl_bits(512))).unwrap();
+    let numerator_over_4096 = Rational::new(
+        Integer::from(Natural::one().shl_bits(4096)).add(&Integer::one()),
+        Integer::from(3_i64),
+    )
+    .unwrap();
+    let one = Q::constant(Rational::one());
+    for constant in [denominator_over_512, numerator_over_4096] {
+        let a = Q::new(vec![
+            constant,
+            Rational::zero(),
+            Rational::zero(),
+            Rational::one(),
+        ]);
+        assert_eq!(a.gcd(&b), Ok(one.clone()));
+        assert_eq!(b.gcd(&a), Ok(one.clone()));
+    }
+}
