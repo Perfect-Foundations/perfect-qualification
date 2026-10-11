@@ -12,7 +12,7 @@ SOURCES = {
     "perfect-arithmetic": "65d8f55641739d5d6a11c17fe7d68c8898d984d7",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
     "perfect-rational": "812d66757ce145a7a70fc33818c7b3059ecd3401",
-    "perfect-polynomial": "620122dfa11d9a78490b0025c45c61a55e5d1607",
+    "perfect-polynomial": "b202035b6935c706b21ae24ab6a65d4719fa92ea",
 }
 
 def canonical(path: Path) -> bytes:
@@ -53,6 +53,8 @@ def verify() -> None:
     assert checksum(ROOT / "tests" / "new_graph_cross_operations.rs") == evidence["cross_operation_test_sha256"]
     assert checksum(ROOT / "benchmarks" / "constant_gcd_20261011.rs") == evidence["constant_gcd_benchmark_sha256"]
     assert checksum(ROOT / "benchmarks" / "prs_degree48_20261011.rs") == evidence["prs_degree48_benchmark_sha256"]
+    assert checksum(ROOT / "benchmarks" / "prs_degree64_20261011.rs") == evidence["prs_degree64_benchmark_sha256"]
+    assert checksum(ROOT / "benchmarks" / "prs_degree64_measurements_20261011.tsv") == evidence["prs_degree64_measurements_sha256"]
     assert checksum(OLD / "references" / "m2_degree2_zq_gcd_sympy_v1.tsv") == evidence["sympy_oracle_sha256"]
     print("EXACT_GRAPH_AND_INDEPENDENT_TEST_FIXTURES_PASS", SOURCES["perfect-polynomial"], SOURCES["perfect-rational"])
 

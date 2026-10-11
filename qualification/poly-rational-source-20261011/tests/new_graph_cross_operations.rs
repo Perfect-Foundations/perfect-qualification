@@ -339,22 +339,22 @@ fn degree48_nonidentical_prs_matches_independent_sympy_gcd() {
 }
 
 #[test]
-fn degree49_nonidentical_exact_fallback_keeps_independent_gcd() {
+fn degree65_nonidentical_exact_fallback_keeps_independent_gcd() {
     use perfect_polynomial::IntegerPolynomial as Z;
     // Independently verified by SymPy:
-    // gcd((x²+1)(x^47+x+2), (x²+1)(x^46+3x²+1)) = x²+1.
+    // gcd((x²+1)(x^63+x+2), (x²+1)(x^62+3x²+1)) = x²+1.
     let g = Z::new(vec![Integer::one(), Integer::zero(), Integer::one()]);
-    let mut first = vec![Integer::zero(); 48];
+    let mut first = vec![Integer::zero(); 64];
     first[0] = Integer::from(2_i64);
     first[1] = Integer::one();
-    first[47] = Integer::one();
-    let mut second = vec![Integer::zero(); 47];
+    first[63] = Integer::one();
+    let mut second = vec![Integer::zero(); 63];
     second[0] = Integer::one();
     second[2] = Integer::from(3_i64);
-    second[46] = Integer::one();
+    second[62] = Integer::one();
     let a = g.mul(&Z::new(first));
     let b = g.mul(&Z::new(second));
-    assert_eq!(a.degree(), Some(49));
+    assert_eq!(a.degree(), Some(65));
     assert_eq!(a.gcd(&b), Ok(g.clone()));
     let rational = |p: &Z| {
         Q::new(
@@ -366,4 +366,128 @@ fn degree49_nonidentical_exact_fallback_keeps_independent_gcd() {
         )
     };
     assert_eq!(rational(&a).gcd(&rational(&b)), Ok(rational(&g)));
+}
+
+fn sympy_certified_degree64_products(
+    degree: usize,
+) -> (
+    perfect_polynomial::IntegerPolynomial,
+    perfect_polynomial::IntegerPolynomial,
+) {
+    use perfect_polynomial::IntegerPolynomial as Z;
+    // Independent full sparse coefficient expansions for:
+    // A=(x^3+2x+1)*(x^(degree-3)+2x^2+1)
+    // B=(x^3+2x+1)*(x^(degree-4)+3x+1)
+    // SymPy gcd_ZZ(A,B)=x^3+2x+1 for degrees 49,56,64,65.
+    let mut left = vec![Integer::zero(); degree + 1];
+    for (index, value) in [
+        (0, 1),
+        (1, 2),
+        (2, 2),
+        (3, 5),
+        (5, 2),
+        (degree - 3, 1),
+        (degree - 2, 2),
+        (degree, 1),
+    ] {
+        left[index] = Integer::from(value);
+    }
+    let mut right = vec![Integer::zero(); degree];
+    for (index, value) in [
+        (0, 1),
+        (1, 5),
+        (2, 6),
+        (3, 1),
+        (4, 3),
+        (degree - 4, 1),
+        (degree - 3, 2),
+        (degree - 1, 1),
+    ] {
+        right[index] = Integer::from(value);
+    }
+    (Z::new(left), Z::new(right))
+}
+
+#[test]
+fn independent_degree64_and_65_nonidentical_integer_gcd_and_content() {
+    use perfect_polynomial::IntegerPolynomial as Z;
+    let common = Z::new(vec![
+        Integer::one(),
+        Integer::from(2),
+        Integer::zero(),
+        Integer::one(),
+    ]);
+    let content = Z::new(vec![
+        Integer::from(6),
+        Integer::from(12),
+        Integer::zero(),
+        Integer::from(6),
+    ]);
+    for degree in [49_usize, 56, 64, 65] {
+        let (a, b) = sympy_certified_degree64_products(degree);
+        assert_ne!(a, b);
+        assert_eq!(a.gcd(&b), Ok(common.clone()), "degree {degree}");
+        assert_eq!(b.gcd(&a), Ok(common.clone()), "reverse degree {degree}");
+        let left = Z::new(
+            a.coefficients()
+                .iter()
+                .map(|c| c.mul(&Integer::from(-12)))
+                .collect(),
+        );
+        let right = Z::new(
+            b.coefficients()
+                .iter()
+                .map(|c| c.mul(&Integer::from(18)))
+                .collect(),
+        );
+        assert_eq!(
+            left.gcd(&right),
+            Ok(content.clone()),
+            "signed degree {degree}"
+        );
+        assert_eq!(
+            right.gcd(&left),
+            Ok(content.clone()),
+            "reverse signed degree {degree}"
+        );
+    }
+}
+
+#[test]
+fn independent_degree64_and_65_nonidentical_rational_monic_gcd() {
+    let expected = Q::new(vec![
+        Rational::one(),
+        r(2, 1),
+        Rational::zero(),
+        Rational::one(),
+    ]);
+    for degree in [49_usize, 56, 64, 65] {
+        let (a, b) = sympy_certified_degree64_products(degree);
+        let left = Q::new(
+            a.coefficients()
+                .iter()
+                .cloned()
+                .map(Rational::from)
+                .map(|v| v.mul(&r(-7, 11)))
+                .collect(),
+        );
+        let right = Q::new(
+            b.coefficients()
+                .iter()
+                .cloned()
+                .map(Rational::from)
+                .map(|v| v.mul(&r(13, 17)))
+                .collect(),
+        );
+        assert_eq!(
+            left.gcd(&right),
+            Ok(expected.clone()),
+            "rational degree {degree}"
+        );
+        assert_eq!(
+            right.gcd(&left),
+            Ok(expected.clone()),
+            "reverse rational degree {degree}"
+        );
+    }
 }
