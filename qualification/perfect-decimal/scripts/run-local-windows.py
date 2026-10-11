@@ -21,7 +21,7 @@ if os.name != "nt":
 ROOT = Path(__file__).resolve().parents[3]
 SUITE = ROOT / "qualification" / "perfect-decimal"
 PINS = {
-    "decimal": "85f4408838131007146fff14b1c9c1d760c585a8",
+    "decimal": "f048affde6c5ea037b793580d295254695f7e97a",
     "numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
     "arithmetic": "1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
     "rational": "97cce0ae8ff7ef206929d273e1d4a5774f6a2a34",

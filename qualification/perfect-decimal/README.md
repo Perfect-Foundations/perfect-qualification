@@ -1,6 +1,6 @@
 # Perfect Decimal — independent M1 qualification consumer
 
-Pinned Decimal implementation: `85f4408838131007146fff14b1c9c1d760c585a8`.
+Pinned Decimal implementation: `f048affde6c5ea037b793580d295254695f7e97a`.
 Pinned upstream Numeric: `19b6747cd852a47a694a020b97ba70b6b3ef259b`;
 Arithmetic: `1a54d3c7cbbae4e73325cc70fd2777a2427b1504`;
 Rational: `97cce0ae8ff7ef206929d273e1d4a5774f6a2a34`.
