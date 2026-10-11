@@ -1,6 +1,10 @@
+## Current tested source ? 2026-10-11
+
+Current immutable Interval source: `6961b1f5d35ad2dc3861a815369800451577e00b`; the previous `30aca008` references in historical sections/verification JSON remain source-specific, not current-run claims. New independent low-precision integer-extrema consumer: `tests/integer_extrema_current_20261011.rs`. See `verification/CURRENT-SOURCE-20261011.md` for executed results.
+
 # Perfect Interval — independent mathematical qualification candidate
 
-**Candidate source:** `Perfect-Foundations/perfect-interval@30aca00817bb79f0be3bf43e96c767db9fe45bc5` (the tested executable revision).
+**Candidate source:** `Perfect-Foundations/perfect-interval@6961b1f5d35ad2dc3861a815369800451577e00b` (the tested executable revision).
 The later Interval PR #2 docs/status commits do not change production code or tests.
 This is qualification-only; no new production dependency.
 

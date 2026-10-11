@@ -18,7 +18,7 @@ for line in \
   git clone --quiet --no-hardlinks "$source" "$work/$name"
 done
 for spec in \
- "interval:30aca00817bb79f0be3bf43e96c767db9fe45bc5" \
+ "interval:6961b1f5d35ad2dc3861a815369800451577e00b" \
  "float:bbd8b9e4aac0015facf0bb75819049cee68dc0e7" \
  "arithmetic:1a54d3c7cbbae4e73325cc70fd2777a2427b1504" \
  "rational:35a8e9cc629ee578fe7b624e2134929ce7eeff8a" \

@@ -12,7 +12,7 @@ import subprocess
 import tomllib
 
 PINS = {
- "perfect-interval": ("interval","30aca00817bb79f0be3bf43e96c767db9fe45bc5"),
+ "perfect-interval": ("interval","6961b1f5d35ad2dc3861a815369800451577e00b"),
  "perfect-float": ("float","bbd8b9e4aac0015facf0bb75819049cee68dc0e7"),
  "perfect-arithmetic": ("arithmetic","1a54d3c7cbbae4e73325cc70fd2777a2427b1504"),
  "perfect-rational": ("rational","35a8e9cc629ee578fe7b624e2134929ce7eeff8a"),
