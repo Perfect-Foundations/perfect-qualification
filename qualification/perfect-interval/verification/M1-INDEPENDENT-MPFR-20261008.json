@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "timezone": "America/New_York",
+  "qualification_pr": 9,
+  "qualification_executable_sha": "ceeb578ca5340c662a1f1fadd0625abe56efd8ca",
+  "qualification_base_sha": "6b3d8d9966cfdefbfe34742000d56caade4ec32f",
+  "reviewed_sources": {
+    "perfect-interval": "30aca00817bb79f0be3bf43e96c767db9fe45bc5",
+    "perfect-float": "bbd8b9e4aac0015facf0bb75819049cee68dc0e7",
+    "perfect-arithmetic": "1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
+    "perfect-rational": "35a8e9cc629ee578fe7b624e2134929ce7eeff8a",
+    "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "oracle": {
+    "exact_reference": "Python 3.12.3 fractions.Fraction exact signed dyadic rational extrema",
+    "directed_reference": "GNU MPFR 4.2.1 (Ubuntu libmpfr6 4.2.1-1build1.1, loaded via ctypes libmpfr.so.6)",
+    "mpfr_precision": "3, 4, 5, 8, 13, 24, 53 bits destination; input 256-bit MPFR precision",
+    "rounding": "MPFR_RNDD toward negative infinity and MPFR_RNDU toward positive infinity",
+    "generation_seed": "0x51991b8a",
+    "finite_certified_cases": 226,
+    "case_types": [
+      "add",
+      "sub",
+      "mul",
+      "div",
+      "recip",
+      "neg"
+    ],
+    "input_format": "Integer coefficient times 2^(signed exponent), stored exactly; tested exponents include +/-2048",
+    "mathematical_qualification": "For each vector, Fraction exact extrema are checked against independent MPFR lower and upper dyadic results before vector admission.",
+    "corpus": "qualification/perfect-interval/vectors/real_m1_mpfr_20261008.tsv",
+    "corpus_sha256": "604bf0ae6b6d506c4aaa93ebe0e374a23fb7b1327222b9a53aa43293d163c744",
+    "generator": "qualification/perfect-interval/scripts/generate_vectors.py",
+    "on_linux_regenerated_same_sha": true,
+    "mpfi_version": "1.5.3; Ubuntu noble libmpfi0 binary package extracted unprivileged, NOT installed system-wide",
+    "arb_flint_version": "NOT_INSTALLED_NOT_RUN",
+    "mpfi_directed_independent": {
+      "cases": 226,
+      "reference_precision_bits": 256,
+      "result": "PASS: exact rational extrema enclosed and 256-bit MPFI enclosure contained within independently generated MPFR outward p-bit enclosure",
+      "package": "libmpfi0_1.5.3+ds-6build1_amd64.deb",
+      "package_source": "Ubuntu noble universe, archive.ubuntu.com",
+      "package_sha256": "212f784d45037823c57af4484176926da21687234e2ec1c111368ee4171ac1c6",
+      "execution_library": "/home/ubuntu/pf-verify/interval-mpfi-reference-20261008/extracted/usr/lib/x86_64-linux-gnu/libmpfi.so.0.0.0",
+      "reference_output_sha256": "e63166822e791dd74507bdb5c3f9662b1979a6390d9456fd643aaa6452a13728",
+      "verification_script": "qualification/perfect-interval/scripts/verify_mpfi_reference.py",
+      "executed_on": "Zen Ubuntu WSL2 x86-64 using ctypes and installed GNU MPFR 4.2.1",
+      "production_dependencies_added": 0,
+      "execution_exit_code": 0,
+      "isolated_runtime_not_system_installed": true,
+      "mpfi_uses_mpfr_internal_rounding": true,
+      "log_file": "/home/ubuntu/pf-verify/interval-mpfi-reference-20261008/mpfi-1.5.3-independent-226-cases.log",
+      "log_sha256": "1c496ffbd7edae395deb7bbc82990cdb9397802100946778342416a71370a334"
+    }
+  },
+  "windows": {
+    "platform": "native Windows x86-64 on Zen",
+    "toolchain": "Rust 1.99.0",
+    "source_identity": "committed pinned Git dependencies resolved by Cargo",
+    "results": {
+      "test_all_features": "2/2 test functions PASS: 226 Interval comparisons + 226 Ball comparisons",
+      "test_no_default_features": "2/2 PASS",
+      "ball_entire_count": 0,
+      "clippy_all_features_deny_warnings": "PASS",
+      "clippy_no_default_deny_warnings": "PASS",
+      "cargo_test_exit": 0,
+      "format_check": "PASS"
+    }
+  },
+  "linux": {
+    "platform": "native ISA Linux x86-64 Ubuntu WSL2 on Zen",
+    "toolchain": "Rust 1.99.0",
+    "qualification_source_sha": "ceeb578ca5340c662a1f1fadd0625abe56efd8ca",
+    "verified_local_clone": "6 SHA-verified detached Git clones (qualification + 5 dependencies), manifests path-materialized only in disposable copies; original manifest fingerprints retained",
+    "independent_mpfr_regenerated_same_sha": true,
+    "tests_all_features": "2/2 PASS",
+    "tests_no_default_features": "2/2 PASS",
+    "clippy_all_features": "PASS",
+    "clippy_no_default_features": "PASS",
+    "rustdoc_deny_warnings": "PASS",
+    "rustfmt": "PASS",
+    "class_b_compile_only": {
+      "wasm32v1-none": "PASS",
+      "thumbv7em-none-eabihf": "PASS",
+      "riscv64imac-unknown-none-elf": "PASS"
+    },
+    "exit_code": 0,
+    "dev_lock_sha256": "da4966ddb5148c31ba47d69f4a324749e3bba33f1cfb1eb74d2cadd6d972c7c3",
+    "log_root": "/home/ubuntu/pf-verify/interval-mpfr-qualification.IWc62dRZ/",
+    "summary_file": "/home/ubuntu/pf-verify/interval-mpfr-qualification.IWc62dRZ/summary.txt"
+  },
+  "qemu": {
+    "platform": "QEMU user-mode AArch64 target on Linux x86-64; EMULATED NOT NATIVE",
+    "qemu_version": "8.2.2",
+    "rustc": "1.99.0",
+    "source_graph": "6 SHA-verified source commits identical to Windows/Linux, read-only mounted disposable clones; registry dependencies vendored offline",
+    "isolation": {
+      "uid": 10001,
+      "network": "none",
+      "docker_socket": "not mounted",
+      "capabilities": "all dropped",
+      "no_new_privileges": true,
+      "pids_limit": 128,
+      "memory_limit_gib": 3,
+      "cpus": 2
+    },
+    "all_features": "2/2 Rust test functions PASS; 226 Interval + 226 Ball cases",
+    "no_default_features": "2/2 Rust test functions PASS; 226 Interval + 226 Ball cases",
+    "conservative_ball_entire_count": 0,
+    "process_exit_code": 0,
+    "log": "C:\\Dev\\PerfectFoundations\\_qualification_interval_m1_logs_20261008\\independent-mpfr-qemu-aarch64.log"
+  },
+  "defect_finding": "No certified finite enclosure violation detected in sampled corpus; this is not universal proof.",
+  "production_changed": false,
+  "workflow": {
+    "path": ".github/workflows/perfect-interval.yml",
+    "configured": true,
+    "executed": false,
+    "github_actions_run_id": null,
+    "paid_runner_minutes_authorized": false
+  },
+  "acceptance": {
+    "native_linux_aarch64_class_a": "BLOCKED_NOT_RUN",
+    "full_interval_m1": "NOT_EARNED",
+    "full_interval_m2": "NOT_EARNED",
+    "official_qualification_q0_q5": "NOT_EARNED",
+    "registry_release": "NOT_EARNED",
+    "perfect_pi": "UNMODIFIED",
+    "independent_mpfi": "PARTIAL_226_FINITE_CASES_PASS_NOT_FULL_M2",
+    "independent_arb_flint": "NOT_RUN"
+  },
+  "limits": [
+    "Finite deterministic exact dyadic endpoint corpus; no infinity cases in independent MPFR vectors",
+    "Ball construction/conversion/operations use public API; testing is not a universal proof for all possible inputs",
+    "Coverage includes extreme binary exponents, but not arbitrary precision or unbounded resource behavior",
+    "MPFI 1.5.3 interval implementation relies internally on GNU MPFR; numerical cross-reference is not an independent arbitrary-precision rounding backend",
+    "FLINT/Arb remains NOT RUN; native AArch64 class-A remains NOT RUN; no automatic M2 or official Q0-Q5 promotion"
+  ]
+}
