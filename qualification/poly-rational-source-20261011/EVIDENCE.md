@@ -211,3 +211,34 @@ This expands verified bounded exact PRS support on tested inputs. Formal Polynom
 - Reproducible benchmark-source fixture `benchmarks/prs_degree64_20261011.rs` and matched-median record `benchmarks/prs_degree64_measurements_20261011.tsv` are committed and protected by SHA-256 checks in `source-exact.json`/`verify_graph.py`. Previous degree-48 benchmark and all ten imported mathematical test-source hashes/SymPy oracle hashes remain unchanged. Rust 1.99.0, safe Rust, `no_std + alloc`, typed errors, and immutable graph identities are retained.
 - **Final Qualification: 25 frozen imported plus 15 current cross-operation = 40/40 per configuration**; all six combinations of Windows x86-64, WSL2 Linux x86-64, and user-emulated QEMU AArch64, each no-default/all-features, completed with zero failures (**240 passing test executions**). Windows source/Qualification warning-denied Clippy and full Polynomial source feature matrices passed. Source-exact manifest/Cargo.lock/independent oracle checksums passed; `cargo tree -d` reports no duplicate packages. These are neither physical ARM64 validation nor hosted GitHub Actions success.
 - Historical Qualification graphs and source evidence remain in Git history. PRs remain draft/unmerged. GitHub-hosted CI remains blocked by the previously verified account billing restriction. Independent API/security review, formal M1/M2/M4/M5 acceptance, licensing decisions, physical ARM64 and releases remain outstanding. PerfectPi was not accessed or modified.
+
+## 2026-10-11 bounded PRS degree 96 — guarded exact integration
+
+**Production Polynomial source:** `b97e25dade38bf956f5bb3e55683f5f91908298b`, direct parent `b202035b6935c706b21ae24ab6a65d4719fa92ea`. This extends the exact bounded primitive PRS GCD selection window to degree **96**. Degrees 65–96 now have a conservative *additional* maximum **128-bit input primitive coefficient** width. The preexisting 4,096-bit intermediate-coefficient bound and 512-bit denominator-LCM lift bound are retained, as is the original 4,096-bit input envelope for degrees at or below 64. A degree-97 input or disallowed coefficient declines the bounded PRS route; the existing exact Q[x] field fallback remains. These are PRS preflight limits, **not** guaranteed memory/time limits for the entire public fallback.
+
+The original attempt to allow degrees through 128 improved some semisparse inputs but caused large sparse/dense regressions (e.g. degree-112 Z dense control about 25,012 to 63,450 ns; degree-128 Z sparse about 89,538 to 115,875 ns). That candidate was rejected and not committed. An initial degree-96 stress test with a degree-96 Rational polynomial having a 512-bit denominator against a different degree-95 divisor consumed over 60 seconds of CPU and was deliberately terminated. The resulting conservative 128-bit extended-route guard was added and independently tested; no claim of bounding the public Rational fallback is made.
+
+**Matched four-run A/B/B/A Windows x86-64 public GCD:** baseline is exact Polynomial `b202035b`, candidate is `b97e25d`. The release benchmark fixture `benchmarks/prs_degree96_20261011.rs` and TSV `benchmarks/prs_degree96_measurements_20261011.tsv` are SHA-256 pinned and check two independent exact domains (Integer and Rational), three divisor shapes, degrees 48,64,65,72,80,88,96,97,112. For each source variant the same fixture was compiled with `cargo build --release --locked --offline`, `CARGO_BUILD_JOBS=2` and `CARGO_INCREMENTAL=0`, running baseline/candidate/candidate/baseline with exact source restored under a `finally` clause. Each number below is the median of the two runs for that variant; these are short samples, not statistical or portable speedup guarantees.
+
+| Nonidentical public semisparse GCD | Baseline ns | Degree-96 candidate ns | Speedup |
+|---|---:|---:|---:|
+| Z[x] degree 65 | 808,775 | 68,962 | 11.73x |
+| Q[x] degree 65 | 787,462 | 65,012 | 12.11x |
+| Z[x] degree 72 | 833,038 | 70,475 | 11.82x |
+| Q[x] degree 72 | 779,700 | 70,612 | 11.04x |
+| Z[x] degree 80 | 882,762 | 79,588 | 11.09x |
+| Q[x] degree 80 | 896,150 | 80,512 | 11.13x |
+| Z[x] degree 88 | 982,312 | 94,338 | 10.41x |
+| Q[x] degree 88 | 968,612 | 94,125 | 10.29x |
+| Z[x] degree 96 | 1,195,412 | 110,712 | 10.80x |
+| Q[x] degree 96 | 1,057,875 | 112,350 | 9.42x |
+| Z[x] degree 97 (fallback control) | 1,050,588 | 1,106,025 | 0.95x |
+| Q[x] degree 97 (fallback control) | 1,057,762 | 1,097,775 | 0.96x |
+
+Sparse/dense inputs and degree-48/64 controls had mixed smaller results. No memory allocation, universal speedup, constant-time or whole-domain performance claim is made.
+
+**Math and resource assurance:** source-owned `tests/m2_prs_degree96_nonidentical_exact_20261011.rs` checks independent SymPy-proven GCD factor `x^3+2x+1` for nonidentical degree 72,80,88,96,97 inputs, operand reversal, signed Integer contents, and nonunit rational scaling. Source-private checks prove the exact new bounded path executes for nonidentical degree-96/95 inputs; degree 97 refuses; 128-bit expanded-route inputs remain eligible while 129-bit inputs decline. The retained old degree-64 route still supports 4,096-bit input magnitudes, and denominator lifting still distinguishes 512/513-bit LCM width. A previously degree-65 fraction-free route test moved to degree 97 so it still verifies actual fallback execution.
+
+**Independent Qualification:** the frozen 25 imported mathematical tests and prior 15 cross-operation tests remain unchanged. Two new independent current-consumer checks construct expanded coefficient arrays, without production polynomial multiplication, for degrees 72,80,96,97; they verify both integer content and Rational monic normalization. Consequently the tested consumer contains **25 frozen + 17 current = 42 tests per configuration**. All six exact locked configurations passed: Windows native x86-64, Ubuntu WSL2 Linux x86-64, and QEMU user-mode AArch64, each in no-default and all-features: **252 successful test executions, zero failures**. Complete affected Windows and WSL2 Polynomial source suites and Windows `-D warnings` Clippy/rustdoc passed both modes; direct new source GCD and private route/boundary tests passed QEMU both modes. Windows Qualification warning-denied Clippy passed both modes. Both hosts' graph verifiers confirmed exact Git revisions, Cargo.lock, preserved imported SymPy vectors and frozen test hashes, and newly pinned benchmark/test hashes; independent 14-vector Python checks matched Windows and WSL2. `cargo tree -d` found no duplicated dependency identities.
+
+**Limits:** this evidence does not imply physical AArch64 tests, hosted Actions success under the known billing restriction, formal M1/M2 acceptance, independent API/security signoff, licensing or release readiness. No PerfectPi changes or historical Qualification consumer modifications were made.

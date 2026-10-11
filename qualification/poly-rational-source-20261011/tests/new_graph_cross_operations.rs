@@ -491,3 +491,64 @@ fn independent_degree64_and_65_nonidentical_rational_monic_gcd() {
         );
     }
 }
+
+#[test]
+fn degree96_independent_expansion_integer_gcd_and_content() {
+    use perfect_polynomial::IntegerPolynomial as Z;
+    // Independently confirmed with SymPy for n=72,80,96,97:
+    // gcd(A_n,B_n)=x^3+2*x+1, for the distinct expanded A/B vectors.
+    let common = Z::new(vec![
+        Integer::one(),
+        Integer::from(2),
+        Integer::zero(),
+        Integer::one(),
+    ]);
+    let scaled = Z::new(vec![
+        Integer::from(6),
+        Integer::from(12),
+        Integer::zero(),
+        Integer::from(6),
+    ]);
+    for degree in [72_usize, 80, 96, 97] {
+        let (a, b) = sympy_certified_degree64_products(degree);
+        assert_ne!(a, b);
+        assert_eq!(a.gcd(&b), Ok(common.clone()), "Z degree {degree}");
+        assert_eq!(b.gcd(&a), Ok(common.clone()), "reverse Z degree {degree}");
+        let signed = |p: &Z, n: i64| {
+            Z::new(
+                p.coefficients()
+                    .iter()
+                    .map(|v| v.mul(&Integer::from(n)))
+                    .collect(),
+            )
+        };
+        assert_eq!(signed(&a, -12).gcd(&signed(&b, 18)), Ok(scaled.clone()));
+    }
+}
+#[test]
+fn degree96_independent_expansion_rational_monic_gcd() {
+    // Same independently expanded integer coefficient vectors as above,
+    // lifted using signed exact fractions without production multiplication.
+    let common = Q::new(vec![r(1, 1), r(2, 1), r(0, 1), r(1, 1)]);
+    for degree in [72_usize, 80, 96, 97] {
+        let (a, b) = sympy_certified_degree64_products(degree);
+        let aq = Q::new(
+            a.coefficients()
+                .iter()
+                .cloned()
+                .map(Rational::from)
+                .map(|v| v.mul(&r(-7, 11)))
+                .collect(),
+        );
+        let bq = Q::new(
+            b.coefficients()
+                .iter()
+                .cloned()
+                .map(Rational::from)
+                .map(|v| v.mul(&r(13, 17)))
+                .collect(),
+        );
+        assert_eq!(aq.gcd(&bq), Ok(common.clone()), "Q degree {degree}");
+        assert_eq!(bq.gcd(&aq), Ok(common.clone()), "reverse Q degree {degree}");
+    }
+}

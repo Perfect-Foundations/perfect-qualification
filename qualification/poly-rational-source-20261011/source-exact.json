@@ -4,9 +4,9 @@
     "perfect-arithmetic": "65d8f55641739d5d6a11c17fe7d68c8898d984d7",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
     "perfect-rational": "812d66757ce145a7a70fc33818c7b3059ecd3401",
-    "perfect-polynomial": "b202035b6935c706b21ae24ab6a65d4719fa92ea"
+    "perfect-polynomial": "b97e25dade38bf956f5bb3e55683f5f91908298b"
   },
-  "cargo_lock_sha256": "487b27c725b293a9c899139b6effafa8546d219fa0563ee9b511a9a2a252bedc",
+  "cargo_lock_sha256": "db9e04d2d89dace838d1833d879e5400ec6ac72334cb8319ac26140ea9ab2dc2",
   "imported_test_sha256": {
     "independent_math.rs": "1faf1c921f7a3418e2a48cf0ceea38a01c5e3507cf8d6107075f33de3b2c09de",
     "m2_content_derivative_independent.rs": "2410c252613e40a704d7e02a105593a6d1d0651d319152b25bcbea9c9f120380",
@@ -22,9 +22,11 @@
   "sympy_oracle_sha256": "622490f8c3c72bcffbd4889ba8d572043cf35ac7ef393801a79fa194bce256f6",
   "source_parent_qualification": "603e24f5c20c3c10abc75caff5c057c58116112e",
   "verification_boundary": "experimental, native Windows and WSL2 plus QEMU where executed; not physical ARM64, independent approval or release",
-  "cross_operation_test_sha256": "77c07f1f8342d3ff3e43002cfcf2b70349e49850809fae4f8e6612bb51e97f85",
+  "cross_operation_test_sha256": "0ef93284c27538c230152fcfdcc2a8b1ae3bce2e69529e6d88b10be83499b7f4",
   "constant_gcd_benchmark_sha256": "b36e6f776ad8eb3a2a4da03cb73a6c956bbb33eb6b283c88714c4cbbf6a7b5d3",
   "prs_degree48_benchmark_sha256": "a627938e9a569ef8d9a00a057db38d789e722a5f22dda50fb2eee52a6594580a",
   "prs_degree64_benchmark_sha256": "04efee1a006d497fa48deda4feafa696f045d3bb6cd607aa30dcb6f3a554fa86",
-  "prs_degree64_measurements_sha256": "c777b587a0db95523914c7d1864c2c6b4766b1d661e6f31d68b35b27daeabf5c"
+  "prs_degree64_measurements_sha256": "c777b587a0db95523914c7d1864c2c6b4766b1d661e6f31d68b35b27daeabf5c",
+  "prs_degree96_benchmark_sha256": "6bbb1b9b38f0be100c0f1bbded2172f35c720611e0045693d6f1d0057860a554",
+  "prs_degree96_measurements_sha256": "a415f81368a19c73a2b334513663a641198e5d24b8d756a4bdbd82387545213c"
 }
