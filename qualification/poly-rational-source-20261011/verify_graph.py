@@ -11,8 +11,8 @@ OLD = ROOT.parent / "fused-git-graph-20261010"
 SOURCES = {
     "perfect-arithmetic": "65d8f55641739d5d6a11c17fe7d68c8898d984d7",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
-    "perfect-rational": "dfe536c88c69dc36b188893045dc03434855371c",
-    "perfect-polynomial": "a7909f9ce2b41db9d2cf318ee326b5f44e0a1b31",
+    "perfect-rational": "020c1a354f86f80ea9dd0af767f8e706f509ff08",
+    "perfect-polynomial": "8d51179eac4bac7f879f268f8b56086249d57c43",
 }
 
 def canonical(path: Path) -> bytes:
@@ -50,6 +50,7 @@ def verify() -> None:
         path = OLD / "tests" / name
         assert path.is_file() and checksum(path) == expected_hash, path
     assert len(evidence["imported_test_sha256"]) == 10
+    assert checksum(ROOT / "tests" / "new_graph_cross_operations.rs") == evidence["cross_operation_test_sha256"]
     assert checksum(OLD / "references" / "m2_degree2_zq_gcd_sympy_v1.tsv") == evidence["sympy_oracle_sha256"]
     print("EXACT_GRAPH_AND_INDEPENDENT_TEST_FIXTURES_PASS", SOURCES["perfect-polynomial"], SOURCES["perfect-rational"])
 

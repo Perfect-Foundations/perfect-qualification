@@ -49,3 +49,22 @@ fn fused_integer_coefficient_cancellation_is_exact_at_wide_magnitude() {
     assert_eq!(left.unsigned_bit_length(), 4097);
     assert_eq!(left.neg().unsigned_bit_length(), 4097);
 }
+
+#[test]
+fn signed_unit_multiplication_integral_products_and_horner_match_fraction() {
+    let p = Q::new(vec![r(1, 2), r(2, 3), r(-3, 5)]);
+    let minus_one = Q::constant(r(-1, 1));
+    let negated = p.mul(&minus_one);
+    // Python Fraction: all product coefficients are the exact negatives.
+    assert_eq!(negated, Q::new(vec![r(-1, 2), r(-2, 3), r(3, 5)]));
+    // Fraction polynomial at x=5/3: -1/18 before negation, +1/18 after.
+    assert_eq!(p.evaluate(&r(5, 3)), r(-1, 18));
+    assert_eq!(negated.evaluate(&r(5, 3)), r(1, 18));
+    let (q, rem) = negated.div_rem(&minus_one).unwrap();
+    assert_eq!(q, p);
+    assert_eq!(rem, Q::zero());
+    // Python integer convolution: [23,-31] * [-31] = [-713,961].
+    let ints = Q::new(vec![r(23, 1), r(-31, 1)]);
+    let result = ints.mul(&Q::constant(r(-31, 1)));
+    assert_eq!(result, Q::new(vec![r(-713, 1), r(961, 1)]));
+}
