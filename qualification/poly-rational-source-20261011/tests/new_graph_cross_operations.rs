@@ -646,3 +646,80 @@ fn rational_self_division_and_near_opposite_reconstruction_are_exact() {
     assert_eq!(near.mul(&quotient).add(&rem), p);
     assert!(!rem.is_zero());
 }
+
+#[test]
+fn independent_large_sparse_integer_product_matches_schoolbook_oracle() {
+    use perfect_polynomial::IntegerPolynomial as Z;
+    // Exact finite convolution, independent of production Polynomial::mul.
+    let mut sparse = vec![Integer::zero(); 257];
+    sparse[0] = Integer::from(3_i64);
+    sparse[128] = Integer::from(-7_i64);
+    sparse[256] = Integer::from(5_i64);
+    let mut dense = (0..257)
+        .map(|i| Integer::from((i % 9) as i64 - 4))
+        .collect::<Vec<_>>();
+    dense[256] = Integer::from(2_i64);
+    let mut expected = vec![Integer::zero(); 513];
+    for (i, a) in sparse.iter().enumerate() {
+        for (j, b) in dense.iter().enumerate() {
+            expected[i + j] = expected[i + j].add(&a.mul(b));
+        }
+    }
+    let a = Z::new(sparse);
+    let b = Z::new(dense);
+    let oracle = Z::new(expected);
+    assert_eq!(a.mul(&b), oracle);
+    assert_eq!(b.mul(&a), oracle);
+}
+
+#[test]
+fn independent_mixed_denominator_sparse_product_matches_fraction_oracle() {
+    let mut a = vec![Rational::zero(); 129];
+    let mut b = vec![Rational::zero(); 129];
+    a[0] = r(1, 2);
+    a[64] = r(-7, 3);
+    a[128] = r(3, 11);
+    b[0] = r(-2, 5);
+    b[43] = r(5, 7);
+    b[128] = r(1, 13);
+    let mut expected = vec![Rational::zero(); 257];
+    for (i, x) in a.iter().enumerate() {
+        for (j, y) in b.iter().enumerate() {
+            expected[i + j] = expected[i + j].add(&x.mul(y));
+        }
+    }
+    let pa = Q::new(a);
+    let pb = Q::new(b);
+    let oracle = Q::new(expected);
+    assert_eq!(pa.mul(&pb), oracle);
+    assert_eq!(pb.mul(&pa), oracle);
+}
+
+#[test]
+fn independent_monic_sparse_high_degree_division_matches_exact_qr() {
+    // A = (x^64+2*x^21-x^62+1)*(x^31+3/7*x+2) + 5/11*x^63+1/13.
+    // Expected quotient and remainder are specified before construction;
+    // construct A by independent scalar Fraction-style convolution.
+    let mut divisor = vec![Rational::zero(); 65];
+    divisor[0] = Rational::one();
+    divisor[21] = r(2, 1);
+    divisor[62] = r(-1, 1);
+    divisor[64] = Rational::one();
+    let mut quotient = vec![Rational::zero(); 32];
+    quotient[0] = r(2, 1);
+    quotient[1] = r(3, 7);
+    quotient[31] = Rational::one();
+    let mut dividend = vec![Rational::zero(); 96];
+    for (i, x) in divisor.iter().enumerate() {
+        for (j, y) in quotient.iter().enumerate() {
+            dividend[i + j] = dividend[i + j].add(&x.mul(y));
+        }
+    }
+    dividend[0] = dividend[0].add(&r(1, 13));
+    dividend[63] = dividend[63].add(&r(5, 11));
+    let mut rem = vec![Rational::zero(); 64];
+    rem[0] = r(1, 13);
+    rem[63] = r(5, 11);
+    let actual = Q::new(dividend).div_rem(&Q::new(divisor)).unwrap();
+    assert_eq!(actual, (Q::new(quotient), Q::new(rem)));
+}
