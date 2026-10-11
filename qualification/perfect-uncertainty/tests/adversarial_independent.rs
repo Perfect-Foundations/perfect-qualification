@@ -71,3 +71,24 @@ fn independently_derived_nist_tn1297_a3_linear_2_input_controls() {
         );
     }
 }
+
+#[test]
+fn finite_variance_must_not_fail_due_to_absolute_diagnostic_overflow() {
+    // Exact arithmetic: the all-ones rank-one PSD matrix computes
+    // (1e308 - 1e308 + 1)^2 = 1. Every supplied f64 is finite.
+    // The previous source revision rejected the result because only
+    // the auxiliary sum of absolute terms exceeded f64::MAX.
+    let matrix = CorrelationMatrix::new(
+        3,
+        vec![1.0; 9],
+        CorrelationPolicy {
+            max_dimension: 3,
+            psd_tolerance: 0.0,
+        },
+    )
+    .unwrap();
+    let result = propagate_first_order(&[1e308, -1e308, 1.0], &matrix).unwrap();
+    assert_eq!(result.variance(), 1.0);
+    assert_eq!(result.standard_uncertainty(), 1.0);
+    assert!(!result.clamped_roundoff());
+}

@@ -72,3 +72,30 @@ This source-exact candidate is **not** accepted as formal M1 qualification.
 Broader conditioned-matrix studies, independently reproduced published GUM
 numerical datasets, physical ARM64 runtime, hosted CI and API/security review
 remain pending. Perfectπ remained untouched.
+
+## Current production pin and additional overflow refusal regression
+
+**Current pinned production source:**
+`1ca644f946cb9adea9f817675a464a5800713b25`.
+This follow-up changes neither the 103 original nor the 160 additional
+exact mathematical reference cases. Total independent Fraction cases: **263**.
+
+A new independent public consumer verifies that the all-ones rank-one PSD
+matrix with finite `g=[1e308,-1e308,1]` yields exact variance 1,
+not `NonFiniteResult`. Previously the auxiliary absolute-magnitude
+roundoff diagnostic overflowed despite a finite correct variance.
+The production fix conservatively saturates that diagnostic without
+silently changing the quadratic form itself.
+
+Rust 1.99 Windows native x86-64 and WSL2 Linux x86-64 each passed
+`cargo test --locked --offline` and warning-denied all-target Clippy
+under both `--no-default-features` and `--all-features`.
+Six integration tests per configuration × 4 configurations =
+**24 passing independent integration test executions**; no failures.
+Independent Python reference reproduction (263 cases) and the
+exact-Git-source Cargo.lock/vector-hash verifier passed on both hosts.
+WSL2's private Cargo Git cache imported the same exact local Git object;
+no source path override, dependency redefinition or lockfile substitution.
+
+This is not formal M1/Q6 acceptance, native ARM64 validation, hosted CI
+or release authorization.
