@@ -1,2 +1,4 @@
 **/target/
 **/Cargo.lock
+# Independently verified Uncertainty consumer's exact Git source lock.
+!qualification/perfect-uncertainty/Cargo.lock
