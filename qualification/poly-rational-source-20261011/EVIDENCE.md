@@ -102,3 +102,26 @@ New permanent source-owned regressions check exact wide signed monomial coeffici
 - The source-exact manifest/lockfile/SymPy and imported fixture SHA-256 verifier passed. The upstream versions were not replaced by local path patches, and no duplicate Arithmetic/Rational identities were introduced.
 - A candidate-only release-mode performance probe, **not a matched before/after comparison**, measured selected sparse (divisor degree, quotient degree) operation times of (128,200) 6,557 ns; (256,200) 6,733 ns; (512,200) 7,530 ns. Dense controls: (256,40) 108,270 ns; (512,40) 223,900 ns. **No claimed relative speedup or universal performance benefit** follows from these measurements alone.
 - The 2026-10-11 parent Qualification commit `0c203bd38889ba4f3305ae3f0b3bc284c94945a4` remains in Git history, as does the independent historical `fused-git-graph-20261010` consumer. Native physical ARM64, hosted Actions (known billing block), independent API/security approval, formal milestones, licensing and release remain pending. PerfectPi was not accessed, built, tested or modified.
+
+## Matched sparse Integer division benchmark follow-up (2026-10-11)
+
+The previously documented `d120829` optimization has now been compared against its direct source predecessor `29274e1edd5db2b23fb5ee2465987f11cd9d0efa`. This is **new performance evidence for the same already-qualified production revision**, not a new source revision or an additional Qualification test run.
+
+The reproducibility fixture is `benchmarks/sparse_integer_division_20261011.rs` (SHA-256 of the fixture on Windows: `BA68A47F465EFDEDB357E607F0FA8762394EB233BD32CF2B084131F56166700B`). It is a standalone Cargo example source and is intentionally outside the consumer's `examples/` directory so that Qualification's 34-test execution matrix and all-target Clippy scope are unchanged. To rerun, copy it to a temporary example in an authorized experimental Polynomial checkout and execute that example with `cargo run --release --locked --offline --example <name>` at each specified exact source revision; do not alter protected branches or historical consumers.
+
+The fixture constructs the exact dividend as `divisor.mul(&quotient)` before timing, measures only the public `IntegerPolynomial::div_exact(&divisor)`, and exercises divisor `x^d + 3` and quotient coefficients `(i % 9) + 1` for 201 terms. Dense controls use divisor coefficients `(i % 7) + 1` and quotient degree 20. The selected sparse quotient degree is 200. Repetition counts are 48 (sparse degree 64/128), 24 (sparse degree 256/512), and 4 (dense controls). Timed results use Rust `Instant` and `black_box`. Windows release-mode compile flags: `--locked --offline`, `CARGO_BUILD_JOBS=2`, `CARGO_INCREMENTAL=0`, same Cargo manifest/dependency lock and host. An automated four-run A/B/B/A execution substituted *only* `src/division.rs` from the parent commit, rebuilt the example for each variant, and restored the current source byte-for-byte in a `finally` block; its normalized content matched Git HEAD.
+
+| Integer public division workload | Baseline median (ns) | Candidate median (ns) | Ratio |
+|---|---:|---:|---:|
+| Sparse divisor degree 64, quotient degree 200 | 25,655 | 12,988 | 1.98x |
+| Sparse divisor degree 128, quotient degree 200 | 41,880 | 8,337 | 5.02x |
+| Sparse divisor degree 256, quotient degree 200 | 76,100 | 8,406 | 9.05x |
+| Sparse divisor degree 512, quotient degree 200 | 145,989 | 9,470 | 15.42x |
+| Dense divisor degree 128, quotient degree 20 | 49,600 | 47,762 | 1.04x |
+| Dense divisor degree 256, quotient degree 20 | 103,175 | 97,562 | 1.06x |
+
+These are short, paired workload measurements with two observations per variant, not a statistical performance qualification, portable speedup guarantee, allocation comparison, or worst-case bound. In contrast to the earlier candidate-only data, these establish measured before/after results for the listed workloads.
+
+**Storage cleanup after benchmarking:** A scoped `cargo clean` of the experimental Polynomial Windows target removed 7,203 generated files (943.3 MiB as reported by Cargo). All 24 root-level scripts and logs were copied, SHA-256 checked, restored, and independently rechecked before the duplicate backup was deleted. C: free at this execution's start was 23,056,355,328 bytes; measured free space after cleanup/backup removal was 24,051,347,456 bytes (increase 994,992,128 bytes). WSL2 VHDX was not compacted, unrelated caches and untracked evidence were not touched.
+
+The exact tested and immutable source graph remains Numeric `19b6747`, Arithmetic `65d8f55`, Rational `812d667`, Polynomial `d120829`, already qualified by commit `2b84ceb` with 34/34 checks in each of six platform/feature executions. No new acceptance, CI, physical ARM64, or release evidence is implied by this benchmark-only record.
