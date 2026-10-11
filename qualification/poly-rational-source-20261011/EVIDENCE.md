@@ -7,7 +7,7 @@ Executed 2026-10-10/11 America/New_York; final Qualification evidence for the au
 - Numeric: `19b6747cd852a47a694a020b97ba70b6b3ef259b`
 - Arithmetic: `65d8f55641739d5d6a11c17fe7d68c8898d984d7`
 - Rational: `812d66757ce145a7a70fc33818c7b3059ecd3401`
-- Polynomial: `29274e1edd5db2b23fb5ee2465987f11cd9d0efa`
+- Polynomial: `d1208299eaea7c0dd924a19178689c67753fe3cc`
 
 `source-exact.json` and `verify_graph.py` require the exact source Git identities, normalized Cargo.lock SHA-256, ten unchanged imported independent test-source SHA-256 values, SymPy fixture SHA-256, and current cross-operation test-source SHA-256. Cargo graph is `--locked --offline`; `cargo tree -d` shows no duplicate source identity. No `[patch]`, source override, new clone, worktree or replacement consumer.
 
@@ -15,11 +15,11 @@ Executed 2026-10-10/11 America/New_York; final Qualification evidence for the au
 
 | Execution environment | No default features | All features |
 |---|---:|---:|
-| Windows x86-64 | 33/33 passed | 33/33 passed |
-| Ubuntu WSL2 Linux x86-64 | 33/33 passed | 33/33 passed |
-| QEMU user-mode Linux AArch64 | 33/33 passed | 33/33 passed |
+| Windows x86-64 | 34/34 passed | 34/34 passed |
+| Ubuntu WSL2 Linux x86-64 | 34/34 passed | 34/34 passed |
+| QEMU user-mode Linux AArch64 | 34/34 passed | 34/34 passed |
 
-All six `cargo test --locked --offline` executions returned zero. Each runs 25 frozen independent mathematical checks and eight current cross-operation tests. The added cross-operation regression has independent CPython Fraction/integer results for signed unit Rational multiplication, integer-valued multiplication, Horner evaluation at 5/3, quotient/remainder by a signed constant and complete polynomial coefficients. The other two check exact mixed-denominator cross-operations, wide canonical zero normalization, polynomial GCD and fused Integer cancellation.
+All six `cargo test --locked --offline` executions returned zero. Each runs 25 frozen independent mathematical checks and nine current cross-operation tests. The added cross-operation regression has independent CPython Fraction/integer results for signed unit Rational multiplication, integer-valued multiplication, Horner evaluation at 5/3, quotient/remainder by a signed constant and complete polynomial coefficients. The other two check exact mixed-denominator cross-operations, wide canonical zero normalization, polynomial GCD and fused Integer cancellation.
 
 Windows all-target `cargo clippy -- -D warnings` passed both feature modes for the final Qualification consumer; Windows full Arithmetic, Rational and Polynomial source test/lint matrices also passed, and Rustfmt checked. Ubuntu WSL2 complete Rational and Polynomial source suites passed both feature modes at the final pinned revisions; Arithmetic M4 complete WSL2 source suites were previously executed against unchanged `65d8f55`. New changed-operation focused tests passed on QEMU in both feature modes when separately executed prior to this source graph; this current 33-test consumer additionally passed QEMU both modes.
 
@@ -93,3 +93,12 @@ New permanent source-owned regressions check exact wide signed monomial coeffici
 **Final locked Qualification result:** 25 imported + 8 current cross-operation tests = **33/33 passing in six configurations**: Windows native x86-64, Ubuntu WSL2 x86-64 and QEMU user-mode Linux AArch64, each with no-default and all-features. All six test commands exited zero. Warning-denied Windows Qualification Clippy passed both modes. The updated immutable graph, lockfile digest, current cross-operation hash and unchanged imported SymPy/source hashes passed the exact verifier. Focused changed-operation source tests directly passed QEMU both modes; full affected Rust source tests passed Windows and WSL2 both modes; warning-denied Windows source Clippy and rustdoc passed both modes.
 
 **Boundaries:** No physical ARM64 evidence or formal M1/M2/M4/M5 acceptance. Hosted Actions remain externally blocked by account billing. Independent API/security approval, licensing and releases remain pending. No PerfectPi files were accessed or modified.
+
+## 2026-10-11 sparse Integer exact-division production follow-up
+
+- Current pinned source is Polynomial `d1208299eaea7c0dd924a19178689c67753fe3cc`; all other four-crate source revisions are preserved from the prior graph. The production change reuses cached nonzero lower divisor coefficient references in sparse long Integer division, while avoiding the sparse-index allocation for ordinary small/dense divisors.
+- The owning production regression `tests/m2_sparse_integer_division_20261011.rs` passed no-default/all-features; independent integer-convolution coefficient vectors, nonmonomial negative-leading/nonunit divisors, and exact `NonIntegralQuotient`/`NonExactDivision` errors are checked. Both complete Windows Polynomial source suites, rustfmt and warning-denied all-target Clippy passed for the source revision.
+- New consumer-owned `sparse_integer_nonmonomial_division_matches_independent_exact_vectors` verifies complete expected quotient coefficients and typed error precedence without relying on the production regression. Final locked Qualification executed **34/34 checks in each of six configurations**, zero failures: Windows x86-64, WSL2 Linux x86-64, QEMU user-emulated AArch64 Linux, each with no-default and all-features. Windows Qualification warning-denied all-target Clippy passed both modes. Total: 204 executed independent test cases.
+- The source-exact manifest/lockfile/SymPy and imported fixture SHA-256 verifier passed. The upstream versions were not replaced by local path patches, and no duplicate Arithmetic/Rational identities were introduced.
+- A candidate-only release-mode performance probe, **not a matched before/after comparison**, measured selected sparse (divisor degree, quotient degree) operation times of (128,200) 6,557 ns; (256,200) 6,733 ns; (512,200) 7,530 ns. Dense controls: (256,40) 108,270 ns; (512,40) 223,900 ns. **No claimed relative speedup or universal performance benefit** follows from these measurements alone.
+- The 2026-10-11 parent Qualification commit `0c203bd38889ba4f3305ae3f0b3bc284c94945a4` remains in Git history, as does the independent historical `fused-git-graph-20261010` consumer. Native physical ARM64, hosted Actions (known billing block), independent API/security approval, formal milestones, licensing and release remain pending. PerfectPi was not accessed, built, tested or modified.

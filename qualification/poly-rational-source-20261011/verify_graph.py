@@ -12,7 +12,7 @@ SOURCES = {
     "perfect-arithmetic": "65d8f55641739d5d6a11c17fe7d68c8898d984d7",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
     "perfect-rational": "812d66757ce145a7a70fc33818c7b3059ecd3401",
-    "perfect-polynomial": "29274e1edd5db2b23fb5ee2465987f11cd9d0efa",
+    "perfect-polynomial": "d1208299eaea7c0dd924a19178689c67753fe3cc",
 }
 
 def canonical(path: Path) -> bytes:

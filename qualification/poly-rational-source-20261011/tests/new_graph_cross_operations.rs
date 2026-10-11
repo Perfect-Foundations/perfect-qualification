@@ -206,3 +206,39 @@ fn integer_monomial_coefficients_match_shifted_integer_reference() {
     assert_eq!(a.mul(&b), expected);
     assert_eq!(b.mul(&a), expected);
 }
+
+#[test]
+fn sparse_integer_nonmonomial_division_matches_independent_exact_vectors() {
+    use perfect_polynomial::{IntegerPolynomial as Z, PolynomialError};
+    let from_terms = |length: usize, terms: &[(usize, i64)]| {
+        let mut coefficients = vec![Integer::zero(); length];
+        for &(degree, value) in terms {
+            coefficients[degree] = Integer::from(value);
+        }
+        Z::new(coefficients)
+    };
+    // Independent integer convolution:
+    // (x^256+3)*(2*x^200-5*x^13+7)
+    // = 2*x^456-5*x^269+7*x^256+6*x^200-15*x^13+21.
+    let divisor = from_terms(257, &[(0, 3), (256, 1)]);
+    let expected = from_terms(201, &[(0, 7), (13, -5), (200, 2)]);
+    let dividend = from_terms(
+        457,
+        &[(0, 21), (13, -15), (200, 6), (256, 7), (269, -5), (456, 2)],
+    );
+    assert_eq!(dividend.div_exact(&divisor), Ok(expected));
+
+    // Exactly one-half in Q[x], but not in Z[x].
+    let twice = from_terms(65, &[(0, 2), (64, 2)]);
+    let half = from_terms(65, &[(0, 1), (64, 1)]);
+    assert_eq!(
+        half.div_exact(&twice),
+        Err(PolynomialError::NonIntegralQuotient)
+    );
+    // Nonzero remainder must take precedence.
+    let nonexact = from_terms(66, &[(0, 1), (65, 1)]);
+    assert_eq!(
+        nonexact.div_exact(&twice),
+        Err(PolynomialError::NonExactDivision)
+    );
+}
