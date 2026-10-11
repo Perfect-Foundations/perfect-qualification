@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "source": {
+    "qualification_tests_harness": "e8afabd1ec1e5629e489a0201aa64a08c273f5b2",
+    "decimal": "85f4408838131007146fff14b1c9c1d760c585a8",
+    "numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "arithmetic": "1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
+    "rational": "97cce0ae8ff7ef206929d273e1d4a5774f6a2a34"
+  },
+  "script_blob": "b6ff25ad335ddfdce091d01ff22a766a8fc03e0f",
+  "platform": "Zen native Windows AMD64, Python 3.14.3, rustc 1.99.0",
+  "pinned_local_clones": true,
+  "pristine_harness_copy": true,
+  "mode": "fully offline, no GitHub-hosted minutes",
+  "logs": "C:\\Dev\\PerfectFoundations\\_pf_qual_evidence\\decimal-win-qualification.6qlh_qgi",
+  "checks": {
+    "python_quantize": 440,
+    "representation_vectors": 21,
+    "representation_fingerprint": "a0e4476440bf4082",
+    "materializer": "PASS",
+    "cargo_lock": "PASS",
+    "fmt": "PASS",
+    "tests_all": "7/7 PASS",
+    "tests_no_default": "7/7 PASS",
+    "clippy_all": "PASS",
+    "clippy_no_default": "PASS",
+    "rustdoc": "PASS"
+  },
+  "lock_sha256": "adef3658db298b4421dde53d6147c8dc9f17fbabc6ae4552bcc05a71f07510c4",
+  "exit_code": 0,
+  "limits": [
+    "Windows native is not Linux ARM64",
+    "Host checks do not award cross-host Q0–Q5 without actually running supported native ARM64",
+    "The script is committed after this verified local content; test and oracle source SHAs unchanged",
+    "No user checkout modified; Perfectπ unmodified"
+  ]
+}
