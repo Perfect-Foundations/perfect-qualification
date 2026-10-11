@@ -118,3 +118,39 @@ fn dense_integer_convolution_uses_independent_triangular_coefficients() {
         assert_eq!(product.coefficients()[k], Integer::from(sum), "degree={k}");
     }
 }
+
+#[test]
+fn high_degree_sparse_field_divisor_matches_independent_fraction_vectors() {
+    // Independent CPython Fraction expansion for:
+    // (x^256 + 1/3) * (2*x^200 - 5*x^13/2 + 1/7) + (-x^80 + 1/11).
+    let mut divisor = vec![Rational::zero(); 257];
+    divisor[0] = r(1, 3);
+    divisor[256] = Rational::one();
+    let divisor = Q::new(divisor);
+
+    let mut expected_q = vec![Rational::zero(); 201];
+    expected_q[0] = r(1, 7);
+    expected_q[13] = r(-5, 2);
+    expected_q[200] = r(2, 1);
+    let expected_q = Q::new(expected_q);
+
+    let mut expected_r = vec![Rational::zero(); 81];
+    expected_r[0] = r(1, 11);
+    expected_r[80] = r(-1, 1);
+    let expected_r = Q::new(expected_r);
+
+    let mut dividend = vec![Rational::zero(); 457];
+    for (i, n, d) in [
+        (0, 32, 231),
+        (13, -5, 6),
+        (80, -1, 1),
+        (200, 2, 3),
+        (256, 1, 7),
+        (269, -5, 2),
+        (456, 2, 1),
+    ] {
+        dividend[i] = r(n, d);
+    }
+    let actual = Q::new(dividend).div_rem(&divisor).unwrap();
+    assert_eq!(actual, (expected_q, expected_r));
+}
