@@ -68,3 +68,53 @@ fn signed_unit_multiplication_integral_products_and_horner_match_fraction() {
     let result = ints.mul(&Q::constant(r(-31, 1)));
     assert_eq!(result, Q::new(vec![r(-713, 1), r(961, 1)]));
 }
+
+#[test]
+fn subtraction_and_monomial_remainder_have_independent_fraction_values() {
+    let a = r(5, 6);
+    let b = r(7, 10);
+    // Python Fraction(5,6) - Fraction(7,10) == Fraction(2,15).
+    assert_eq!(a.sub(&b), r(2, 15));
+    assert_eq!(a.sub(&a), Rational::zero());
+    let mut coefficients = vec![Rational::zero(); 26];
+    coefficients[0] = r(1, 3);
+    coefficients[3] = r(-2, 5);
+    coefficients[4] = r(4, 9);
+    coefficients[14] = r(-5, 13);
+    coefficients[25] = r(7, 11);
+    let a = Q::new(coefficients);
+    let b = Q::new(vec![
+        Rational::zero(),
+        Rational::zero(),
+        Rational::zero(),
+        Rational::zero(),
+        r(-3, 7),
+    ]);
+    let (q, rem) = a.div_rem(&b).unwrap();
+    let mut reference = vec![Rational::zero(); 22];
+    reference[0] = r(-28, 27);
+    reference[10] = r(35, 39);
+    reference[21] = r(-49, 33);
+    assert_eq!(q, Q::new(reference));
+    assert_eq!(
+        rem,
+        Q::new(vec![r(1, 3), Rational::zero(), Rational::zero(), r(-2, 5)])
+    );
+}
+
+#[test]
+fn dense_integer_convolution_uses_independent_triangular_coefficients() {
+    use perfect_polynomial::IntegerPolynomial as Z;
+    let a = Z::new((1..=64).map(Integer::from).collect());
+    let b = Z::new(vec![Integer::one(); 64]);
+    let product = a.mul(&b);
+    assert_eq!(product.coefficients().len(), 127);
+    // CPython arbitrary integer convolution: coefficient[k] is the sum
+    // of 1-based indices in the valid finite length-64 window.
+    for k in 0..127usize {
+        let lower = k.saturating_sub(63);
+        let upper = k.min(63);
+        let sum = ((upper + 1) * (upper + 2) - lower * (lower + 1)) / 2;
+        assert_eq!(product.coefficients()[k], Integer::from(sum), "degree={k}");
+    }
+}

@@ -11,8 +11,8 @@ OLD = ROOT.parent / "fused-git-graph-20261010"
 SOURCES = {
     "perfect-arithmetic": "65d8f55641739d5d6a11c17fe7d68c8898d984d7",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
-    "perfect-rational": "020c1a354f86f80ea9dd0af767f8e706f509ff08",
-    "perfect-polynomial": "8d51179eac4bac7f879f268f8b56086249d57c43",
+    "perfect-rational": "8bd86f328850c8153537842947b161ed7e3f0d24",
+    "perfect-polynomial": "815f6a2ae3fb58407b28d6a84c781a82add9433c",
 }
 
 def canonical(path: Path) -> bytes:
