@@ -172,3 +172,32 @@ The acceptance boundary remains unchanged: local execution evidence for these ex
 - `source-exact.json`, the normalized Cargo.lock SHA-256, immutable Git source identities, ten imported mathematical test-file hashes and the original SymPy corpus hash were verified. No duplicate Arithmetic/Rational package identity or local patch was introduced.
 - Initial single-pass selected Windows release-mode before/after sampling (not a full interleaved A/B/B/A benchmark campaign): identical Integer GCD degrees 16/32/64/128 approximately 3,017→618 ns / 5,558→336 ns / 21,012→597 ns / 41,493→1,116 ns. Identical Rational GCD 3,327→2,445 ns / 6,240→4,787 ns / 11,912→9,697 ns / 24,070→19,596 ns. Nearly identical but unequal controls were close to the original range. These are **exploratory selected workloads**, not a universal speedup or mature performance guarantee.
 - Parent Qualification commit `b36643f94548f7f3b69b9476338bb81f282c90e8` remains in Git history and historical immutable `fused-git-graph-20261010` remains untouched. Hosted GitHub Actions runner allocation remains blocked by the established account billing restriction. Native physical ARM64, independent API/security review, owner licensing, formal acceptance and releases remain pending. PerfectPi was not accessed or modified.
+
+## 2026-10-11 bounded primitive PRS extension: degree 32 to 48
+
+**Production Polynomial source:** `620122dfa11d9a78490b0025c45c61a55e5d1607`, direct parent `26fbb9388a0d14a316e6c285f27c8411154275b5`. The only production behavior expansion is to permit input polynomial degrees 33 through 48 on the *existing bounded primitive pseudo-remainder GCD route*. The input coefficient, denominator-LCM and intermediate growth ceilings remain `4096`, `512` and `4096` bits respectively; all guard refusals retain the existing exact Q[x] fallback/resume behavior. The code also updates two route-coverage fixtures: private degree acceptance now checks exact 48/49 boundary, and an existing fraction-free-route integration test was moved from degree 40 to degree 49 to remain outside PRS eligibility. No new public API or dependency was added. The unrelated attempted zero-coefficient PRS scaling change regressed in most of 24 matched Z/Q controls and was restored **without committing it**.
+
+**Public-GCD matched Windows release-mode evidence:** The fixture `benchmarks/prs_degree48_20261011.rs` (canonical SHA-256 `a627938e9a569ef8d9a00a057db38d789e722a5f22dda50fb2eee52a6594580a`) constructs two *different* inputs, each containing common factor `g=x^3+2x+1`, and times `gcd` on both Z[x] and Q[x]. Tests include sparse, semisparse and dense cases at degree 12, 16, 24, 28, 36, 40 and 48. Four matched runs A/B/B/A rebuild the exact same release example while changing only `src/primitive_prs.rs` between the Git parent and production candidate, with `--locked --offline`, `CARGO_BUILD_JOBS=2`, `CARGO_INCREMENTAL=0`; source bytes were restored in `finally`. The results below are medians of two runs per revision in nanoseconds:
+
+| Nonidentical complete GCD workload | Parent | Extended PRS | Ratio |
+|---|---:|---:|---:|
+| Z[x] degree 36, semisparse | 341,916 | 31,700 | 10.79x |
+| Z[x] degree 40, semisparse | 388,616 | 35,400 | 10.98x |
+| Z[x] degree 48, semisparse | 485,916 | 46,350 | 10.48x |
+| Q[x] degree 36, semisparse | 341,733 | 30,050 | 11.37x |
+| Q[x] degree 40, semisparse | 375,633 | 34,300 | 10.95x |
+| Q[x] degree 48, semisparse | 468,633 | 42,133 | 11.12x |
+| Z[x] degree 40, sparse | 32,216 | 14,916 | 2.16x |
+| Q[x] degree 40, sparse | 27,533 | 14,933 | 1.84x |
+| Z[x] degree 48, dense | 27,633 | 10,466 | 2.64x |
+| Q[x] degree 48, dense | 24,950 | 11,500 | 2.17x |
+| Z[x] degree 28, sparse control | 8,325 | 10,441 | 0.80x (regression) |
+| Q[x] degree 28, dense control | 6,283 | 6,466 | 0.97x (regression) |
+
+This is evidence for *specific complete nonidentical GCD operations*, not a universal or statistically qualified speedup, nor a benchmark of formal subresultant complexity. The degree-12-to-28 controls were mostly comparable with some regressions. Memory/allocation use was not measured.
+
+**Independent source verification:** `tests/m2_prs_degree48_nonidentical_exact_20261011.rs` verifies SymPy independently established factor `x^3+2*x+1` for degrees 36, 40, 48; both operand orders; negative nonunit Integer contents `-6` and `+15`; exact Rational normalization with denominators 11 and 17; and degree-49 fallback. A separate private unit test proves `try_z_gcd` and `try_q_gcd` actually take the enlarged bounded PRS route for nonidentical degree-48/47 inputs, while refusing a 4097-bit coefficient. The prior fraction-free route test was shifted beyond the new ceiling and again verifies that fallback dispatch occurs. Complete Windows Polynomial tests, rustfmt and warning-denied all-target Clippy passed both feature modes; full WSL2 source tests and the changed three-test direct QEMU AArch64 executions passed both modes.
+
+**Independent current-graph Qualification:** The new source-exact consumer adds two checks using *different* independently SymPy-proven factor `x^2+1` for degrees 36, 40, 48 and separately 49. The frozen 25 imported oracle checks and prior 11 current cross-operation checks are unchanged. Consequently **25 frozen + 13 current = 38 tests per configuration**. The locked graph passed all six configurations: Windows native x86-64, Ubuntu WSL2 x86-64 and QEMU user-mode Linux AArch64, each no-default/all-features: **228 passing test executions, zero failures**. Windows Qualification Clippy `-D warnings` passed both modes. Manifest/lockfile source SHA verifier checks the exact four-crate graph, unchanged historical SymPy/imported test checksums, updated current test source hash, and the newly added PRS benchmark fixture hash.
+
+This expands verified bounded exact PRS support on tested inputs. Formal Polynomial M1/M2 milestone acceptance, independent security/API review, physical ARM64 evidence, GitHub Actions execution under the known billing block, licensing and publication remain separate outstanding gates. PerfectPi remains read-only and was not modified.

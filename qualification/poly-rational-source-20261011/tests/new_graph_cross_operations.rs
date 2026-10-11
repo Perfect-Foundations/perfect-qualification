@@ -304,3 +304,66 @@ fn identical_nonconstant_integer_and_rational_gcd_have_independent_canonical_coe
     let high = Z::new(high);
     assert_eq!(high.gcd(&high), Ok(high.neg()));
 }
+
+#[test]
+fn degree48_nonidentical_prs_matches_independent_sympy_gcd() {
+    use perfect_polynomial::IntegerPolynomial as Z;
+    fn polynomial(degree: usize, nonzero: &[(usize, i64)]) -> Z {
+        let mut coefficients = vec![Integer::zero(); degree + 1];
+        coefficients[degree] = Integer::one();
+        for &(degree, value) in nonzero {
+            coefficients[degree] = Integer::from(value);
+        }
+        Z::new(coefficients)
+    }
+    fn as_q(poly: &Z) -> Q {
+        Q::new(
+            poly.coefficients()
+                .iter()
+                .cloned()
+                .map(Rational::from)
+                .collect(),
+        )
+    }
+    // Independent SymPy ZZ oracle for degree 36,40,48:
+    // gcd((x^2+1)*(x^(n-2)+x+2), (x^2+1)*(x^(n-3)+3*x^2+1)) = x^2+1.
+    let g = polynomial(2, &[(0, 1)]);
+    for degree in [36_usize, 40, 48] {
+        let a = g.mul(&polynomial(degree - 2, &[(0, 2), (1, 1)]));
+        let b = g.mul(&polynomial(degree - 3, &[(0, 1), (2, 3)]));
+        assert_ne!(a, b);
+        assert_eq!(a.gcd(&b), Ok(g.clone()), "Z[x] degree {degree}");
+        assert_eq!(b.gcd(&a), Ok(g.clone()), "reverse Z[x] {degree}");
+        assert_eq!(as_q(&a).gcd(&as_q(&b)), Ok(as_q(&g)), "Q[x] {degree}");
+    }
+}
+
+#[test]
+fn degree49_nonidentical_exact_fallback_keeps_independent_gcd() {
+    use perfect_polynomial::IntegerPolynomial as Z;
+    // Independently verified by SymPy:
+    // gcd((x²+1)(x^47+x+2), (x²+1)(x^46+3x²+1)) = x²+1.
+    let g = Z::new(vec![Integer::one(), Integer::zero(), Integer::one()]);
+    let mut first = vec![Integer::zero(); 48];
+    first[0] = Integer::from(2_i64);
+    first[1] = Integer::one();
+    first[47] = Integer::one();
+    let mut second = vec![Integer::zero(); 47];
+    second[0] = Integer::one();
+    second[2] = Integer::from(3_i64);
+    second[46] = Integer::one();
+    let a = g.mul(&Z::new(first));
+    let b = g.mul(&Z::new(second));
+    assert_eq!(a.degree(), Some(49));
+    assert_eq!(a.gcd(&b), Ok(g.clone()));
+    let rational = |p: &Z| {
+        Q::new(
+            p.coefficients()
+                .iter()
+                .cloned()
+                .map(Rational::from)
+                .collect(),
+        )
+    };
+    assert_eq!(rational(&a).gcd(&rational(&b)), Ok(rational(&g)));
+}
