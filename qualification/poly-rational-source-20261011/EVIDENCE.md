@@ -125,3 +125,41 @@ These are short, paired workload measurements with two observations per variant,
 **Storage cleanup after benchmarking:** A scoped `cargo clean` of the experimental Polynomial Windows target removed 7,203 generated files (943.3 MiB as reported by Cargo). All 24 root-level scripts and logs were copied, SHA-256 checked, restored, and independently rechecked before the duplicate backup was deleted. C: free at this execution's start was 23,056,355,328 bytes; measured free space after cleanup/backup removal was 24,051,347,456 bytes (increase 994,992,128 bytes). WSL2 VHDX was not compacted, unrelated caches and untracked evidence were not touched.
 
 The exact tested and immutable source graph remains Numeric `19b6747`, Arithmetic `65d8f55`, Rational `812d667`, Polynomial `d120829`, already qualified by commit `2b84ceb` with 34/34 checks in each of six platform/feature executions. No new acceptance, CI, physical ARM64, or release evidence is implied by this benchmark-only record.
+
+## 2026-10-11 exact nonzero-constant Polynomial GCD source and benchmark
+
+**New exact Polynomial source SHA:** `0ea415f459c911b090c25ca25c62797bd2082fbc` (existing experimental PR #18; direct predecessor `d1208299eaea7c0dd924a19178689c67753fe3cc`). Numeric `19b6747`, Arithmetic `65d8f55`, and Rational `812d667` are unchanged. Production change in `src/division.rs` recognizes nonzero constant operands *after* the existing zero-GCD cases. For Q[x], every nonzero constant is invertible, so the canonical monic GCD is 1. For Z[x], the positive constant GCD is `gcd(content(left),content(right))`. This bypasses both PRS and rational Euclidean division for this exact case. Normal nonconstant paths remain unchanged.
+
+**Independent source-owned regression:** `tests/m1_m2_constant_gcd_exact_20261011.rs` verifies signed coefficient contents, opposite order, two constants, zero semantics, 8192-bit exact magnitudes, fractional nonzero unit constants, and a nonconstant shared-factor control. All three tests passed in both Windows feature modes, complete Windows Polynomial test suites and warning-denied all-target Clippy passed both modes, and direct QEMU AArch64 execution of these three tests passed both modes.
+
+**Independent Qualification regression:** `constant_polynomial_gcd_uses_exact_content_and_field_units` uses the separate SymPy-derived equation `gcd_Z(6*x^128+18*x^64-12,-18)=6`, both operand orders, exact rational unit GCD, and zero. Frozen 25 imported tests and prior nine cross-operation tests are unchanged. The current consumer includes 25 imported + 10 cross-operation tests = **35 tests per feature/platform configuration**.
+
+**Matched release-mode public GCD benchmark:** `benchmarks/constant_gcd_20261011.rs` (canonical SHA-256 `b36e6f776ad8eb3a2a4da03cb73a6c956bbb33eb6b283c88714c4cbbf6a7b5d3`). Its source fixture is outside this consumer's Cargo examples so test/Clippy scope is unchanged. In the authorized Polynomial experiment, four ordered A/B/B/A builds substituted *only* the Git parent `src/division.rs` against the candidate file, rebuilding the same release-mode Cargo example each time with `--locked --offline`, `CARGO_BUILD_JOBS=2`, and `CARGO_INCREMENTAL=0`; a `finally` handler restored and byte-verified the candidate. Coefficients, polynomial degree, benchmark repetition counts and dense controls are frozen in the checked-in benchmark fixture. Nanoseconds below are medians of two iterations per source variant:
+
+| Public GCD operation | Previous (ns) | Optimized (ns) | Ratio |
+|---|---:|---:|---:|
+| Z[x], degree 16 versus nonzero constant | 1,280 | 296 | 4.32x |
+| Z[x], degree 64 versus nonzero constant | 1,711 | 361 | 4.74x |
+| Z[x], degree 128 versus nonzero constant | 2,774 | 436 | 6.36x |
+| Z[x], degree 256 versus nonzero constant | 4,726 | 661 | 7.15x |
+| Q[x], degree 16 versus nonzero constant | 400 | 38 | 10.53x |
+| Q[x], degree 64 versus nonzero constant | 662 | 36 | 18.39x |
+| Q[x], degree 128 versus nonzero constant | 1,041 | 34 | 30.62x |
+| Q[x], degree 256 versus nonzero constant | 1,780 | 35 | 50.86x |
+| Z[x], degree 16 versus nonconstant degree-one control | 2,044 | 2,349 | 0.87x (regression) |
+| Z[x], degree 256 versus nonconstant degree-one control | 11,392 | 11,359 | ~1.00x |
+| Q[x], degree 256 versus nonconstant degree-one control | 8,636 | 8,428 | 1.02x |
+
+These are short matched measurements of the specified exact workloads, not universal speedups, a formal statistical qualification, or an improvement to general nonconstant PRS. No physical AArch64 hardware testing, hosted CI, formal M1/M2 gate acceptance, independent API/security approval, licensing or release is implied. Historical Qualified consumers and PerfectPi were not modified.
+
+**Final source-exact Qualification execution (current pinned graph):**
+
+| Environment | No default features | All features |
+|---|---:|---:|
+| Windows x86-64 | 35/35 passed | 35/35 passed |
+| Ubuntu WSL2 x86-64 | 35/35 passed | 35/35 passed |
+| QEMU user-mode Linux AArch64 | 35/35 passed | 35/35 passed |
+
+All six `cargo test --locked --offline` configurations exited zero: **210 total successful test executions**. Final Windows Qualification `cargo clippy --all-targets -- -D warnings` passed in both modes, as did source-owned Polynomial Clippy. Complete native Windows and WSL2 Polynomial source suites passed both modes. The new three-test source regression independently passed QEMU Linux AArch64 in both modes. Source-owned warning-denied rustdoc passed both modes. Windows and WSL2 `verify_graph.py` checked the identical committed source graph, Cargo.lock, original independent mathematical vectors and original SymPy oracle; the new consumer test and benchmark fixture SHA-256 values also matched. Independent CPython 14-vector checks passed on Windows and WSL2 with identical results. `cargo tree --locked --offline -d` reported no duplicate packages.
+
+The acceptance boundary remains unchanged: local execution evidence for these exact configurations only; neither physical ARM64 validation, externally billing-blocked hosted CI, formal milestone approval nor release is established.

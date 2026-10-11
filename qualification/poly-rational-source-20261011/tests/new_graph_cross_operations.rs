@@ -242,3 +242,29 @@ fn sparse_integer_nonmonomial_division_matches_independent_exact_vectors() {
         Err(PolynomialError::NonExactDivision)
     );
 }
+
+#[test]
+fn constant_polynomial_gcd_uses_exact_content_and_field_units() {
+    use perfect_polynomial::IntegerPolynomial as Z;
+
+    // Python/SymPy: gcd_Z(6*x^128 + 18*x^64 - 12, -18) = 6,
+    // independent of sign, order, or sparse coefficient storage.
+    let mut cs = vec![Integer::zero(); 129];
+    cs[0] = Integer::from(-12_i64);
+    cs[64] = Integer::from(18_i64);
+    cs[128] = Integer::from(6_i64);
+    let a = Z::new(cs);
+    let c = Z::constant(Integer::from(-18_i64));
+    let expected = Z::constant(Integer::from(6_i64));
+    assert_eq!(a.gcd(&c), Ok(expected.clone()));
+    assert_eq!(c.gcd(&a), Ok(expected));
+
+    // Over Q[x] any nonzero rational constant is a unit; gcd is monic 1.
+    let p = Q::new(vec![r(3, 7), r(-5, 11), r(1, 1)]);
+    let unit = Q::constant(r(-7, 11));
+    let one = Q::constant(Rational::one());
+    assert_eq!(p.gcd(&unit), Ok(one.clone()));
+    assert_eq!(unit.gcd(&p), Ok(one.clone()));
+    assert_eq!(unit.gcd(&unit), Ok(one));
+    assert_eq!(Q::zero().gcd(&Q::zero()), Ok(Q::zero()));
+}
