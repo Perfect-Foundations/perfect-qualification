@@ -62,7 +62,7 @@ dependencies = [
 [[package]]
 name = "perfect-units"
 version = "0.1.0"
-source = "git+https://github.com/Perfect-Foundations/perfect-units.git?rev=2fead7599f0f44dbc3ea7612c9b1db32330d8852#2fead7599f0f44dbc3ea7612c9b1db32330d8852"
+source = "git+https://github.com/Perfect-Foundations/perfect-units.git?rev=a98a063ef6fa719a697eb290cf6af90514eeafbb#a98a063ef6fa719a697eb290cf6af90514eeafbb"
 dependencies = [
  "perfect-arithmetic",
  "perfect-rational",

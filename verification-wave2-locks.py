@@ -6,12 +6,12 @@ import pathlib, tomllib, hashlib, subprocess
 root=pathlib.Path(__file__).resolve().parent
 expected={
  "perfect-algebra":{
-  "perfect-algebra":"5e24b4f4c685ef5dd26e1976cda5518b06795fe3",
+  "perfect-algebra":"8c8c0794f6098db1545e4ca18a6bfb38e2e822f2",
   "perfect-number-theory":"2bdd2eee53615acb5beac8720c1d2be62120c080",
   "perfect-arithmetic":"9ec660f9abfd7fe93e441e77dbb1158c371603f5",
   "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b"},
  "perfect-units":{
-  "perfect-units":"2fead7599f0f44dbc3ea7612c9b1db32330d8852",
+  "perfect-units":"a98a063ef6fa719a697eb290cf6af90514eeafbb",
   "perfect-rational":"97cce0ae8ff7ef206929d273e1d4a5774f6a2a34",
   "perfect-arithmetic":"1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
   "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b"}}

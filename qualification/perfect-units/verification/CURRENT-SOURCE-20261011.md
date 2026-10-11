@@ -2,7 +2,7 @@
 
 ## Exact source graph
 
-- `perfect-units@2fead7599f0f44dbc3ea7612c9b1db32330d8852`
+- `perfect-units@a98a063ef6fa719a697eb290cf6af90514eeafbb`
 - `perfect-rational@97cce0ae8ff7ef206929d273e1d4a5774f6a2a34`
 - `perfect-arithmetic@1a54d3c7cbbae4e73325cc70fd2777a2427b1504`
 - `perfect-numeric@19b6747cd852a47a694a020b97ba70b6b3ef259b`

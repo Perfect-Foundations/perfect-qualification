@@ -2,7 +2,7 @@
 
 ## Exact source graph
 
-- `perfect-algebra@5e24b4f4c685ef5dd26e1976cda5518b06795fe3`
+- `perfect-algebra@8c8c0794f6098db1545e4ca18a6bfb38e2e822f2`
 - `perfect-number-theory@2bdd2eee53615acb5beac8720c1d2be62120c080`
 - `perfect-arithmetic@9ec660f9abfd7fe93e441e77dbb1158c371603f5`
 - `perfect-numeric@19b6747cd852a47a694a020b97ba70b6b3ef259b`
