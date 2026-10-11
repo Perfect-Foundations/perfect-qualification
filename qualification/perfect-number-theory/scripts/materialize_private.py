@@ -8,7 +8,7 @@ import subprocess
 import tomllib
 
 REVISIONS = {
-    "perfect-number-theory": "41aaa4763da2d11aea9e65666f9ed7f84d43ed61",
+    "perfect-number-theory": "2bdd2eee53615acb5beac8720c1d2be62120c080",
     "perfect-arithmetic": "9ec660f9abfd7fe93e441e77dbb1158c371603f5",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
 }

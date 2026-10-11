@@ -6,7 +6,7 @@ Python's standard-library integers and arithmetic, independent of Number Theory.
 
 Pinned source graph:
 
-- Number Theory: `41aaa4763da2d11aea9e65666f9ed7f84d43ed61`
+- Number Theory: `2bdd2eee53615acb5beac8720c1d2be62120c080`
 - Arithmetic: `9ec660f9abfd7fe93e441e77dbb1158c371603f5`
 - Numeric: `19b6747cd852a47a694a020b97ba70b6b3ef259b`
 - MSRV: Rust 1.99.0
