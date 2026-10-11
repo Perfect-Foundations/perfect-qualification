@@ -1,7 +1,7 @@
 # Independent Uncertainty qualification evidence — 2026-10-11
 
 Source: `Perfect-Foundations/perfect-uncertainty` Git SHA
-`d9e82a6e4f510903fe0125cae91fa0d8fa00d4e9`.
+`82ebfc51ca3754507ddd36380615bf006ea6d08a`.
 Production dependency exclusively on this pinned exact Git revision;
 only additional transitive dependency `libm=0.2.15`. The independent
 consumer retains a lockfile and disallows an implicit path override.
@@ -30,3 +30,45 @@ test executions total. Python independently regenerated corpus hashes on both
 hosts and source/lock verifier passed. No ARM64 hardware, formal acceptance,
 published GUM profile, or release claim. Windows and WSL2 are distinct hosts
 but the same physical x86-64 hardware.
+
+## Numerical-stability source follow-up — same date
+
+Uncertainty source pinned to
+`82ebfc51ca3754507ddd36380615bf006ea6d08a`.
+The source fixes a demonstrated catastrophic cancellation defect in the
+first-order GUM kernel by using Neumaier-compensated evaluation of
+`g^T (R g)`. For the all-ones rank-one PSD correlation matrix and
+`[1e16,-1e16,1]`, the exact variance is 1; earlier multiplication-first
+accumulation could return a grossly incorrect positive or negative value.
+
+The **original immutable 103 exact Fraction vectors remain unchanged**.
+Independent Python `scripts/adversarial_reference.py` separately computes
+160 more exact arithmetic cases from diagonal and pairwise terms over
+four structurally different PSD families and mixed magnitudes through
+`10^18`. Its retained corpus
+`vectors/adversarial_gum_v1.tsv` has SHA-256
+`23e5c039b6728ade8cd56d42a5e5b3ebfd023821f2fe860e76fddcedc8fed8e4`.
+Combined mathematical reference scope is **263 exact vectors**.
+
+The separate public consumer additionally checks an exact application of
+[NIST TN 1297 Appendix A, Eq. (A-3)](https://www.nist.gov/pml/nist-technical-note-1297/nist-tn-1297-appendix-law-propagation-uncertainty):
+a test-derived example, not a reproduction of NIST's published numerical data.
+
+Native Windows x86-64 and WSL2 Linux x86-64 both passed
+`cargo test --locked --offline` and
+`cargo clippy --locked --offline --all-targets -- -D warnings`
+under `--no-default-features` and `--all-features`:
+five integration tests per host-feature configuration, **20 passing test
+executions**, with no failures. The 263-case independent Python reference,
+all three frozen vector hashes, and exact pinned Cargo.lock graph verifier
+passed on each host.
+
+The WSL2 cache initially lacked the new Git commit, so an exact copy of
+the same production Git object was fetched from the checked-out Git
+repository into its private Cargo Git cache. There were no path overrides,
+dependency substitutions, altered lockfile identities or source modifications.
+
+This source-exact candidate is **not** accepted as formal M1 qualification.
+Broader conditioned-matrix studies, independently reproduced published GUM
+numerical datasets, physical ARM64 runtime, hosted CI and API/security review
+remain pending. Perfectπ remained untouched.

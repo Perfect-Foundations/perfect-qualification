@@ -11,7 +11,7 @@ checksum = "f9fbbcab51052fe104eb5e5d351cf728d30a5be1fe14d9be8a3b097481fb97de"
 [[package]]
 name = "perfect-uncertainty"
 version = "0.1.0"
-source = "git+https://github.com/Perfect-Foundations/perfect-uncertainty.git?rev=d9e82a6e4f510903fe0125cae91fa0d8fa00d4e9#d9e82a6e4f510903fe0125cae91fa0d8fa00d4e9"
+source = "git+https://github.com/Perfect-Foundations/perfect-uncertainty.git?rev=82ebfc51ca3754507ddd36380615bf006ea6d08a#82ebfc51ca3754507ddd36380615bf006ea6d08a"
 dependencies = [
  "libm",
 ]
