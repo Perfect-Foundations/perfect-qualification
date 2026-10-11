@@ -6,8 +6,8 @@ Executed 2026-10-10/11 America/New_York; final Qualification evidence for the au
 
 - Numeric: `19b6747cd852a47a694a020b97ba70b6b3ef259b`
 - Arithmetic: `65d8f55641739d5d6a11c17fe7d68c8898d984d7`
-- Rational: `8bd86f328850c8153537842947b161ed7e3f0d24`
-- Polynomial: `9a073971392c6caae1238337fb6c10afef11cbf0`
+- Rational: `812d66757ce145a7a70fc33818c7b3059ecd3401`
+- Polynomial: `29274e1edd5db2b23fb5ee2465987f11cd9d0efa`
 
 `source-exact.json` and `verify_graph.py` require the exact source Git identities, normalized Cargo.lock SHA-256, ten unchanged imported independent test-source SHA-256 values, SymPy fixture SHA-256, and current cross-operation test-source SHA-256. Cargo graph is `--locked --offline`; `cargo tree -d` shows no duplicate source identity. No `[patch]`, source override, new clone, worktree or replacement consumer.
 
@@ -15,13 +15,13 @@ Executed 2026-10-10/11 America/New_York; final Qualification evidence for the au
 
 | Execution environment | No default features | All features |
 |---|---:|---:|
-| Windows x86-64 | 31/31 passed | 31/31 passed |
-| Ubuntu WSL2 Linux x86-64 | 31/31 passed | 31/31 passed |
-| QEMU user-mode Linux AArch64 | 31/31 passed | 31/31 passed |
+| Windows x86-64 | 33/33 passed | 33/33 passed |
+| Ubuntu WSL2 Linux x86-64 | 33/33 passed | 33/33 passed |
+| QEMU user-mode Linux AArch64 | 33/33 passed | 33/33 passed |
 
-All six `cargo test --locked --offline` executions returned zero. Each runs 25 frozen independent mathematical checks and six current cross-operation tests. The added cross-operation regression has independent CPython Fraction/integer results for signed unit Rational multiplication, integer-valued multiplication, Horner evaluation at 5/3, quotient/remainder by a signed constant and complete polynomial coefficients. The other two check exact mixed-denominator cross-operations, wide canonical zero normalization, polynomial GCD and fused Integer cancellation.
+All six `cargo test --locked --offline` executions returned zero. Each runs 25 frozen independent mathematical checks and eight current cross-operation tests. The added cross-operation regression has independent CPython Fraction/integer results for signed unit Rational multiplication, integer-valued multiplication, Horner evaluation at 5/3, quotient/remainder by a signed constant and complete polynomial coefficients. The other two check exact mixed-denominator cross-operations, wide canonical zero normalization, polynomial GCD and fused Integer cancellation.
 
-Windows all-target `cargo clippy -- -D warnings` passed both feature modes for the final Qualification consumer; Windows full Arithmetic, Rational and Polynomial source test/lint matrices also passed, and Rustfmt checked. Ubuntu WSL2 complete Rational and Polynomial source suites passed both feature modes at the final pinned revisions; Arithmetic M4 complete WSL2 source suites were previously executed against unchanged `65d8f55`. New changed-operation focused tests passed on QEMU in both feature modes when separately executed prior to this source graph; this final 30-test consumer additionally passed QEMU both modes.
+Windows all-target `cargo clippy -- -D warnings` passed both feature modes for the final Qualification consumer; Windows full Arithmetic, Rational and Polynomial source test/lint matrices also passed, and Rustfmt checked. Ubuntu WSL2 complete Rational and Polynomial source suites passed both feature modes at the final pinned revisions; Arithmetic M4 complete WSL2 source suites were previously executed against unchanged `65d8f55`. New changed-operation focused tests passed on QEMU in both feature modes when separately executed prior to this source graph; this current 33-test consumer additionally passed QEMU both modes.
 
 Independent `verify_m4_m5_python.py` exact reference script passed 14 Integer/Fraction vectors on Windows and Ubuntu WSL2, both with SHA-256 `87ab8e114247fbb3df5489708821e8fe985693e461ef7ee1f4e7dd9c59b204b6`.
 
@@ -65,3 +65,31 @@ This is verified exact behavior for the executed configurations, not physical AR
 - Final exact locked consumer: **25 imported independent + 6 current cross-operation = 31 tests**, zero failures per configuration: Windows native x86-64 no-default/all-features; WSL2 Linux native x86-64 no-default/all-features; QEMU user-emulated Linux AArch64 no-default/all-features. All six Cargo test commands exited zero. Windows warning-denied all-target Clippy also passed in both configurations. The exact graph/lockfile/imported-oracle hash verifier passed.
 - Measured matched Windows release-mode A/B/B/A **public division** performance on selected sparse divisor/quotient degree pairs: (128,200) 52,058→12,982 ns; (256,200) 68,822→9,162 ns; (512,200) 146,230→20,075 ns. Dense controls (256,40) 1,222,316→1,107,699 ns and (512,40) 2,647,283→2,358,966 ns. These are workload-specific short measurements, **not** a universal performance claim.
 - The earlier graph at `dc61c0fe3690ce59f7c878da4a4e41b1ca2b490c` is retained in Git history, and the separate `fused-git-graph-20261010/` corpus remains untouched. QEMU results are not physical ARM64 hardware acceptance. Hosted Actions remain account billing-blocked; formal M1/M2/M4/M5, independent API/security review, licenses, and releases are not approved.
+
+
+## Current revision — integer monomial multiplication and mixed Rational product (2026-10-11)
+
+The previous sparse Rational field division Qualification (Polynomial `9a07397`, Qualification `5348a78`) remains historical in Git history. This update advances only the existing current consumer, not the historical `fused-git-graph-20261010` corpus.
+
+**Exact tested production graph:** Numeric `19b6747`, Arithmetic `65d8f55`, Rational `812d66757ce145a7a70fc33818c7b3059ecd3401`, Polynomial `29274e1edd5db2b23fb5ee2465987f11cd9d0efa`. Rational `812d667` specializes `mul` when exactly one operand has denominator one, performing only the potentially relevant cross-cancellation. Polynomial `f595b5e` recognizes canonical signed/nonunit integer monomial multipliers from a cheap first-coefficient gate, then performs exact coefficient scaling and shifting. Polynomial `29274e1` pins Rational `812d667` in manifest and lockfile.
+
+Matched four-run A/B/B/A release-mode *public-operation* measurements (nanoseconds; baseline→candidate), selected operands only:
+
+| Operation | Baseline | Candidate |
+|---|---:|---:|
+| IntegerPolynomial 128 coefficients, 256-bit × x^64 | 20,882 | 4,650 |
+| IntegerPolynomial 512 coefficients, 256-bit × x^64 | 72,972 | 17,485 |
+| IntegerPolynomial 128 coefficients, 256-bit × 17*x^64 | 20,830 | 5,430 |
+| IntegerPolynomial 512 coefficients, 256-bit × dense degree-3 control | 174,020 | 184,628 (regression) |
+| Rational integral × fractional, 256-bit | 342 | 222 |
+| Rational fractional × integral, 1,024-bit | 400 | 273 |
+| Rational exact integral/fractional cancellation, 4,096-bit | 302 | 206 |
+| Rational fractional × fractional control, 1,024-bit | 15,533 | 14,928 |
+
+These are short, matched workload observations, not universal performance guarantees, memory measurements or statistically qualified cross-platform speedups.
+
+New permanent source-owned regressions check exact wide signed monomial coefficients, swapped operand order, canonical zero, sparse/dense reference convolution, single-integral Rational multiplication, full cancellation, sign, canonical reduction and fractional control. Two new independent current-consumer tests cover 4096-bit Fraction product identities and a 96-coefficient monomial scaling reference. The existing frozen 25 imported independent oracle tests were not changed.
+
+**Final locked Qualification result:** 25 imported + 8 current cross-operation tests = **33/33 passing in six configurations**: Windows native x86-64, Ubuntu WSL2 x86-64 and QEMU user-mode Linux AArch64, each with no-default and all-features. All six test commands exited zero. Warning-denied Windows Qualification Clippy passed both modes. The updated immutable graph, lockfile digest, current cross-operation hash and unchanged imported SymPy/source hashes passed the exact verifier. Focused changed-operation source tests directly passed QEMU both modes; full affected Rust source tests passed Windows and WSL2 both modes; warning-denied Windows source Clippy and rustdoc passed both modes.
+
+**Boundaries:** No physical ARM64 evidence or formal M1/M2/M4/M5 acceptance. Hosted Actions remain externally blocked by account billing. Independent API/security approval, licensing and releases remain pending. No PerfectPi files were accessed or modified.

@@ -3,10 +3,10 @@
   "packages": {
     "perfect-arithmetic": "65d8f55641739d5d6a11c17fe7d68c8898d984d7",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
-    "perfect-rational": "8bd86f328850c8153537842947b161ed7e3f0d24",
-    "perfect-polynomial": "9a073971392c6caae1238337fb6c10afef11cbf0"
+    "perfect-rational": "812d66757ce145a7a70fc33818c7b3059ecd3401",
+    "perfect-polynomial": "29274e1edd5db2b23fb5ee2465987f11cd9d0efa"
   },
-  "cargo_lock_sha256": "36425bba1816bd937a5277dbf15c9aa1d57924de7a0693126c790de64cc7bf58",
+  "cargo_lock_sha256": "ce94a71b2c3c385ec6f83a38e99f1cf269a07db6e156dd805e53e47e3c6f0f06",
   "imported_test_sha256": {
     "independent_math.rs": "1faf1c921f7a3418e2a48cf0ceea38a01c5e3507cf8d6107075f33de3b2c09de",
     "m2_content_derivative_independent.rs": "2410c252613e40a704d7e02a105593a6d1d0651d319152b25bcbea9c9f120380",
@@ -22,5 +22,5 @@
   "sympy_oracle_sha256": "622490f8c3c72bcffbd4889ba8d572043cf35ac7ef393801a79fa194bce256f6",
   "source_parent_qualification": "603e24f5c20c3c10abc75caff5c057c58116112e",
   "verification_boundary": "experimental, native Windows and WSL2 plus QEMU where executed; not physical ARM64, independent approval or release",
-  "cross_operation_test_sha256": "e58f771c7884316c60c9f92c922553d3d10a8ddae44b893fbce1fca4e26c3dfd"
+  "cross_operation_test_sha256": "43ab8974c7cfa4ee197a47b78053db14e64627817e1138c738c7739e5f6edbdd"
 }

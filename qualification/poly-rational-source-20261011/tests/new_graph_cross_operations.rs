@@ -154,3 +154,55 @@ fn high_degree_sparse_field_divisor_matches_independent_fraction_vectors() {
     let actual = Q::new(dividend).div_rem(&divisor).unwrap();
     assert_eq!(actual, (expected_q, expected_r));
 }
+
+#[test]
+fn integral_fraction_cancellation_matches_python_fraction_at_wide_width() {
+    let denominator = Integer::from(Natural::one().shl_bits(4096).add(&Natural::from(19_u8)));
+    let fractional = Rational::new(Integer::from(29_i64), denominator.clone()).unwrap();
+    let integral = Rational::from(denominator.clone());
+    // Python Fraction(D,1) * Fraction(29,D) = Fraction(29,1).
+    assert_eq!(
+        integral.mul(&fractional),
+        Rational::from(Integer::from(29_i64))
+    );
+    assert_eq!(
+        fractional.mul(&integral.neg()),
+        Rational::from(Integer::from(-29_i64))
+    );
+    let numerator = Integer::from(Natural::one().shl_bits(4096).add(&Natural::from(17_u8)));
+    let n = Rational::from(numerator.clone());
+    // Independently specified Fraction(N*29,D) with canonical sign and reduction.
+    let reference = Rational::new(numerator.mul(&Integer::from(29_i64)), denominator).unwrap();
+    assert_eq!(n.mul(&fractional), reference);
+    assert_eq!(fractional.mul(&n), reference);
+}
+
+#[test]
+fn integer_monomial_coefficients_match_shifted_integer_reference() {
+    use perfect_polynomial::IntegerPolynomial as Z;
+    let high = Integer::from(Natural::one().shl_bits(256));
+    let a = Z::new(
+        (0..96usize)
+            .map(|i| {
+                let value = high.add(&Integer::from((i + 5) as i64));
+                if i.is_multiple_of(3) {
+                    value.neg()
+                } else {
+                    value
+                }
+            })
+            .collect(),
+    );
+    let mut monomial = vec![Integer::zero(); 37];
+    monomial.push(Integer::from(-17_i64));
+    let b = Z::new(monomial);
+    let mut reference = vec![Integer::zero(); 37];
+    reference.extend(
+        a.coefficients()
+            .iter()
+            .map(|c| c.mul(&Integer::from(-17_i64))),
+    );
+    let expected = Z::new(reference);
+    assert_eq!(a.mul(&b), expected);
+    assert_eq!(b.mul(&a), expected);
+}
