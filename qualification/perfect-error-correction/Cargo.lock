@@ -39,7 +39,7 @@ dependencies = [
 [[package]]
 name = "perfect-algebra"
 version = "0.1.0"
-source = "git+https://github.com/Perfect-Foundations/perfect-algebra.git?rev=6a2d4924466ebeab79b849f56e6d9a8b9acfdf24#6a2d4924466ebeab79b849f56e6d9a8b9acfdf24"
+source = "git+https://github.com/Perfect-Foundations/perfect-algebra.git?rev=da90fb38b1491aac8caf8600c0943d5a3bab388c#da90fb38b1491aac8caf8600c0943d5a3bab388c"
 dependencies = [
  "perfect-arithmetic",
  "perfect-number-theory",
@@ -58,7 +58,7 @@ dependencies = [
 [[package]]
 name = "perfect-error-correction"
 version = "0.1.0"
-source = "git+https://github.com/Perfect-Foundations/perfect-error-correction.git?rev=55a5fd368f008dd8b8bbbea1751829d5e1dc99aa#55a5fd368f008dd8b8bbbea1751829d5e1dc99aa"
+source = "git+https://github.com/Perfect-Foundations/perfect-error-correction.git?rev=c7b6ebfb4ef10630378f2f724f7e81bdc7e4f1fb#c7b6ebfb4ef10630378f2f724f7e81bdc7e4f1fb"
 dependencies = [
  "perfect-algebra",
  "perfect-arithmetic",
