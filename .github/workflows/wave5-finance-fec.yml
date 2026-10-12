@@ -1,5 +1,8 @@
 name: Wave 5 Finance and FEC Qualification
 on:
+  push:
+    branches: [qualify-wave3-fec-finance-20261011]
+    paths: ['.github/workflows/wave5-finance-fec.yml']
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
@@ -14,7 +17,7 @@ permissions:
 
 jobs:
   exact-qualification:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
