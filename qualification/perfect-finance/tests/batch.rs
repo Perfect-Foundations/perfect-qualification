@@ -32,6 +32,8 @@ fn batched_range_queries_match_python_exact_references() {
     let mut batch = CashFlowBatch::new(&flows, 8, limits).unwrap();
     let cap = batch.retained_index_capacity();
     let mut count = 0;
+    let mut reusable_totals = Vec::with_capacity(8);
+    let mut reusable_grouped = Vec::with_capacity(8);
     for entry in SOURCE
         .lines()
         .filter(|l| !l.starts_with('#') && !l.is_empty())
@@ -49,11 +51,19 @@ fn batched_range_queries_match_python_exact_references() {
         };
         let range = DateRange::new(date(fields[1]), date(fields[2]), start, end).unwrap();
         let result = batch.currency_totals(Some(&range)).unwrap();
+        batch
+            .currency_totals_into(Some(&range), &mut reusable_totals)
+            .unwrap();
+        assert_eq!(reusable_totals, result);
         let expected = Decimal::parse(fields[6], limits).unwrap();
         let currency = CurrencyCode::new(fields[5]).unwrap();
         let found = result.iter().find(|m| m.currency() == currency).unwrap();
         assert_eq!(found.amount(), &expected, "oracle {count}");
         let dated = batch.aggregate(Some(&range)).unwrap();
+        batch
+            .aggregate_into(Some(&range), &mut reusable_grouped)
+            .unwrap();
+        assert_eq!(reusable_grouped, dated);
         assert!(dated.iter().all(|f| range.contains(f.date())));
         count += 1;
     }
@@ -64,4 +74,30 @@ fn batched_range_queries_match_python_exact_references() {
     ));
     assert_eq!(batch.len(), 8);
     assert!(batch.retained_index_capacity() >= cap);
+}
+
+#[test]
+fn caller_owned_outputs_commit_only_after_exact_success() {
+    let limits = DecimalLimits::new(1).unwrap();
+    let rows = [
+        row("2024-02-29", "EUR", "1", limits),
+        row("2024-02-29", "USD", "9", limits),
+        row("2024-02-29", "USD", "9", limits),
+    ];
+    let mut batch = CashFlowBatch::new(&rows, 3, limits).unwrap();
+    let marker = row("2024-02-28", "JPY", "3", limits);
+    let mut dated = vec![marker.clone()];
+    let mut totals = vec![marker.money().clone()];
+    assert!(batch.aggregate_into(None, &mut dated).is_err());
+    assert!(batch.currency_totals_into(None, &mut totals).is_err());
+    assert_eq!(dated.as_slice(), core::slice::from_ref(&marker));
+    assert_eq!(totals[0], *marker.money());
+    let replacement = [row("2024-02-29", "EUR", "2", limits)];
+    batch.reset(&replacement, 1, limits).unwrap();
+    for _ in 0..5 {
+        batch.aggregate_into(None, &mut dated).unwrap();
+        batch.currency_totals_into(None, &mut totals).unwrap();
+        assert_eq!(dated.as_slice(), replacement.as_slice());
+        assert_eq!(totals[0], *replacement[0].money());
+    }
 }

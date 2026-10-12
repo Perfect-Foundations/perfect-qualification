@@ -6,13 +6,13 @@ import tomllib
 root=Path(__file__).resolve().parent
 GRAPH={
  "perfect-error-correction":{
-  "perfect-error-correction":"985176401494dda6973da05122d946b4ff3004e7",
-  "perfect-algebra":"8c8c0794f6098db1545e4ca18a6bfb38e2e822f2",
+  "perfect-error-correction":"14f0d11ac3424c68158812511d6c4cac13a90ef1",
+  "perfect-algebra":"6d4eac0ebaab2417720304ba2739089120db8fa4",
   "perfect-number-theory":"2bdd2eee53615acb5beac8720c1d2be62120c080",
   "perfect-arithmetic":"9ec660f9abfd7fe93e441e77dbb1158c371603f5",
   "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b"},
  "perfect-finance":{
-  "perfect-finance":"cacc0eb40a735788245033d0679c9d8364f73545",
+  "perfect-finance":"1752f18f9d17fc59a8440dcb48abb9f3d9f986f3",
   "perfect-decimal":"f048affde6c5ea037b793580d295254695f7e97a",
   "perfect-rational":"97cce0ae8ff7ef206929d273e1d4a5774f6a2a34",
   "perfect-arithmetic":"1a54d3c7cbbae4e73325cc70fd2777a2427b1504",

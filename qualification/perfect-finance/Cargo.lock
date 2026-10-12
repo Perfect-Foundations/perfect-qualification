@@ -74,7 +74,7 @@ dependencies = [
 [[package]]
 name = "perfect-finance"
 version = "0.1.0"
-source = "git+https://github.com/Perfect-Foundations/perfect-finance.git?rev=cacc0eb40a735788245033d0679c9d8364f73545#cacc0eb40a735788245033d0679c9d8364f73545"
+source = "git+https://github.com/Perfect-Foundations/perfect-finance.git?rev=1752f18f9d17fc59a8440dcb48abb9f3d9f986f3#1752f18f9d17fc59a8440dcb48abb9f3d9f986f3"
 dependencies = [
  "perfect-decimal",
  "perfect-rational",
