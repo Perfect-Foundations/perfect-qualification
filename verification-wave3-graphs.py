@@ -54,7 +54,7 @@ for name,wanted in GRAPH.items():
     assert b"\r" not in data and data.endswith(b"\n")
     assert sha256(data).hexdigest()==digest,(name,vector)
   print("EXACT_GRAPH_AND_VECTOR_PASS",name,
-        "lock_sha256",sha256(lock.read_bytes()).hexdigest())
+        "lock_sha256",sha256(lock.read_bytes().replace(b"\r\n", b"\n")).hexdigest())
 print("WAVE3_GRAPH_LOCK_FROZEN_VECTORS_PASS")
 
 # Independent exact two-revision Finance performance harness provenance.
@@ -76,4 +76,4 @@ assert sources=={
     f"git+https://github.com/Perfect-Foundations/perfect-finance.git?rev={sha}#{sha}"
     for sha in expected.values()
 },sources
-print("EXACT_FINANCE_DUAL_REVISION_BENCH_PASS",sha256(bench_lock).hexdigest())
+print("EXACT_FINANCE_DUAL_REVISION_BENCH_PASS",sha256(bench_lock.replace(b"\r\n", b"\n")).hexdigest())
