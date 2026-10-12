@@ -13,6 +13,7 @@ VECTORS={
     "adversarial_gum_v1.tsv":"23e5c039b6728ade8cd56d42a5e5b3ebfd023821f2fe860e76fddcedc8fed8e4",
     "conditioning_v1.tsv":"b59e7aab50b1f89ab01661e01c119e50bb19e9fc9d511d3c2de208b036ffaa86",
     "conditioned_4_6_8_v1.tsv":"30541264282bfcb43ada3e8349e8ac8e4c8fe1b90eb61ffcb068f0f6e9f37cc3",
+    "gram_covariance_v1.tsv":"d10b42da25b5746390c1b1cd47677a6b5704d7e9f03eeaab483898b933560aaf",
 }
 manifest=tomllib.loads((CONSUMER/"Cargo.toml").read_text(encoding="utf-8"))
 deps=manifest["dependencies"]

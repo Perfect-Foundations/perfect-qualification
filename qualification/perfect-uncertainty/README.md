@@ -32,3 +32,7 @@ Near-singular binary64 input verification additionally uses
 The full four-corpus mathematical reference count is **497**.
 The complete evidence and numerical limits are documented in
 `verification/CURRENT-SOURCE-20261011.md`.
+
+## Arbitrary PSD Gram qualification extension (2026-10-11)
+
+Run `python scripts/gram_reference.py` to recompute 1,601 additional exact rational variance references from general sign-Gram PSD correlation matrices (3 to 16 dimensions), with a frozen SHA-256. The Rust consumer tests all of them in both normal and reversed coordinate order and checks 49 independently constructed invalid-source PSD rejection cases and six singular controls. Total mathematical reference count is now 2,998 independent rows, not counting the permutation repeats. Details and limitations: `verification/GRAM-ARBITRARY-20261011.md`.
