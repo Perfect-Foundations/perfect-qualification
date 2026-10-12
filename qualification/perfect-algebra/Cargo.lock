@@ -39,7 +39,7 @@ dependencies = [
 [[package]]
 name = "perfect-algebra"
 version = "0.1.0"
-source = "git+https://github.com/Perfect-Foundations/perfect-algebra.git?rev=16831b3cde94f29f18b3e62304fb6e050d7cfcc5#16831b3cde94f29f18b3e62304fb6e050d7cfcc5"
+source = "git+https://github.com/Perfect-Foundations/perfect-algebra.git?rev=6a2d4924466ebeab79b849f56e6d9a8b9acfdf24#6a2d4924466ebeab79b849f56e6d9a8b9acfdf24"
 dependencies = [
  "perfect-arithmetic",
  "perfect-number-theory",

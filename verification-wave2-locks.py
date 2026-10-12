@@ -6,7 +6,7 @@ import pathlib, tomllib, hashlib, subprocess
 root=pathlib.Path(__file__).resolve().parent
 expected={
  "perfect-algebra":{
-  "perfect-algebra":"16831b3cde94f29f18b3e62304fb6e050d7cfcc5",
+  "perfect-algebra":"6a2d4924466ebeab79b849f56e6d9a8b9acfdf24",
   "perfect-number-theory":"2bdd2eee53615acb5beac8720c1d2be62120c080",
   "perfect-arithmetic":"9ec660f9abfd7fe93e441e77dbb1158c371603f5",
   "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b"},

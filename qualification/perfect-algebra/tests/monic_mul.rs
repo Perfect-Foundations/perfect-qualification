@@ -84,3 +84,27 @@ fn canonical_monic_multiplication_matches_independent_bit_polynomials() {
         assert_eq!(high, symbol(&f, mask ^ (1u64 << degree)));
     }
 }
+
+#[test]
+fn extension_inverse_matches_independent_brute_force_binary_field_oracle() {
+    for (poly, mask, degree) in [
+        (&[1_u64, 1, 0, 0, 1][..], 0x13u64, 4u32),
+        (&[1_u64, 1, 0, 1, 1, 0, 0, 0, 1][..], 0x11bu64, 8u32),
+    ] {
+        let field = binary_field(poly);
+        let order = 1u64 << degree;
+        for a in 1..order {
+            let expected = (1..order)
+                .find(|&candidate| independent_bit_poly_mul(a, candidate, degree, mask) == 1)
+                .expect("finite-field element has unique inverse");
+            let actual = symbol(&field, a).inverse().unwrap();
+            assert_eq!(
+                actual,
+                symbol(&field, expected),
+                "GF({order}) inverse input={a}"
+            );
+            assert_eq!(actual.inverse().unwrap(), symbol(&field, a));
+        }
+        assert!(field.zero().inverse().is_err());
+    }
+}
