@@ -108,3 +108,36 @@ fn extension_inverse_matches_independent_brute_force_binary_field_oracle() {
         assert!(field.zero().inverse().is_err());
     }
 }
+
+#[test]
+fn inplace_subtract_matches_independent_xor_and_preserves_parent_identity() {
+    for (poly, degree, seeds) in [
+        (&[1u64, 1, 0, 0, 1][..], 4u32, &[0u64, 1, 2, 3, 7, 15][..]),
+        (
+            &[1u64, 1, 0, 1, 1, 0, 0, 0, 1][..],
+            8u32,
+            &[0u64, 1, 2, 3, 0x53, 0xca, 0xff][..],
+        ),
+    ] {
+        let field = binary_field(poly);
+        for &a in seeds {
+            for b in 0..(1u64 << degree) {
+                let mut modified = symbol(&field, a);
+                modified.sub_assign(&symbol(&field, b)).unwrap();
+                assert_eq!(
+                    modified,
+                    symbol(&field, a ^ b),
+                    "GF(2^{degree}) a={a} b={b}"
+                );
+                modified.sub_assign(&field.zero()).unwrap();
+                assert_eq!(modified, symbol(&field, a ^ b));
+            }
+        }
+    }
+    let a = binary_field(&[1, 1, 0, 0, 1]);
+    let b = binary_field(&[1, 0, 0, 1, 1]);
+    let mut candidate = a.one();
+    let before = candidate.clone();
+    assert!(candidate.sub_assign(&b.one()).is_err());
+    assert_eq!(candidate, before);
+}
