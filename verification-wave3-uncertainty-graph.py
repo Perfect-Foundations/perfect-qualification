@@ -6,12 +6,13 @@ import tomllib
 
 ROOT=pathlib.Path(__file__).resolve().parent
 CONSUMER=ROOT/"qualification"/"perfect-uncertainty"
-REV="66af44422c38f5c86d4e4b3c44f8ae2a37c1a59c"
+REV="1450a418f5473b3e173a0cc79c65f0ce55d29427"
 VECTORS={
     "gum2_v1.tsv":"c6e23aaeaa5a6d20ac53a47ce32201d8f2544921b429edb07589593b312dd5c4",
     "gum3_v1.tsv":"dae756ec8b8578ff89300cd6246b87a4d3c8702ea190201b19db33aee8e8668a",
     "adversarial_gum_v1.tsv":"23e5c039b6728ade8cd56d42a5e5b3ebfd023821f2fe860e76fddcedc8fed8e4",
     "conditioning_v1.tsv":"b59e7aab50b1f89ab01661e01c119e50bb19e9fc9d511d3c2de208b036ffaa86",
+    "conditioned_4_6_8_v1.tsv":"30541264282bfcb43ada3e8349e8ac8e4c8fe1b90eb61ffcb068f0f6e9f37cc3",
 }
 manifest=tomllib.loads((CONSUMER/"Cargo.toml").read_text(encoding="utf-8"))
 deps=manifest["dependencies"]
