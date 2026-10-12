@@ -6,13 +6,13 @@ import tomllib
 root=Path(__file__).resolve().parent
 GRAPH={
  "perfect-error-correction":{
-  "perfect-error-correction":"6c9023a2ecd16f7e6f0b0d9c68df57b38fc497f7",
+  "perfect-error-correction":"1316c8b0d0db3d21b67b456bf17f2da8359fc57d",
   "perfect-algebra":"8c8c0794f6098db1545e4ca18a6bfb38e2e822f2",
   "perfect-number-theory":"2bdd2eee53615acb5beac8720c1d2be62120c080",
   "perfect-arithmetic":"9ec660f9abfd7fe93e441e77dbb1158c371603f5",
   "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b"},
  "perfect-finance":{
-  "perfect-finance":"f716cb02c34dc79d51cef3540d7f0c0cc2ba930f",
+  "perfect-finance":"f867494370f714e9cec962dd6202d9f546e397fd",
   "perfect-decimal":"f048affde6c5ea037b793580d295254695f7e97a",
   "perfect-rational":"97cce0ae8ff7ef206929d273e1d4a5774f6a2a34",
   "perfect-arithmetic":"1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
@@ -22,7 +22,8 @@ VECTORS={
  "perfect-error-correction":{
   "hamming_v1.tsv":"5ddef5b87b2b994ced47a86a2f3c4b88db09f17603b54254866aa05c6c24cdf6",
   "rs_gf5_v1.tsv":"07b62970fc79b24fddc9a2494228c180f0a4600b75fe791db53db807683408e0",
-  "rs_gf16_v1.tsv":"b16458ba91078c41d6c00d617dba5399014d49168322cd0303deba802b1e3ddb"},
+  "rs_gf16_v1.tsv":"b16458ba91078c41d6c00d617dba5399014d49168322cd0303deba802b1e3ddb",
+  "rs_gf17_n16_v1.tsv":"cf0b27977ee74c7a9adf7a2dc418791610f275e60d423d885459d440221b643f"},
  "perfect-finance":{
   "day_count_v1.tsv":"0a113ac24472f45ed92707c43157f79c20cd1981d074f6c89c0975b82832ddc0",
   "money_quantize_v1.tsv":"d754eff8cefc686087dcda8429a03d4aab693e4bdf337b7b5e50d8dc27e3b76f",
