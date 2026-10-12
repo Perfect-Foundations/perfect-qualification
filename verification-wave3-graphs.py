@@ -6,13 +6,13 @@ import tomllib
 root=Path(__file__).resolve().parent
 GRAPH={
  "perfect-error-correction":{
-  "perfect-error-correction":"832d52700ddd3b4f1fa94700e778d84c8b83f8a8",
+  "perfect-error-correction":"c25e906ebbd608391706b25307d0bedfaab80a3d",
   "perfect-algebra":"8c8c0794f6098db1545e4ca18a6bfb38e2e822f2",
   "perfect-number-theory":"2bdd2eee53615acb5beac8720c1d2be62120c080",
   "perfect-arithmetic":"9ec660f9abfd7fe93e441e77dbb1158c371603f5",
   "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b"},
  "perfect-finance":{
-  "perfect-finance":"07696278c321ecdb94180ae1af243cdb97a00f57",
+  "perfect-finance":"63f704c68e1567991979fff1061266946285d153",
   "perfect-decimal":"f048affde6c5ea037b793580d295254695f7e97a",
   "perfect-rational":"97cce0ae8ff7ef206929d273e1d4a5774f6a2a34",
   "perfect-arithmetic":"1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
@@ -31,7 +31,8 @@ VECTORS={
   "money_quantize_v1.tsv":"d754eff8cefc686087dcda8429a03d4aab693e4bdf337b7b5e50d8dc27e3b76f",
   "cashflow_cancel_v1.tsv":"d97b4baf8f271d763cc788e62452fb271fd8254319738fc4260c088ed8a35ece",
   "multioperand_v1.tsv":"c59cf1b20dc18370ba0103f7ea372f17ef7121acfc839d3ace42875ac9e6b455",
-  "currency_net_v1.tsv":"02c9f1c3973da070118382ae1ab6211e317af85ff21b04497b9ccc95fcee716b"}}
+  "currency_net_v1.tsv":"02c9f1c3973da070118382ae1ab6211e317af85ff21b04497b9ccc95fcee716b",
+  "date_range_v1.tsv":"0529ed78ea046396b8f7ca80c541711a810179b909a30be926567496cff9896e"}}
 for name,wanted in GRAPH.items():
   p=root/"qualification"/name
   lock=p/"Cargo.lock"
@@ -72,12 +73,13 @@ print("BW_GF7_INDEPENDENT_REGEN_PASS", bw_count, sha256(bw_data).hexdigest())
 for name, script, output, expected in [
     ("perfect-error-correction","packed_reference.py","hamming_packed_v1.tsv",48),
     ("perfect-finance","currency_net_reference.py","currency_net_v1.tsv",6),
+    ("perfect-finance","date_range_reference.py","date_range_v1.tsv",14),
 ]:
     directory=root/"qualification"/name
     namespace=runpy.run_path(str(directory/"scripts"/script))
     raw,count=namespace["render"]()
     assert count==expected and raw==(directory/"vectors"/output).read_bytes()
-    print("WAVE9_INDEPENDENT_REGEN_PASS",name,count,sha256(raw).hexdigest())
+    print("WAVE10_INDEPENDENT_REGEN_PASS" if script=="date_range_reference.py" else "WAVE9_INDEPENDENT_REGEN_PASS", name,count,sha256(raw).hexdigest())
 
 # Independent exact two-revision Finance performance harness provenance.
 bench=root/"qualification"/"perfect-finance"/"benchmarks"/"exact-aggregation"

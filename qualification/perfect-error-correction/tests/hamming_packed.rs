@@ -1,4 +1,6 @@
-use perfect_error_correction::{DecodeStatus, Hamming, HammingCodeProfile, PackedBitOrder};
+use perfect_error_correction::{
+    CodeError, DecodeStatus, Hamming, HammingCodeProfile, PackedBitOrder, PackedBlock,
+};
 
 const SOURCE: &str = include_str!("../vectors/hamming_packed_v1.tsv");
 fn hex(s: &str) -> Vec<u8> {
@@ -39,6 +41,24 @@ fn independently_computed_packed_hamming_every_supported_size_and_order() {
         assert_eq!(profile.code_bits(), code_bits);
         let encoded = h.encode_packed(&message, data_bits, order).unwrap();
         assert_eq!(encoded.bytes(), expected, "packed reference row {count}");
+        let typed = PackedBlock::new(message.clone(), data_bits, order).unwrap();
+        assert_eq!(profile.encode_block(&typed).unwrap().bytes(), expected);
+        let typed_word = PackedBlock::new(expected.clone(), code_bits, order).unwrap();
+        assert_eq!(
+            profile.decode_block(&typed_word).unwrap().status,
+            DecodeStatus::Clean
+        );
+        assert_eq!(profile.syndrome_block(&typed_word).unwrap().position, 0);
+        let opposite = if msb {
+            PackedBitOrder::LeastSignificantFirst
+        } else {
+            PackedBitOrder::MostSignificantFirst
+        };
+        let mismatch = PackedBlock::new(vec![0u8; message.len()], data_bits, opposite).unwrap();
+        assert!(matches!(
+            profile.encode_block(&mismatch),
+            Err(CodeError::IncompatibleProfile)
+        ));
         let decoded = h.decode_packed(&expected, code_bits, order).unwrap();
         assert_eq!(decoded.status, DecodeStatus::Clean);
         assert_eq!(decoded.message.unwrap().bytes(), message);
