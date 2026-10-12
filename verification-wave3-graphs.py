@@ -12,7 +12,7 @@ GRAPH={
   "perfect-arithmetic":"9ec660f9abfd7fe93e441e77dbb1158c371603f5",
   "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b"},
  "perfect-finance":{
-  "perfect-finance":"6f7540a13d29ab97387e2b0305fd3c9c2739d9c6",
+  "perfect-finance":"90be47248298b49089d49f954866ed916bc57ed5",
   "perfect-decimal":"f048affde6c5ea037b793580d295254695f7e97a",
   "perfect-rational":"97cce0ae8ff7ef206929d273e1d4a5774f6a2a34",
   "perfect-arithmetic":"1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
@@ -25,7 +25,8 @@ VECTORS={
   "rs_gf16_v1.tsv":"b16458ba91078c41d6c00d617dba5399014d49168322cd0303deba802b1e3ddb"},
  "perfect-finance":{
   "day_count_v1.tsv":"0a113ac24472f45ed92707c43157f79c20cd1981d074f6c89c0975b82832ddc0",
-  "money_quantize_v1.tsv":"d754eff8cefc686087dcda8429a03d4aab693e4bdf337b7b5e50d8dc27e3b76f"}}
+  "money_quantize_v1.tsv":"d754eff8cefc686087dcda8429a03d4aab693e4bdf337b7b5e50d8dc27e3b76f",
+  "cashflow_cancel_v1.tsv":"d97b4baf8f271d763cc788e62452fb271fd8254319738fc4260c088ed8a35ece"}}
 for name,wanted in GRAPH.items():
   p=root/"qualification"/name
   lock=p/"Cargo.lock"
