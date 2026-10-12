@@ -139,3 +139,21 @@ fn refusal_for_oversized_element_and_extension_degree() {
         Err(AlgebraError::InverseOfZero)
     ));
 }
+
+#[test]
+fn shared_parent_keeps_exact_independent_field_semantics() {
+    let x = extension("g23");
+    let y = extension("g23");
+    assert_eq!(x, y);
+    assert_eq!(fingerprint(&x), fingerprint(&y));
+    let a = element(&x, 3);
+    let b = element(&y, 5);
+    assert_eq!(a.add(&b).unwrap(), element(&x, 6));
+    let zero = x.element(vec![x.base().zero(); 64]).unwrap();
+    assert_eq!(zero, x.zero());
+    let f = extension("g22");
+    assert!(matches!(
+        x.one().mul(&f.one()),
+        Err(AlgebraError::IncompatibleParent)
+    ));
+}
