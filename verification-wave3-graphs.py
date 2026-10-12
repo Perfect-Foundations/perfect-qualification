@@ -6,13 +6,13 @@ import tomllib
 root=Path(__file__).resolve().parent
 GRAPH={
  "perfect-error-correction":{
-  "perfect-error-correction":"9619ce3cc6522563842e622f6b65cc827026ece4",
+  "perfect-error-correction":"832d52700ddd3b4f1fa94700e778d84c8b83f8a8",
   "perfect-algebra":"8c8c0794f6098db1545e4ca18a6bfb38e2e822f2",
   "perfect-number-theory":"2bdd2eee53615acb5beac8720c1d2be62120c080",
   "perfect-arithmetic":"9ec660f9abfd7fe93e441e77dbb1158c371603f5",
   "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b"},
  "perfect-finance":{
-  "perfect-finance":"f867494370f714e9cec962dd6202d9f546e397fd",
+  "perfect-finance":"07696278c321ecdb94180ae1af243cdb97a00f57",
   "perfect-decimal":"f048affde6c5ea037b793580d295254695f7e97a",
   "perfect-rational":"97cce0ae8ff7ef206929d273e1d4a5774f6a2a34",
   "perfect-arithmetic":"1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
@@ -24,12 +24,14 @@ VECTORS={
   "rs_gf5_v1.tsv":"07b62970fc79b24fddc9a2494228c180f0a4600b75fe791db53db807683408e0",
   "rs_gf16_v1.tsv":"b16458ba91078c41d6c00d617dba5399014d49168322cd0303deba802b1e3ddb",
   "rs_gf17_n16_v1.tsv":"cf0b27977ee74c7a9adf7a2dc418791610f275e60d423d885459d440221b643f",
-  "rs_bw_gf7_v1.tsv":"ee8a732e3568b14145c99103b336526e82e955953ac2c7a3cfe22fcf8805f378"},
+  "rs_bw_gf7_v1.tsv":"ee8a732e3568b14145c99103b336526e82e955953ac2c7a3cfe22fcf8805f378",
+  "hamming_packed_v1.tsv":"9cf1d589247b80a75a0ad154a2e765951eeec14f360c9c7a07befd4787dd98e5"},
  "perfect-finance":{
   "day_count_v1.tsv":"0a113ac24472f45ed92707c43157f79c20cd1981d074f6c89c0975b82832ddc0",
   "money_quantize_v1.tsv":"d754eff8cefc686087dcda8429a03d4aab693e4bdf337b7b5e50d8dc27e3b76f",
   "cashflow_cancel_v1.tsv":"d97b4baf8f271d763cc788e62452fb271fd8254319738fc4260c088ed8a35ece",
-  "multioperand_v1.tsv":"c59cf1b20dc18370ba0103f7ea372f17ef7121acfc839d3ace42875ac9e6b455"}}
+  "multioperand_v1.tsv":"c59cf1b20dc18370ba0103f7ea372f17ef7121acfc839d3ace42875ac9e6b455",
+  "currency_net_v1.tsv":"02c9f1c3973da070118382ae1ab6211e317af85ff21b04497b9ccc95fcee716b"}}
 for name,wanted in GRAPH.items():
   p=root/"qualification"/name
   lock=p/"Cargo.lock"
@@ -66,6 +68,16 @@ bw_data, bw_count = runpy.run_path(str(bw_path))["render"]()
 bw_frozen = root/"qualification"/"perfect-error-correction"/"vectors"/"rs_bw_gf7_v1.tsv"
 assert bw_data == bw_frozen.read_bytes() and bw_count == 16
 print("BW_GF7_INDEPENDENT_REGEN_PASS", bw_count, sha256(bw_data).hexdigest())
+# Source-independent regeneration of Wave 9 packed-bit and currency totals.
+for name, script, output, expected in [
+    ("perfect-error-correction","packed_reference.py","hamming_packed_v1.tsv",48),
+    ("perfect-finance","currency_net_reference.py","currency_net_v1.tsv",6),
+]:
+    directory=root/"qualification"/name
+    namespace=runpy.run_path(str(directory/"scripts"/script))
+    raw,count=namespace["render"]()
+    assert count==expected and raw==(directory/"vectors"/output).read_bytes()
+    print("WAVE9_INDEPENDENT_REGEN_PASS",name,count,sha256(raw).hexdigest())
 
 # Independent exact two-revision Finance performance harness provenance.
 bench=root/"qualification"/"perfect-finance"/"benchmarks"/"exact-aggregation"

@@ -1,0 +1,7 @@
+# scenario currency exact_decimal_total
+0 EUR 4.50
+0 USD 4.20
+1 JPY -0.00
+1 USD 0.005
+2 EUR 0.00
+2 USD 2.375
