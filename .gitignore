@@ -1,2 +1,6 @@
 **/target/
 **/Cargo.lock
+
+# Explicit locked, source-exact Wave 2 independent consumers (do not unignore other lockfiles).
+!qualification/perfect-algebra/Cargo.lock
+!qualification/perfect-units/Cargo.lock
