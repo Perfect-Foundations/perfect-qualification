@@ -2,7 +2,9 @@ use perfect_error_correction::{CodeError, Hamming, PackedBitOrder, PackedCorrect
 const DATA: &str = include_str!("../vectors/hamming_packed_v1.tsv");
 fn from_hex(s: &str) -> Vec<u8> {
     s.as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|v| u8::from_str_radix(core::str::from_utf8(v).unwrap(), 16).unwrap())
         .collect()
 }
@@ -57,7 +59,7 @@ fn independent_packed_reference_through_caller_buffers() {
             assert_eq!(recovered, data);
         }
         let mut malformed = word.clone();
-        if h.code_bits() % 8 != 0 {
+        if !h.code_bits().is_multiple_of(8) {
             let padding = if order == PackedBitOrder::MostSignificantFirst {
                 1
             } else {
