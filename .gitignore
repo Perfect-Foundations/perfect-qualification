@@ -4,3 +4,5 @@
 !qualification/perfect-uncertainty/Cargo.lock
 # Retain exact locks for the reproducible source-revision comparison harness.
 !qualification/perfect-uncertainty/benchmarks/fma-comparison/Cargo.lock
+# Locked before/after pivot-performance harness.
+!qualification/perfect-uncertainty/benchmarks/psd-pivot-comparison/Cargo.lock
