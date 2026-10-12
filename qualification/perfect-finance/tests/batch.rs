@@ -101,3 +101,50 @@ fn caller_owned_outputs_commit_only_after_exact_success() {
         assert_eq!(totals[0], *replacement[0].money());
     }
 }
+
+#[test]
+fn narrow_1024_flow_range_matches_independent_python_decimal_sums() {
+    let limits = DecimalLimits::new(18).unwrap();
+    let currencies = ["USD", "EUR", "JPY", "GBP"];
+    let mut flows = Vec::new();
+    for i in 0..1024 {
+        let day = format!("2024-02-{:02}", i % 29 + 1);
+        let amount = if i % 2 == 0 {
+            "1000000.007"
+        } else {
+            "-999999.992"
+        };
+        flows.push(row(&day, currencies[i % 4], amount, limits));
+    }
+    let day = date("2024-02-15");
+    let range = DateRange::new(day, day, DateBoundary::Inclusive, DateBoundary::Inclusive).unwrap();
+    let expected = [
+        ("EUR", "-7999999.936"),
+        ("GBP", "-8999999.928"),
+        ("JPY", "9000000.063"),
+        ("USD", "9000000.063"),
+    ];
+    let mut batch = CashFlowBatch::new(&flows, 1024, limits).unwrap();
+    let mut result = Vec::with_capacity(8);
+    let mut dated = Vec::with_capacity(8);
+    for _ in 0..8 {
+        batch
+            .currency_totals_into(Some(&range), &mut result)
+            .unwrap();
+        batch.aggregate_into(Some(&range), &mut dated).unwrap();
+        assert_eq!(result.len(), 4);
+        for (actual, (code, amount)) in result.iter().zip(expected.iter()) {
+            assert_eq!(actual.currency(), CurrencyCode::new(code).unwrap());
+            assert_eq!(actual.amount(), &Decimal::parse(amount, limits).unwrap());
+        }
+        assert_eq!(dated.len(), 4);
+        assert!(dated.iter().all(|x| x.date() == day));
+        for item in &dated {
+            let matching = result
+                .iter()
+                .find(|r| r.currency() == item.money().currency())
+                .unwrap();
+            assert_eq!(item.money(), matching);
+        }
+    }
+}

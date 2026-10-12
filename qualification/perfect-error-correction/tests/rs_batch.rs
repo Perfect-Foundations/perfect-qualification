@@ -226,3 +226,43 @@ fn gf16_batch_matches_frozen_independent_polynomial_evaluations() {
         }
     }
 }
+
+#[test]
+fn caller_buffers_match_frozen_gf17_codewords_and_preserve_failed_outputs() {
+    let code = ReedSolomon::new(field(), 16, 12, 1000).unwrap();
+    let mut encoded = vec![code.field().one()];
+    let mut checks = vec![code.field().one()];
+    let mut count = 0;
+    for row in ORACLE
+        .lines()
+        .filter(|s| !s.is_empty() && !s.starts_with('#'))
+    {
+        let fields: Vec<u64> = row.split_whitespace().map(|v| v.parse().unwrap()).collect();
+        let msg = fields[..12]
+            .iter()
+            .map(|&v| code.field().ordinal(v).unwrap())
+            .collect::<Vec<_>>();
+        let expected = fields[12..]
+            .iter()
+            .map(|&v| code.field().ordinal(v).unwrap())
+            .collect::<Vec<_>>();
+        code.encode_into(&msg, &mut encoded).unwrap();
+        assert_eq!(encoded, expected);
+        code.syndromes_into(&encoded, &mut checks).unwrap();
+        assert!(checks.iter().all(RsSymbol::is_zero));
+        let before = encoded.clone();
+        assert!(matches!(
+            code.encode_into(&msg[..11], &mut encoded),
+            Err(CodeError::InvalidLength { .. })
+        ));
+        assert_eq!(encoded, before);
+        let prior = checks.clone();
+        assert!(matches!(
+            code.syndromes_into(&encoded[..15], &mut checks),
+            Err(CodeError::InvalidLength { .. })
+        ));
+        assert_eq!(checks, prior);
+        count += 1;
+    }
+    assert_eq!(count, 8);
+}
