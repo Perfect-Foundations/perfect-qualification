@@ -4,11 +4,13 @@ This separate Rust crate does not ship as a production dependency.
 Its Cargo.toml and tracked Cargo.lock pin actual immutable Git source revisions,
 never path overrides or nonexistent registry publications.
 
-`python scripts/reference.py` recomputes all frozen mathematical references
-using the Python standard library; it never accepts Rust's output as expected
-results. The reference generator's `--generate` option refuses overwriting
-a preexisting file. Vector hashes and complete source provenance are recorded
-in `verification/CURRENT-SOURCE-20261011.md`.
+`python scripts/reference.py` and `python scripts/bw_gf7_reference.py`
+recompute the applicable frozen mathematical references using the Python
+standard library, without accepting Rust output as expected results. The
+new GF(7) reference generator refuses overwriting a preexisting vector.
+Frozen hashes and source provenance are recorded in
+`verification/CURRENT-SOURCE-20261011.md` (historical) and
+`verification/WAVE8-BW-20261012.md` (new FEC source revision).
 
 Verification:
 ```sh

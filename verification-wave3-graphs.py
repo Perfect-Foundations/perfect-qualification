@@ -6,7 +6,7 @@ import tomllib
 root=Path(__file__).resolve().parent
 GRAPH={
  "perfect-error-correction":{
-  "perfect-error-correction":"1316c8b0d0db3d21b67b456bf17f2da8359fc57d",
+  "perfect-error-correction":"9619ce3cc6522563842e622f6b65cc827026ece4",
   "perfect-algebra":"8c8c0794f6098db1545e4ca18a6bfb38e2e822f2",
   "perfect-number-theory":"2bdd2eee53615acb5beac8720c1d2be62120c080",
   "perfect-arithmetic":"9ec660f9abfd7fe93e441e77dbb1158c371603f5",
@@ -23,7 +23,8 @@ VECTORS={
   "hamming_v1.tsv":"5ddef5b87b2b994ced47a86a2f3c4b88db09f17603b54254866aa05c6c24cdf6",
   "rs_gf5_v1.tsv":"07b62970fc79b24fddc9a2494228c180f0a4600b75fe791db53db807683408e0",
   "rs_gf16_v1.tsv":"b16458ba91078c41d6c00d617dba5399014d49168322cd0303deba802b1e3ddb",
-  "rs_gf17_n16_v1.tsv":"cf0b27977ee74c7a9adf7a2dc418791610f275e60d423d885459d440221b643f"},
+  "rs_gf17_n16_v1.tsv":"cf0b27977ee74c7a9adf7a2dc418791610f275e60d423d885459d440221b643f",
+  "rs_bw_gf7_v1.tsv":"ee8a732e3568b14145c99103b336526e82e955953ac2c7a3cfe22fcf8805f378"},
  "perfect-finance":{
   "day_count_v1.tsv":"0a113ac24472f45ed92707c43157f79c20cd1981d074f6c89c0975b82832ddc0",
   "money_quantize_v1.tsv":"d754eff8cefc686087dcda8429a03d4aab693e4bdf337b7b5e50d8dc27e3b76f",
@@ -57,6 +58,14 @@ for name,wanted in GRAPH.items():
   print("EXACT_GRAPH_AND_VECTOR_PASS",name,
         "lock_sha256",sha256(lock.read_bytes().replace(b"\r\n", b"\n")).hexdigest())
 print("WAVE3_GRAPH_LOCK_FROZEN_VECTORS_PASS")
+
+# Recompute new GF(7) oracle independently; frozen SHA alone is not enough.
+import runpy
+bw_path = root/"qualification"/"perfect-error-correction"/"scripts"/"bw_gf7_reference.py"
+bw_data, bw_count = runpy.run_path(str(bw_path))["render"]()
+bw_frozen = root/"qualification"/"perfect-error-correction"/"vectors"/"rs_bw_gf7_v1.tsv"
+assert bw_data == bw_frozen.read_bytes() and bw_count == 16
+print("BW_GF7_INDEPENDENT_REGEN_PASS", bw_count, sha256(bw_data).hexdigest())
 
 # Independent exact two-revision Finance performance harness provenance.
 bench=root/"qualification"/"perfect-finance"/"benchmarks"/"exact-aggregation"
