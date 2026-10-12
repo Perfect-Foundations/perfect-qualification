@@ -1,0 +1,2 @@
+# Frozen source-independent mathematical vectors preserve byte identity on Windows.
+qualification/perfect-uncertainty/vectors/*.tsv text eol=lf
