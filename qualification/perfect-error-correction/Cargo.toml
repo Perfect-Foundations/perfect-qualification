@@ -10,7 +10,7 @@ default = ["std"]
 std = ["perfect-error-correction/std", "perfect-algebra/std", "perfect-arithmetic/std", "perfect-number-theory/std"]
 
 [dependencies]
-perfect-error-correction = { git = "https://github.com/Perfect-Foundations/perfect-error-correction.git", rev = "02594e730c156ed0e5f585ba0e5d348d6240e6fd", version = "=0.1.0", default-features = false }
+perfect-error-correction = { git = "https://github.com/Perfect-Foundations/perfect-error-correction.git", rev = "6c9023a2ecd16f7e6f0b0d9c68df57b38fc497f7", version = "=0.1.0", default-features = false }
 perfect-algebra = { git = "https://github.com/Perfect-Foundations/perfect-algebra.git", rev = "8c8c0794f6098db1545e4ca18a6bfb38e2e822f2", version = "=0.1.0", default-features = false }
 perfect-number-theory = { git = "https://github.com/Perfect-Foundations/perfect-number-theory.git", rev = "2bdd2eee53615acb5beac8720c1d2be62120c080", version = "=0.1.0", default-features = false }
 perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "9ec660f9abfd7fe93e441e77dbb1158c371603f5", version = "=0.1.0", default-features = false }

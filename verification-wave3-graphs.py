@@ -6,13 +6,13 @@ import tomllib
 root=Path(__file__).resolve().parent
 GRAPH={
  "perfect-error-correction":{
-  "perfect-error-correction":"02594e730c156ed0e5f585ba0e5d348d6240e6fd",
+  "perfect-error-correction":"6c9023a2ecd16f7e6f0b0d9c68df57b38fc497f7",
   "perfect-algebra":"8c8c0794f6098db1545e4ca18a6bfb38e2e822f2",
   "perfect-number-theory":"2bdd2eee53615acb5beac8720c1d2be62120c080",
   "perfect-arithmetic":"9ec660f9abfd7fe93e441e77dbb1158c371603f5",
   "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b"},
  "perfect-finance":{
-  "perfect-finance":"705b92b88277e37bb6bc0bc6e24f7f1c3afce160",
+  "perfect-finance":"f716cb02c34dc79d51cef3540d7f0c0cc2ba930f",
   "perfect-decimal":"f048affde6c5ea037b793580d295254695f7e97a",
   "perfect-rational":"97cce0ae8ff7ef206929d273e1d4a5774f6a2a34",
   "perfect-arithmetic":"1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
@@ -56,3 +56,24 @@ for name,wanted in GRAPH.items():
   print("EXACT_GRAPH_AND_VECTOR_PASS",name,
         "lock_sha256",sha256(lock.read_bytes()).hexdigest())
 print("WAVE3_GRAPH_LOCK_FROZEN_VECTORS_PASS")
+
+# Independent exact two-revision Finance performance harness provenance.
+bench=root/"qualification"/"perfect-finance"/"benchmarks"/"exact-aggregation"
+meta=tomllib.loads((bench/"Cargo.toml").read_text(encoding="utf-8"))
+expected={
+  "baseline":"90be47248298b49089d49f954866ed916bc57ed5",
+  "corrected":"f716cb02c34dc79d51cef3540d7f0c0cc2ba930f",
+}
+assert set(meta["dependencies"])==set(expected)
+for alias,sha in expected.items():
+    entry=meta["dependencies"][alias]
+    assert entry["package"]=="perfect-finance" and entry.get("path") is None
+    assert entry["rev"]==sha and entry["git"]=="https://github.com/Perfect-Foundations/perfect-finance.git"
+bench_lock=(bench/"Cargo.lock").read_bytes()
+records=tomllib.loads(bench_lock.decode("utf-8"))["package"]
+sources={x["source"] for x in records if x["name"]=="perfect-finance"}
+assert sources=={
+    f"git+https://github.com/Perfect-Foundations/perfect-finance.git?rev={sha}#{sha}"
+    for sha in expected.values()
+},sources
+print("EXACT_FINANCE_DUAL_REVISION_BENCH_PASS",sha256(bench_lock).hexdigest())

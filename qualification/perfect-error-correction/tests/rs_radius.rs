@@ -89,3 +89,25 @@ fn invalid_erasure_locations_and_explicit_candidate_limits() {
         Err(CodeError::ResourceLimit { max_trials: 1 })
     ));
 }
+
+#[test]
+fn advertised_mds_capacity_matches_independent_distance_formula() {
+    for n in 2..=5 {
+        for k in 1..n {
+            let rs = ReedSolomon::new(field(), n, k, 1000).unwrap();
+            assert_eq!(rs.minimum_distance(), n - k + 1);
+            for v in 0..=n + 1 {
+                let expected = if v > n - k {
+                    None
+                } else {
+                    Some((n - k - v) / 2)
+                };
+                assert_eq!(rs.correction_capacity(v), expected);
+                if let Some(e) = expected {
+                    assert!(2 * e + v <= n - k);
+                    assert!(2 * (e + 1) + v > n - k);
+                }
+            }
+        }
+    }
+}
