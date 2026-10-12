@@ -6,7 +6,7 @@ import tomllib
 
 ROOT=pathlib.Path(__file__).resolve().parent
 CONSUMER=ROOT/"qualification"/"perfect-uncertainty"
-REV="1450a418f5473b3e173a0cc79c65f0ce55d29427"
+REV="dafe6a28a0dd69042e2b5fcc36ea254f8e16ac60"
 VECTORS={
     "gum2_v1.tsv":"c6e23aaeaa5a6d20ac53a47ce32201d8f2544921b429edb07589593b312dd5c4",
     "gum3_v1.tsv":"dae756ec8b8578ff89300cd6246b87a4d3c8702ea190201b19db33aee8e8668a",
@@ -14,6 +14,7 @@ VECTORS={
     "conditioning_v1.tsv":"b59e7aab50b1f89ab01661e01c119e50bb19e9fc9d511d3c2de208b036ffaa86",
     "conditioned_4_6_8_v1.tsv":"30541264282bfcb43ada3e8349e8ac8e4c8fe1b90eb61ffcb068f0f6e9f37cc3",
     "gram_covariance_v1.tsv":"d10b42da25b5746390c1b1cd47677a6b5704d7e9f03eeaab483898b933560aaf",
+    "pivot_gram_v1.tsv":"4b49ae1139b51ed0bf73701bce6b2a69f92d07dde2cf3bb900dd6500904c43b3",
 }
 manifest=tomllib.loads((CONSUMER/"Cargo.toml").read_text(encoding="utf-8"))
 deps=manifest["dependencies"]
