@@ -6,8 +6,8 @@ import tomllib
 root=Path(__file__).resolve().parent
 GRAPH={
  "perfect-error-correction":{
-  "perfect-error-correction":"14f0d11ac3424c68158812511d6c4cac13a90ef1",
-  "perfect-algebra":"6d4eac0ebaab2417720304ba2739089120db8fa4",
+  "perfect-error-correction":"a9f6189d0dfcc29631216ee403d4439b164120e0",
+  "perfect-algebra":"16831b3cde94f29f18b3e62304fb6e050d7cfcc5",
   "perfect-number-theory":"2bdd2eee53615acb5beac8720c1d2be62120c080",
   "perfect-arithmetic":"9ec660f9abfd7fe93e441e77dbb1158c371603f5",
   "perfect-numeric":"19b6747cd852a47a694a020b97ba70b6b3ef259b"},
