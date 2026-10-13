@@ -4,9 +4,9 @@
     "perfect-arithmetic": "65d8f55641739d5d6a11c17fe7d68c8898d984d7",
     "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
     "perfect-rational": "812d66757ce145a7a70fc33818c7b3059ecd3401",
-    "perfect-polynomial": "f46660214f426833b69842f5e8d714b703adfcc2"
+    "perfect-polynomial": "d3094041c544913da56eabe5b8db35cc5a695b32"
   },
-  "cargo_lock_sha256": "d0429742d797f4477f00e312a137cc60b831e1a8952e11cfb204bd93af9b707b",
+  "cargo_lock_sha256": "bbd22cad5cfccbe57fbcf89ae8f8f9c8f1ca4dfd54c9ccbbf142ffe1b991a772",
   "imported_test_sha256": {
     "independent_math.rs": "1faf1c921f7a3418e2a48cf0ceea38a01c5e3507cf8d6107075f33de3b2c09de",
     "m2_content_derivative_independent.rs": "2410c252613e40a704d7e02a105593a6d1d0651d319152b25bcbea9c9f120380",
