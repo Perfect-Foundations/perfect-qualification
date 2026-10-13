@@ -59,3 +59,16 @@ M1 implementation evidence is materially stronger. Formal M1 acceptance, Algebra
 The previous Wave 20 source-isolated 180-row Finance performance evidence is retained unchanged. Wave 21 produced no new performance comparison; repeated benchmarks without an optimization were intentionally avoided.
 
 No changes to PerfectPi, MachinaMesh, Algebra, protected branches or unrelated work. Original dirty Qualification worktree remains untouched. No billing action, paid resources, or hosted CI use.
+
+
+## Final committed SHA pristine replay (executed after first Qualification push)
+The actual GitHub candidate `1fbe7a43ed794dac0df521608a04fd17a310d2e3` was independently checked out as a new clean detached worktree. `git status --porcelain` was empty before verification, and `git rev-parse HEAD` matched the exact pushed SHA. The following operations returned exit code zero from that checkout:
+
+- `python verification-wave3-graphs.py`: exact source graph and Cargo.lock hashes, unchanged frozen GF(7)/Hamming/Finance references and independent regenerators.
+- `python verification-wave21-daycount.py`: 24 independent date pairs × 4 conventions, 96 exact `Fraction` cases, digest `67cf09a84b9a1f3910af65dc1fb154334c1e2b6450d952447ccc3957f102523a`.
+- Windows Rust 1.99 locked/offline all-target consumer tests: FEC 20/20 and Finance 14/14 pass **per feature mode**; both no-default and all-features configurations passed. First attempts at no-default compilation timed out at the remote command layer; both were rerun successfully, and timeout attempts were not counted.
+- Ubuntu WSL2 Rust 1.99 locked/offline all-target consumer tests: FEC 20/20 and Finance 14/14 per feature mode, passed twice configured.
+- Local Linux AArch64/QEMU Rust 1.99 locked/offline all-target consumer tests: FEC 20/20 and Finance 14/14 per feature mode, passed in both modes. QEMU is emulated ARM64, not native physical hardware.
+- Windows pristine rustfmt --check, warning-denied Clippy with both feature configurations: FEC and Finance all passed.
+
+These results qualify the *source-evidence and consumer scope executed*, not full M1/Q6 approval, untested physical targets, release or packaging gates. This paragraph documents the first commit's replay; subsequent report-only commits preserve the identical locked source and test configurations.
