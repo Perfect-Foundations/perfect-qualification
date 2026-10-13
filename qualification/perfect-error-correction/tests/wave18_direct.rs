@@ -135,6 +135,33 @@ fn independent_gf17_reusable_output_session_and_batch() {
     ));
     assert_eq!(outputs, original);
     assert_eq!(results.len(), old_count);
+    // Shrinking an admitted batch must discard stale slots, unlike a refused batch.
+    code.decode_batch_into_with_workspace(
+        &refs[..1],
+        limits,
+        &mut workspace,
+        &mut outputs,
+        &mut results,
+    )
+    .unwrap();
+    assert_eq!(outputs.len(), 1);
+    assert_eq!(results.len(), 1);
+    assert_eq!(outputs[0].message, sources[0].0);
+    assert_eq!(outputs[0].codeword, sources[0].1);
+    code.decode_batch_into_with_workspace(
+        &[],
+        RsBatchLimits {
+            max_words: 0,
+            max_input_items: 0,
+            max_result_slots: 0,
+        },
+        &mut workspace,
+        &mut outputs,
+        &mut results,
+    )
+    .unwrap();
+    assert!(outputs.is_empty());
+    assert!(results.is_empty());
     let received = inputs[0].clone();
     assert!(matches!(
         code.decode_into_with_workspace(&received[..15], &[], &mut workspace, &mut output),
