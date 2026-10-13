@@ -10,7 +10,7 @@ default = ["std"]
 std = ["perfect-finance/std", "perfect-decimal/std", "perfect-rational/std", "perfect-arithmetic/std", "perfect-numeric/std"]
 
 [dependencies]
-perfect-finance = { git = "https://github.com/Perfect-Foundations/perfect-finance.git", rev = "be084cb969b9ab7b4c4c7696422a2174d8bc85e4", version = "=0.1.0", default-features = false }
+perfect-finance = { git = "https://github.com/Perfect-Foundations/perfect-finance.git", rev = "f91e5ae9b9d297721afe2d507d74ad22a5e689d0", version = "=0.1.0", default-features = false }
 perfect-decimal = { git = "https://github.com/Perfect-Foundations/perfect-decimal.git", rev = "f048affde6c5ea037b793580d295254695f7e97a", version = "=0.1.0", default-features = false }
 perfect-rational = { git = "https://github.com/Perfect-Foundations/perfect-rational.git", rev = "97cce0ae8ff7ef206929d273e1d4a5774f6a2a34", version = "=0.1.0", default-features = false }
 perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "1a54d3c7cbbae4e73325cc70fd2777a2427b1504", version = "=0.1.0", default-features = false }
