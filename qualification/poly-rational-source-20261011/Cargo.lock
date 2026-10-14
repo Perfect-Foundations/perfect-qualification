@@ -54,7 +54,7 @@ source = "git+https://github.com/Perfect-Foundations/perfect-numeric.git?rev=19b
 [[package]]
 name = "perfect-polynomial"
 version = "0.1.0"
-source = "git+https://github.com/Perfect-Foundations/perfect-polynomial.git?rev=d3094041c544913da56eabe5b8db35cc5a695b32#d3094041c544913da56eabe5b8db35cc5a695b32"
+source = "git+https://github.com/Perfect-Foundations/perfect-polynomial.git?rev=7774e361c8a86c1ad3f5358d8df7a353371713d9#7774e361c8a86c1ad3f5358d8df7a353371713d9"
 dependencies = [
  "perfect-arithmetic",
  "perfect-rational",
