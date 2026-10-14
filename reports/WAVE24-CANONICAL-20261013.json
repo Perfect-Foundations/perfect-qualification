@@ -1,0 +1,45 @@
+{
+  "canonical_rule": "ASCII W24 records, ordinal ascending, LF line separator, terminal LF",
+  "combined_sha256": {
+    "qemu": "d20d1e6e8e778092561e40d780523dc9c144fb0802280844f6aa51c41d6767c2",
+    "win": "d20d1e6e8e778092561e40d780523dc9c144fb0802280844f6aa51c41d6767c2",
+    "wsl": "d20d1e6e8e778092561e40d780523dc9c144fb0802280844f6aa51c41d6767c2"
+  },
+  "features": "all-features",
+  "groups": {
+    "FEC": {
+      "records": 128,
+      "sha256": {
+        "qemu": "33a256ce217e95ae00cbd1db245f03e193cdb88372d6fd98a1aaf0e9dae6b98a",
+        "win": "33a256ce217e95ae00cbd1db245f03e193cdb88372d6fd98a1aaf0e9dae6b98a",
+        "wsl": "33a256ce217e95ae00cbd1db245f03e193cdb88372d6fd98a1aaf0e9dae6b98a"
+      },
+      "source_sha": "ca6fd8437a3bb024ebe199cf6a6f6c3d0427bde5"
+    },
+    "FIN": {
+      "records": 128,
+      "sha256": {
+        "qemu": "be0e7b9060345cb7c7bb5cabe9fad38f0fa63263fd28acb014f6eb671440183b",
+        "win": "be0e7b9060345cb7c7bb5cabe9fad38f0fa63263fd28acb014f6eb671440183b",
+        "wsl": "be0e7b9060345cb7c7bb5cabe9fad38f0fa63263fd28acb014f6eb671440183b"
+      },
+      "source_sha": "7d0e44ad33d33313c671348605d5562e7bbed478"
+    },
+    "POLY": {
+      "records": 128,
+      "sha256": {
+        "qemu": "7120fd33313cee79447d11fbac5c49e84c06cb6f921c78670308adcf1c5a9ff2",
+        "win": "7120fd33313cee79447d11fbac5c49e84c06cb6f921c78670308adcf1c5a9ff2",
+        "wsl": "7120fd33313cee79447d11fbac5c49e84c06cb6f921c78670308adcf1c5a9ff2"
+      },
+      "source_sha": "7774e361c8a86c1ad3f5358d8df7a353371713d9"
+    }
+  },
+  "platforms": [
+    "win",
+    "wsl",
+    "qemu"
+  ],
+  "rust": "1.99.0",
+  "schema": "perfect-foundations.wave24.canonical.v1"
+}
