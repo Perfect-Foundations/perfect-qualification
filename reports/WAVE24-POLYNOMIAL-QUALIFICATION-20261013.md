@@ -2,7 +2,7 @@
 Date: 2026-10-13. Evidence only; no formal M1/M2 acceptance or release.
 
 ## Source-exact graph
-- Production: Perfect Polynomial PR #18, `7774e361c8a86c1ad3f5358d8df7a353371713d9`.
+- Production: Perfect Polynomial PR #18, `ae45f4d386dff6d525424b70e3115074dc7f8f51`.
 - Independent source-consumer: `qualification/poly-rational-source-20261011`.
 - The consumer's manifest, Cargo.lock, source-exact.json and verify_graph.py are pinned to the exact new commit. Existing Arithmetic, Rational and Numeric source identities are unchanged.
 - `python qualification/poly-rational-source-20261011/verify_graph.py`: PASS; frozen independent mathematical fixtures and previous source graph preserved.
@@ -36,3 +36,9 @@ cargo +1.99.0 test --manifest-path qualification/poly-rational-source-20261011/C
 cargo +1.99.0 test --manifest-path qualification/poly-rational-source-20261011/Cargo.toml --locked --offline --all-targets --all-features
 ```
 The same exact Cargo commands were run under Ubuntu WSL2, and under `--target aarch64-unknown-linux-gnu` with local QEMU and cross-linker environment; none of those executions proves physical ARM64.
+
+## Mutation-derived follow-up (final Wave 24)
+- `tests/wave24_opposite_mutation.rs` uses minimized algebraic counterexamples for a shorter opposite prefix, weak numerator/denominator predicates, and a first-coefficient-only match. The expected Euclidean identities rule out false-positive fast-path results without depending on the production shortcut.
+- Bounded targeted mutation on `opposite_rational_polynomials` using this exact test: **9 compiled/executed mutants; 7 caught, 2 missed, 0 unviable, 0 timeout**. Preserved raw mutation logs: `C:\\Scratch\\wave24_poly_opposite_mutants_final\\mutants.out` on Zen.
+- Surviving variants: replacing the helper with `false`, and changing the sign-disagreement predicate `!=` to `==`. They appear to select the general fallback rather than return wrong results, given the preceding equality guard. These are not certified equivalent under all resources/performance: leave them classified MISSED and do not inflate the mutation score.
+- Exact new Polygon production SHA is test-only; original functional kernels are unchanged. All consumer full suites pass at the pinned final source on Windows, WSL2 and QEMU in both feature modes. No speedup claimed.
