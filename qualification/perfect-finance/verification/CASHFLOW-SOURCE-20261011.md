@@ -1,0 +1,11 @@
+# Source-exact Finance independent aggregation correction — 2026-10-11
+
+Production source: `Perfect-Foundations/perfect-finance@90be47248298b49089d49f954866ed916bc57ed5` (draft PR #2), from prior source `6f7540a...`. Consumer Cargo.toml and tracked Cargo.lock pin the exact Git source, with Decimal `f048aff`, Rational `97cce0a`, Arithmetic `1a54d3c`, Numeric `19b6747` and `time=0.3.44`. No path substitutions or new production dependencies.
+
+The source defect had an exact three-digit counterexample: same-date USD amounts `[900,900,-900]` incorrectly returned `CoefficientLimitExceeded{required:4,limit:3}` because the intermediate 1800 exceeded a bound, although the final exact balance 900 fits. Changed production reduction partitions signs and deterministically prioritizes opposite-sign large cancellation while retaining flow count and exact coefficient/exponent contracts. It remains a bounded heuristic; no proof that every representable total can be computed without an intermediate limit failure.
+
+Independent Python `scripts/cashflow_reference.py` calculates exact rational values from Python Decimal, checking `Fraction(expected)==sum(Fraction(Decimal(input)))`. It retains sixteen previously unseen signed, zero-quantum, high-exponent and cancellation tuples; the frozen `cashflow_cancel_v1.tsv` SHA256 is `d97b4baf8f271d763cc788e62452fb271fd8254319738fc4260c088ed8a35ece`. The Rust public consumer rotates and reverses all tuples and checks values and quantum. Prior 36 exact day-count + 48 quantization vectors remain unchanged; **100 total independent Finance reference rows**, not counting rotations/metamorphic repetitions.
+
+Windows native x86-64 and WSL2 Linux x86-64 Rust 1.99 tests and warning-denied all-target Clippy passed `--locked --offline` in no-default and all-features modes. Four Rust test functions per host/feature configuration, **16/16 executed independently**. Python source-independent vectors and exact source graph/Cargo.lock checker pass on both. Finance lock SHA256 `ced54581a53cb12dd6977d9ce4df05975538dbc1eeb94b258977ac4e86760d19`.
+
+Pristine checkout still required for the final Qualification revision. No formal M1 promotion, universal cancellation guarantee, native ARM64 hardware run, or release claim.

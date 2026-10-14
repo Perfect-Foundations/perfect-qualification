@@ -1,2 +1,7 @@
 **/target/
 **/Cargo.lock
+# Only audited source-exact FEC and Finance qualification locks.
+!qualification/perfect-error-correction/Cargo.lock
+!qualification/perfect-finance/Cargo.lock
+# Pinned dual-revision Finance measurement harness.
+!qualification/perfect-finance/benchmarks/exact-aggregation/Cargo.lock

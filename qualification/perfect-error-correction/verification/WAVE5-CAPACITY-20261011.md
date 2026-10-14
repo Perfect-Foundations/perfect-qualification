@@ -1,0 +1,7 @@
+# Wave 5 source-exact Reed–Solomon distance/capacity Qualification
+
+Production source implementation commit `b77c7c632ab4ac5c127cb30393a880503be86fd4`; final source PR HEAD including CI gate `6c9023a2ecd16f7e6f0b0d9c68df57b38fc497f7`. The tracked consumer manifest and Cargo.lock resolve this exact final Git revision. No independent finite-field arithmetic was introduced.
+
+A degree below k polynomial over a field evaluated at n distinct points has minimum code distance n-k+1. Public `minimum_distance()` exposes this bound. `correction_capacity(v)` returns floor((n-k-v)/2) for v at most n-k, otherwise None. The decoder consumes the same calculation, retains explicit trial limits and continues to validate actual erasure indices. The source regression iterates GF(5) code lengths 2..5, every nonzero message dimension and all erasure counts through n+1. The public Qualification test independently derives the radius and checks the methods and the inequality 2e+v<=n-k including the next-invalid e.
+
+Previous 45 frozen independent FEC mathematical vectors are unchanged. Previous 2,250 injected hard-error/erasure decode patterns still execute. Windows native x86-64 and WSL2 Linux x86-64, Rust 1.99, both feature modes, locked/offline tests, warning-denied Clippy and exact Cargo.lock dependency graph passed before the final detached checkout. Final replay evidence is retained separately. M1 remains draft/unearned.
