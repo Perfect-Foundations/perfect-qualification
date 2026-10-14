@@ -1,0 +1,36 @@
+{
+  "schema": "perfect-foundations.experimental-integration.v1",
+  "purpose": "Source-exact research qualification, not production qualification or release",
+  "rust": "1.99.0",
+  "repos": {
+    "perfect-arithmetic": {
+      "url": "https://github.com/Perfect-Foundations/perfect-arithmetic.git",
+      "sha": "73c3e6f30278556cda090b8d5cce2ed2d2a422c1"
+    },
+    "perfect-polynomial": {
+      "url": "https://github.com/Perfect-Foundations/perfect-polynomial.git",
+      "sha": "ce89bad2b80a2c887f91a912a36a78c80303ba1c",
+      "cargo_lock_git_blob": "b6ec5b4c95b4fa2a5c9e9ded7cebed8902665782",
+      "replay_script_git_blob": "9f3cd465b94ef6c0417a20cf7d22141da43ab3ff"
+    },
+    "perfect-rational": {"sha": "35a8e9cc629ee578fe7b624e2134929ce7eeff8a"},
+    "perfect-numeric": {"sha": "19b6747cd852a47a694a020b97ba70b6b3ef259b"}
+  },
+  "original_protected_arithmetic_sha": "1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
+  "test_only_cargo_source_override": "[patch.'https://github.com/Perfect-Foundations/perfect-arithmetic.git'] perfect-arithmetic = { path = '../_arith_fused_integer_20261010' }",
+  "expected_arithmetic_identities": 1,
+  "feature_matrix": ["--all-features", "--no-default-features"],
+  "cargo_flags": ["--locked"],
+  "independent_references": [
+    "perfect-arithmetic/src/integer.rs Python decimal oracle",
+    "perfect-polynomial/tests/m2_sympy_division.rs",
+    "perfect-polynomial/tests/m2_fused_pseudo_reference.rs",
+    "perfect-polynomial/src/division.rs degree-40/20 path assertion"
+  ],
+  "limitations": [
+    "isolated experimental local path patch, no qualified production dependency graph",
+    "GitHub hosted CI still blocked before execution",
+    "WSL2 is x86-64, not physical ARM64",
+    "M1/M2 status, formal reviewer signoff and release are not granted"
+  ]
+}

@@ -1,0 +1,354 @@
+[
+  {
+    "diff": "--- src/dense.rs\n+++ replace bounded_lcm -> Option<perfect_arithmetic::Natural> with None\n@@ -67,30 +67,17 @@\n     }\n     normalized(out)\n }\n /// Bound the coefficient magnification caused by clearing differing exact\n /// denominators. Values exceeding this research crossover use Rational schoolbook.\n const MAX_CONVOLUTION_INPUT_LCM_BITS: u64 = 512;\n \n fn bounded_lcm(values: &[Rational]) -> Option<perfect_arithmetic::Natural> {\n-    let mut common = perfect_arithmetic::Natural::one();\n-    for value in values {\n-        let d = value.denominator();\n-        let gcd = common.gcd(d);\n-        let (quotient, remainder) = common.div_rem(&gcd).ok()?;\n-        if !remainder.is_zero() {\n-            return None;\n-        }\n-        common = quotient.mul(d);\n-        if common.bit_length() > MAX_CONVOLUTION_INPUT_LCM_BITS {\n-            return None;\n-        }\n-    }\n-    Some(common)\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n fn scaled_integer_coefficients(\n     values: &[Rational],\n     common: &perfect_arithmetic::Natural,\n ) -> Option<Polynomial<Integer>> {\n     let mut output = Vec::with_capacity(values.len());\n     for value in values {\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "bounded_lcm",
+      "return_type": "-> Option<perfect_arithmetic::Natural>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 89
+        },
+        "start": {
+          "column": 1,
+          "line": 74
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/dense.rs:75:5: replace bounded_lcm -> Option<perfect_arithmetic::Natural> with None",
+    "package": "perfect-polynomial",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 17,
+        "line": 88
+      },
+      "start": {
+        "column": 5,
+        "line": 75
+      }
+    }
+  },
+  {
+    "diff": "--- src/dense.rs\n+++ replace bounded_lcm -> Option<perfect_arithmetic::Natural> with Some(Default::default())\n@@ -67,30 +67,17 @@\n     }\n     normalized(out)\n }\n /// Bound the coefficient magnification caused by clearing differing exact\n /// denominators. Values exceeding this research crossover use Rational schoolbook.\n const MAX_CONVOLUTION_INPUT_LCM_BITS: u64 = 512;\n \n fn bounded_lcm(values: &[Rational]) -> Option<perfect_arithmetic::Natural> {\n-    let mut common = perfect_arithmetic::Natural::one();\n-    for value in values {\n-        let d = value.denominator();\n-        let gcd = common.gcd(d);\n-        let (quotient, remainder) = common.div_rem(&gcd).ok()?;\n-        if !remainder.is_zero() {\n-            return None;\n-        }\n-        common = quotient.mul(d);\n-        if common.bit_length() > MAX_CONVOLUTION_INPUT_LCM_BITS {\n-            return None;\n-        }\n-    }\n-    Some(common)\n+    Some(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n fn scaled_integer_coefficients(\n     values: &[Rational],\n     common: &perfect_arithmetic::Natural,\n ) -> Option<Polynomial<Integer>> {\n     let mut output = Vec::with_capacity(values.len());\n     for value in values {\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "bounded_lcm",
+      "return_type": "-> Option<perfect_arithmetic::Natural>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 89
+        },
+        "start": {
+          "column": 1,
+          "line": 74
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/dense.rs:75:5: replace bounded_lcm -> Option<perfect_arithmetic::Natural> with Some(Default::default())",
+    "package": "perfect-polynomial",
+    "replacement": "Some(Default::default())",
+    "span": {
+      "end": {
+        "column": 17,
+        "line": 88
+      },
+      "start": {
+        "column": 5,
+        "line": 75
+      }
+    }
+  },
+  {
+    "diff": "--- src/dense.rs\n+++ delete ! in bounded_lcm\n@@ -72,17 +72,17 @@\n const MAX_CONVOLUTION_INPUT_LCM_BITS: u64 = 512;\n \n fn bounded_lcm(values: &[Rational]) -> Option<perfect_arithmetic::Natural> {\n     let mut common = perfect_arithmetic::Natural::one();\n     for value in values {\n         let d = value.denominator();\n         let gcd = common.gcd(d);\n         let (quotient, remainder) = common.div_rem(&gcd).ok()?;\n-        if !remainder.is_zero() {\n+        if  /* ~ changed by cargo-mutants ~ */remainder.is_zero() {\n             return None;\n         }\n         common = quotient.mul(d);\n         if common.bit_length() > MAX_CONVOLUTION_INPUT_LCM_BITS {\n             return None;\n         }\n     }\n     Some(common)\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "bounded_lcm",
+      "return_type": "-> Option<perfect_arithmetic::Natural>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 89
+        },
+        "start": {
+          "column": 1,
+          "line": 74
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "src/dense.rs:80:12: delete ! in bounded_lcm",
+    "package": "perfect-polynomial",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 80
+      },
+      "start": {
+        "column": 12,
+        "line": 80
+      }
+    }
+  },
+  {
+    "diff": "--- src/dense.rs\n+++ replace > with == in bounded_lcm\n@@ -76,17 +76,17 @@\n     for value in values {\n         let d = value.denominator();\n         let gcd = common.gcd(d);\n         let (quotient, remainder) = common.div_rem(&gcd).ok()?;\n         if !remainder.is_zero() {\n             return None;\n         }\n         common = quotient.mul(d);\n-        if common.bit_length() > MAX_CONVOLUTION_INPUT_LCM_BITS {\n+        if common.bit_length() == /* ~ changed by cargo-mutants ~ */ MAX_CONVOLUTION_INPUT_LCM_BITS {\n             return None;\n         }\n     }\n     Some(common)\n }\n \n fn scaled_integer_coefficients(\n     values: &[Rational],\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "bounded_lcm",
+      "return_type": "-> Option<perfect_arithmetic::Natural>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 89
+        },
+        "start": {
+          "column": 1,
+          "line": 74
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/dense.rs:84:32: replace > with == in bounded_lcm",
+    "package": "perfect-polynomial",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 84
+      },
+      "start": {
+        "column": 32,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- src/dense.rs\n+++ replace > with < in bounded_lcm\n@@ -76,17 +76,17 @@\n     for value in values {\n         let d = value.denominator();\n         let gcd = common.gcd(d);\n         let (quotient, remainder) = common.div_rem(&gcd).ok()?;\n         if !remainder.is_zero() {\n             return None;\n         }\n         common = quotient.mul(d);\n-        if common.bit_length() > MAX_CONVOLUTION_INPUT_LCM_BITS {\n+        if common.bit_length() < /* ~ changed by cargo-mutants ~ */ MAX_CONVOLUTION_INPUT_LCM_BITS {\n             return None;\n         }\n     }\n     Some(common)\n }\n \n fn scaled_integer_coefficients(\n     values: &[Rational],\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "bounded_lcm",
+      "return_type": "-> Option<perfect_arithmetic::Natural>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 89
+        },
+        "start": {
+          "column": 1,
+          "line": 74
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/dense.rs:84:32: replace > with < in bounded_lcm",
+    "package": "perfect-polynomial",
+    "replacement": "<",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 84
+      },
+      "start": {
+        "column": 32,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- src/dense.rs\n+++ replace > with >= in bounded_lcm\n@@ -76,17 +76,17 @@\n     for value in values {\n         let d = value.denominator();\n         let gcd = common.gcd(d);\n         let (quotient, remainder) = common.div_rem(&gcd).ok()?;\n         if !remainder.is_zero() {\n             return None;\n         }\n         common = quotient.mul(d);\n-        if common.bit_length() > MAX_CONVOLUTION_INPUT_LCM_BITS {\n+        if common.bit_length() >= /* ~ changed by cargo-mutants ~ */ MAX_CONVOLUTION_INPUT_LCM_BITS {\n             return None;\n         }\n     }\n     Some(common)\n }\n \n fn scaled_integer_coefficients(\n     values: &[Rational],\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "bounded_lcm",
+      "return_type": "-> Option<perfect_arithmetic::Natural>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 89
+        },
+        "start": {
+          "column": 1,
+          "line": 74
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "src/dense.rs:84:32: replace > with >= in bounded_lcm",
+    "package": "perfect-polynomial",
+    "replacement": ">=",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 84
+      },
+      "start": {
+        "column": 32,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- src/dense.rs\n+++ replace mul_bounded_lcm -> Option<Polynomial<Rational>> with None\n@@ -106,27 +106,17 @@\n }\n \n /// Exact Z[x] convolution after bounded per-operand denominator LCM clearing.\n /// Fall back if denominators grow too large or an internal exact division fails.\n fn mul_bounded_lcm(\n     a: &Polynomial<Rational>,\n     b: &Polynomial<Rational>,\n ) -> Option<Polynomial<Rational>> {\n-    let da = bounded_lcm(&a.coeffs)?;\n-    let db = bounded_lcm(&b.coeffs)?;\n-    let left = scaled_integer_coefficients(&a.coeffs, &da)?;\n-    let right = scaled_integer_coefficients(&b.coeffs, &db)?;\n-    let product = mul(&left, &right);\n-    let denominator = Integer::from(da.mul(&db));\n-    let mut output = Vec::with_capacity(product.coeffs.len());\n-    for numerator in product.coeffs {\n-        output.push(Rational::new(numerator, denominator.clone()).ok()?);\n-    }\n-    Some(normalized(output))\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n /// Exact Q[x] convolution through Z[x] when each operand has a single\n /// canonical common denominator. Reduces O(n*m) Rational normalization to\n /// O(n+m) input conversion and one normalization per output coefficient.\n /// Do not clear distinct denominators into an unbounded LCM: fall back.\n fn mul_rational(a: &Polynomial<Rational>, b: &Polynomial<Rational>) -> Polynomial<Rational> {\n     if a.coeffs.len() < 4 || b.coeffs.len() < 4 {\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "mul_bounded_lcm",
+      "return_type": "-> Option<Polynomial<Rational>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 125
+        },
+        "start": {
+          "column": 1,
+          "line": 108
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with None",
+    "package": "perfect-polynomial",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 124
+      },
+      "start": {
+        "column": 5,
+        "line": 114
+      }
+    }
+  },
+  {
+    "diff": "--- src/dense.rs\n+++ replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::new())\n@@ -106,27 +106,17 @@\n }\n \n /// Exact Z[x] convolution after bounded per-operand denominator LCM clearing.\n /// Fall back if denominators grow too large or an internal exact division fails.\n fn mul_bounded_lcm(\n     a: &Polynomial<Rational>,\n     b: &Polynomial<Rational>,\n ) -> Option<Polynomial<Rational>> {\n-    let da = bounded_lcm(&a.coeffs)?;\n-    let db = bounded_lcm(&b.coeffs)?;\n-    let left = scaled_integer_coefficients(&a.coeffs, &da)?;\n-    let right = scaled_integer_coefficients(&b.coeffs, &db)?;\n-    let product = mul(&left, &right);\n-    let denominator = Integer::from(da.mul(&db));\n-    let mut output = Vec::with_capacity(product.coeffs.len());\n-    for numerator in product.coeffs {\n-        output.push(Rational::new(numerator, denominator.clone()).ok()?);\n-    }\n-    Some(normalized(output))\n+    Some(Polynomial::new()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Exact Q[x] convolution through Z[x] when each operand has a single\n /// canonical common denominator. Reduces O(n*m) Rational normalization to\n /// O(n+m) input conversion and one normalization per output coefficient.\n /// Do not clear distinct denominators into an unbounded LCM: fall back.\n fn mul_rational(a: &Polynomial<Rational>, b: &Polynomial<Rational>) -> Polynomial<Rational> {\n     if a.coeffs.len() < 4 || b.coeffs.len() < 4 {\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "mul_bounded_lcm",
+      "return_type": "-> Option<Polynomial<Rational>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 125
+        },
+        "start": {
+          "column": 1,
+          "line": 108
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::new())",
+    "package": "perfect-polynomial",
+    "replacement": "Some(Polynomial::new())",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 124
+      },
+      "start": {
+        "column": 5,
+        "line": 114
+      }
+    }
+  },
+  {
+    "diff": "--- src/dense.rs\n+++ replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::from_iter([Default::default()]))\n@@ -106,27 +106,17 @@\n }\n \n /// Exact Z[x] convolution after bounded per-operand denominator LCM clearing.\n /// Fall back if denominators grow too large or an internal exact division fails.\n fn mul_bounded_lcm(\n     a: &Polynomial<Rational>,\n     b: &Polynomial<Rational>,\n ) -> Option<Polynomial<Rational>> {\n-    let da = bounded_lcm(&a.coeffs)?;\n-    let db = bounded_lcm(&b.coeffs)?;\n-    let left = scaled_integer_coefficients(&a.coeffs, &da)?;\n-    let right = scaled_integer_coefficients(&b.coeffs, &db)?;\n-    let product = mul(&left, &right);\n-    let denominator = Integer::from(da.mul(&db));\n-    let mut output = Vec::with_capacity(product.coeffs.len());\n-    for numerator in product.coeffs {\n-        output.push(Rational::new(numerator, denominator.clone()).ok()?);\n-    }\n-    Some(normalized(output))\n+    Some(Polynomial::from_iter([Default::default()])) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Exact Q[x] convolution through Z[x] when each operand has a single\n /// canonical common denominator. Reduces O(n*m) Rational normalization to\n /// O(n+m) input conversion and one normalization per output coefficient.\n /// Do not clear distinct denominators into an unbounded LCM: fall back.\n fn mul_rational(a: &Polynomial<Rational>, b: &Polynomial<Rational>) -> Polynomial<Rational> {\n     if a.coeffs.len() < 4 || b.coeffs.len() < 4 {\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "mul_bounded_lcm",
+      "return_type": "-> Option<Polynomial<Rational>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 125
+        },
+        "start": {
+          "column": 1,
+          "line": 108
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::from_iter([Default::default()]))",
+    "package": "perfect-polynomial",
+    "replacement": "Some(Polynomial::from_iter([Default::default()]))",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 124
+      },
+      "start": {
+        "column": 5,
+        "line": 114
+      }
+    }
+  },
+  {
+    "diff": "--- src/dense.rs\n+++ replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::new(Default::default()))\n@@ -106,27 +106,17 @@\n }\n \n /// Exact Z[x] convolution after bounded per-operand denominator LCM clearing.\n /// Fall back if denominators grow too large or an internal exact division fails.\n fn mul_bounded_lcm(\n     a: &Polynomial<Rational>,\n     b: &Polynomial<Rational>,\n ) -> Option<Polynomial<Rational>> {\n-    let da = bounded_lcm(&a.coeffs)?;\n-    let db = bounded_lcm(&b.coeffs)?;\n-    let left = scaled_integer_coefficients(&a.coeffs, &da)?;\n-    let right = scaled_integer_coefficients(&b.coeffs, &db)?;\n-    let product = mul(&left, &right);\n-    let denominator = Integer::from(da.mul(&db));\n-    let mut output = Vec::with_capacity(product.coeffs.len());\n-    for numerator in product.coeffs {\n-        output.push(Rational::new(numerator, denominator.clone()).ok()?);\n-    }\n-    Some(normalized(output))\n+    Some(Polynomial::new(Default::default())) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Exact Q[x] convolution through Z[x] when each operand has a single\n /// canonical common denominator. Reduces O(n*m) Rational normalization to\n /// O(n+m) input conversion and one normalization per output coefficient.\n /// Do not clear distinct denominators into an unbounded LCM: fall back.\n fn mul_rational(a: &Polynomial<Rational>, b: &Polynomial<Rational>) -> Polynomial<Rational> {\n     if a.coeffs.len() < 4 || b.coeffs.len() < 4 {\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "mul_bounded_lcm",
+      "return_type": "-> Option<Polynomial<Rational>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 125
+        },
+        "start": {
+          "column": 1,
+          "line": 108
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::new(Default::default()))",
+    "package": "perfect-polynomial",
+    "replacement": "Some(Polynomial::new(Default::default()))",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 124
+      },
+      "start": {
+        "column": 5,
+        "line": 114
+      }
+    }
+  },
+  {
+    "diff": "--- src/dense.rs\n+++ replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::from(Default::default()))\n@@ -106,27 +106,17 @@\n }\n \n /// Exact Z[x] convolution after bounded per-operand denominator LCM clearing.\n /// Fall back if denominators grow too large or an internal exact division fails.\n fn mul_bounded_lcm(\n     a: &Polynomial<Rational>,\n     b: &Polynomial<Rational>,\n ) -> Option<Polynomial<Rational>> {\n-    let da = bounded_lcm(&a.coeffs)?;\n-    let db = bounded_lcm(&b.coeffs)?;\n-    let left = scaled_integer_coefficients(&a.coeffs, &da)?;\n-    let right = scaled_integer_coefficients(&b.coeffs, &db)?;\n-    let product = mul(&left, &right);\n-    let denominator = Integer::from(da.mul(&db));\n-    let mut output = Vec::with_capacity(product.coeffs.len());\n-    for numerator in product.coeffs {\n-        output.push(Rational::new(numerator, denominator.clone()).ok()?);\n-    }\n-    Some(normalized(output))\n+    Some(Polynomial::from(Default::default())) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Exact Q[x] convolution through Z[x] when each operand has a single\n /// canonical common denominator. Reduces O(n*m) Rational normalization to\n /// O(n+m) input conversion and one normalization per output coefficient.\n /// Do not clear distinct denominators into an unbounded LCM: fall back.\n fn mul_rational(a: &Polynomial<Rational>, b: &Polynomial<Rational>) -> Polynomial<Rational> {\n     if a.coeffs.len() < 4 || b.coeffs.len() < 4 {\n",
+    "file": "src/dense.rs",
+    "function": {
+      "function_name": "mul_bounded_lcm",
+      "return_type": "-> Option<Polynomial<Rational>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 125
+        },
+        "start": {
+          "column": 1,
+          "line": 108
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "src/dense.rs:114:5: replace mul_bounded_lcm -> Option<Polynomial<Rational>> with Some(Polynomial::from(Default::default()))",
+    "package": "perfect-polynomial",
+    "replacement": "Some(Polynomial::from(Default::default()))",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 124
+      },
+      "start": {
+        "column": 5,
+        "line": 114
+      }
+    }
+  }
+]

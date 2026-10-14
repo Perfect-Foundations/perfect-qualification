@@ -1,0 +1,4 @@
+case,len_a,len_b,input_bits,elapsed_ns,allocs,reallocs,total_requested_bytes,peak_incremental_live_bytes,net_live_delta
+z_div_exact_b16_q16_bits32,33,17,32,6200,2,0,1600,1600,0
+z_div_exact_b32_q32_bits128,65,33,128,74300,1090,64,30776,4696,0
+z_div_exact_b64_q64_bits128,129,65,128,307500,4163,189,110600,9304,0

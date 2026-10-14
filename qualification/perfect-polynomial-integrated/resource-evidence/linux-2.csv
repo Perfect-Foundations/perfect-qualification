@@ -1,0 +1,7 @@
+case,allocations,total_requested_bytes,peak_incremental_live_bytes,reallocations,net_live_delta
+integer_shared_gcd,8,1600,1056,0,0
+rational_shared_gcd,11,2400,1056,0,0
+rational_mul,1,392,392,0,0
+rational_div_rem,2,560,560,0,0
+integer_exact_div,2,896,896,0,0
+integer_coprime_gcd,8,1344,928,0,0

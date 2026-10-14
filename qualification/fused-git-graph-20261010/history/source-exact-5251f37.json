@@ -1,0 +1,32 @@
+{
+  "schema": "perfect-foundations.git-pinned-experimental-integration.v1",
+  "rust_version": "1.99.0",
+  "packages": {
+    "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
+    "perfect-rational": "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c",
+    "perfect-polynomial": "30d9d02b8ee681ffeee2a07d4d5bb531461602a1",
+    "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "cargo_lock_sha256": "3d0aeea874b19323ef56c031a6b106da19826a80bdfe686d5d79557d02eb273f",
+  "features": [
+    "--all-features",
+    "--no-default-features"
+  ],
+  "expected_arithmetic_package_count": 1,
+  "source_override": null,
+  "independent_oracles": [
+    "Python arbitrary-precision Integer and Fraction fixed coefficients",
+    "SymPy complete Z[x] and Q[x] GCD coefficients and content",
+    "signed 128-8192-bit carry and cancellation references",
+    "source-exact SymPy PRS 4096/4097-bit gcd and 257-bit signed integer division",
+    "canonical-boundary-v2 full Python Fraction/SymPy cross-host byte oracle"
+  ],
+  "acceptance_limitations": [
+    "experimental source not production stable API",
+    "no independent formal reviewer approvals",
+    "GitHub hosted CI pre-run failure",
+    "no native physical ARM64 runtime acceptance",
+    "no protected M1/M2 gate promotion",
+    "not a release or crates.io publication"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "perfect-foundations.git-pinned-experimental-integration.v1",
+  "rust_version": "1.99.0",
+  "packages": {
+    "perfect-arithmetic": "d99aef2a9ef230eb725adaef664b0cc0214dc4bd",
+    "perfect-rational": "b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c",
+    "perfect-polynomial": "36c052130633804c0b7b2d5ecbfe1f7d8dec4358",
+    "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b"
+  },
+  "cargo_lock_sha256": "6add2f87286c33c8bc1a090c8ee580560643a214c94d430491e914edb00846b7",
+  "features": [
+    "--all-features",
+    "--no-default-features"
+  ],
+  "expected_arithmetic_package_count": 1,
+  "source_override": null,
+  "independent_oracles": [
+    "Python arbitrary-precision Integer and Fraction fixed coefficients",
+    "SymPy complete Z[x] and Q[x] GCD coefficients and content",
+    "signed 128-8192-bit carry and cancellation references"
+  ],
+  "acceptance_limitations": [
+    "experimental source not production stable API",
+    "no independent formal reviewer approvals",
+    "GitHub hosted CI pre-run failure",
+    "no native physical ARM64 runtime acceptance",
+    "no protected M1/M2 gate promotion",
+    "not a release or crates.io publication"
+  ]
+}
