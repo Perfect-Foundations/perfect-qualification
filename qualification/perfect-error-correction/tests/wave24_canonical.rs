@@ -23,7 +23,7 @@ fn mul16(mut a:u64,mut b:u64)->u64{
 fn ord(code:&ReedSolomon,v:u64)->RsSymbol {code.field().ordinal(v).unwrap()}
 fn run(code:&ReedSolomon,session:&mut RsDecodeSession,case:usize,field:u64){
     let k=code.message_len();
-    let coefficients=(0..k).map(|i|((case as u64*11+i as u64*7+3*i as u64*i as u64+5)%field)).collect::<Vec<_>>();
+    let coefficients=(0..k).map(|i|(case as u64*11+i as u64*7+3*i as u64*i as u64+5)%field).collect::<Vec<_>>();
     let message=coefficients.iter().map(|&v|ord(code,v)).collect::<Vec<_>>();
     let encoded=code.encode(&message).unwrap();
     let expected=(0..code.code_len()).map(|x|{
