@@ -34,24 +34,30 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--log-dir",required=True,type=Path)
     parser.add_argument("--output",type=Path)
+    parser.add_argument("--poly-source",choices=("7774e361c8a86c1ad3f5358d8df7a353371713d9","ae45f4d386dff6d525424b70e3115074dc7f8f51"),
+                        default="ae45f4d386dff6d525424b70e3115074dc7f8f51")
+    parser.add_argument("--poly-log-tag",default="",
+                        help="Optional immutable Polynomial log tag, e.g. 7774")
     args=parser.parse_args()
     results={}
     transcripts={}
+    current_sources={**SOURCE,"POLY":args.poly_source}
     for name,domain in GROUPS.items():
         runs={}
         for host in PLATFORMS:
-            path=args.log_dir/f"wave24-canonical-{name}-{host}-20261013.txt"
+            tag=f"-{args.poly_log_tag}" if name=="POLY" and args.poly_log_tag else ""
+            path=args.log_dir/f"wave24-canonical-{name}-{host}{tag}-20261013.txt"
             runs[host]=canonical(path,domain)
         for host in PLATFORMS[1:]:
             if runs["win"]!=runs[host]:
                 index=next((i for i,(a,b) in enumerate(zip(runs["win"],runs[host])) if a!=b),None)
                 raise ValueError(f"{name}: FIRST DIVERGENCE at case {index} win={runs['win'][index]} {host}={runs[host][index]}")
         transcripts[name]=runs
-        results[name]={"source_sha":SOURCE[name],"records":128,
+        results[name]={"source_sha":current_sources[name],"records":128,
             "sha256":{host:digest(rows) for host,rows in runs.items()}}
     combined={}
     for host in PLATFORMS:
-        lines=[f"DOMAIN|{name}|{SOURCE[name]}" for name in GROUPS]
+        lines=[f"DOMAIN|{name}|{current_sources[name]}" for name in GROUPS]
         lines += [line for name in GROUPS for line in transcripts[name][host]]
         combined[host]=digest(lines)
     if len(set(combined.values()))!=1:

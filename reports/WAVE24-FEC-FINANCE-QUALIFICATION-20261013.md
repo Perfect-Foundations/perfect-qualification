@@ -37,3 +37,6 @@ Canonical source: `qualification/perfect-error-correction/tests/wave24_canonical
 
 ## Remaining verification gates
 Formal M1/M2/Q6 acceptance, untested physical ARM64 hardware, holistic fuzz/mutation, long-running resource soak, independent performance regression metrics, formal license/security review and publication remain OPEN. No claimed speedup. No hosting, CI, billing, or paid services.
+
+## Final Polynomial source follow-up
+Polynomial PR #18 advanced to `ae45f4d386dff6d525424b70e3115074dc7f8f51` solely through new mutation-derived tests. The prior 384-record corpus at `7774e361c8a86c1ad3f5358d8df7a353371713d9` remains frozen and is not rewritten. The expanded canonical verifier now accepts an explicit Polynomial source and immutable log tag; the new final-source corpus is retained separately, with exact new hashes in `WAVE24-CANONICAL-FINAL-20261013.json`. Error Correction and Finance source pins are unchanged.
