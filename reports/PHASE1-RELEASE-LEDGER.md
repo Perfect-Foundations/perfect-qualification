@@ -139,3 +139,9 @@ M5, Q0-Q6 and R7A **NOT READY**.
 | phase1-rational-prefix8-allocations-20261023.csv | 48b0a62c63fed7532bf835f3813376e0270a440edc94690c2334b088671a91e9 |
 
 The allocation CSV was normalized losslessly from PowerShell UTF-16 redirected text to UTF-8 with LF line endings for review; numeric values and rows are unchanged.
+
+## Decimal independent rounded-division oracle (Rust 1.99.0)
+
+The existing five-crate test-only consumer now includes 73,200 additional bounded signed Decimal `div_round` cases, checked against an independent i128 integer-quotient/remainder significant-digit oracle. Source exponents are zero, source integers run -30..30 with nonzero divisors, four precisions (1/2/3/5) and five explicit rounding modes; tests independently verify exact resulting Rational value and the rounding error direction. Division by zero and extreme exponent/resource semantics are covered elsewhere and are **not** certified by this bounded test.
+
+Windows Rust 1.99.0 offline locked source-exact no-default/all-feature full integration suites: **11/11 PASS in each mode**. All-feature all-target Clippy with `-D warnings` and formatting checks: **PASS**. This extends Q2/Q5 evidence but leaves Decimal M1, comprehensive numerical coverage, Linux/ARM64 runtime and independent Q0-Q6/R7A **NOT READY**.
