@@ -186,3 +186,8 @@ Rust 1.99.0 Windows Qualification adds 18,800 integer-oracle rounding observatio
 A new Qualification-owned phase1_arithmetic_division_oracle.rs checks 240 large Natural div_rem inputs at widths 64, 256, 1024, 4096, 8192 and 16384 bits against test-only num-bigint 0.4.8 (Arithmetic internally uses 0.5.1). It independently verifies quotient/remainder bits, reconstruction a = q*d + r, remainder bounds, division by one, a smaller than divisor, and division-by-zero error. This tests exact Arithmetic main 95e8499f458d9cb681ce0d452cade1cd17c9f6ad, not an optimized candidate.
 
 Windows Rust 1.99.0 locked offline no-default and all-features five-foundation integration: 17/17 PASS in each configuration. Warning-denied Clippy, formatting, and normal-edge dependency duplicate check PASS. The previous 16,384-bit performance deficit remains open; correctness vectors do not imply competitive latency. Q0-Q6/R7A remain NOT READY.
+
+
+## MSRV optimized release-mode integration
+
+Exact Qualification branch source 2c0e3c8a5453c12b6f12c00854a55138d03c6b79: cargo +1.99.0 test --locked --offline --release --all-features --all-targets passes 17/17 Windows tests. This supplements, but does not replace, the MSRV debug, portability and independent reference evidence above. Native Linux/ARM64, mutations, fuzzing and Q6/R7A remain blocked.
