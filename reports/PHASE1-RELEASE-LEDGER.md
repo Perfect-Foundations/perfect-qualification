@@ -86,3 +86,13 @@ Numbers are seven-round median multiplication latency for the harness's exact in
 | --- | --- |
 | phase1-float-astro-main-20261023-run1.csv | f8ccee98a31d2b12fd1cc30649c18069b521bb51830e2805119e50b50f022984 |
 | phase1-float-astro-main-20261023-run2.csv | 0713d861033b0d08add02682250a1be561ca4b5e05f4e312deacef95aaa6a5cc |
+
+## Exact Rust 1.99.0 MSRV and bounded Decimal Q5 coverage (2026-10-23)
+
+New execution on authorized Windows MSVC source-exact revisions in the source graph above:
+
+- `cargo +1.99.0 test --offline --no-default-features --all-targets` and `cargo +1.99.0 test --offline --all-features --all-targets` **PASS for all five foundation mains**, using a shared Cargo target directory. Float retained one explicitly ignored performance probe. This qualifies the Windows test run under exact declared MSRV (not the full multi-OS MSRV matrix).
+- `cargo +1.99.0 check --offline --no-default-features --target TARGET` with `RUSTFLAGS="-D warnings"`: **15/15 PASS**, five foundations times `wasm32v1-none`, `thumbv7em-none-eabihf`, `riscv64imac-unknown-none-elf`. Cross-target **compilation only**, not hardware/emulated execution.
+- Existing pinned `qualification/perfect-arithmetic`: Rust 1.99.0 offline locked no-default and all-feature suites **9/9 PASS each**, warning-denied Clippy **PASS**.
+- Existing five-foundation integration: added `tests/phase1_quantize_oracle.rs`, a separate bounded primitive integer division/remainder oracle for signed Decimal quantization. Independent expected coefficient and rounding direction are computed without Decimal conversion/reference helpers: **31,605 cases** across five rounding modes, seven source exponents, seven destination exponents and signed coefficients -64..64. An additional test verifies signed-zero preservation across source/target quanta. Rust 1.99.0 offline locked no-default/all-feature integration suites **10/10 PASS each**, warning-denied all-target Clippy and formatting **PASS**.
+- This is new Windows source-exact Q1/Q5 evidence; **Q0–Q6 and R7A remain BLOCKED** by the broader unresolved release gates listed above. No source revision, production crate, license, package publication, readiness percentage or release approval changed.
