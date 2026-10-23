@@ -145,3 +145,33 @@ The allocation CSV was normalized losslessly from PowerShell UTF-16 redirected t
 The existing five-crate test-only consumer now includes 73,200 additional bounded signed Decimal `div_round` cases, checked against an independent i128 integer-quotient/remainder significant-digit oracle. Source exponents are zero, source integers run -30..30 with nonzero divisors, four precisions (1/2/3/5) and five explicit rounding modes; tests independently verify exact resulting Rational value and the rounding error direction. Division by zero and extreme exponent/resource semantics are covered elsewhere and are **not** certified by this bounded test.
 
 Windows Rust 1.99.0 offline locked source-exact no-default/all-feature full integration suites: **11/11 PASS in each mode**. All-feature all-target Clippy with `-D warnings` and formatting checks: **PASS**. This extends Q2/Q5 evidence but leaves Decimal M1, comprehensive numerical coverage, Linux/ARM64 runtime and independent Q0-Q6/R7A **NOT READY**.
+
+## Independent Rational Q5 references on the unchanged five-foundation graph
+
+The existing five-foundation integration consumer now owns
+`qualification/perfect-four-crate-integration/tests/phase1_rational_reference.rs`,
+adapted with explicit provenance from Perfect Rational main
+`21a7fba5f22ab7f5db12b480a1c910edd1797d77`,
+original `tests/phase65_bounded_cmp.rs`. The independent mathematical
+oracle is `num-rational 0.4.2` plus `num-bigint 0.4.8`, test-only.
+The existing Arithmetic backend may separately resolve `num-bigint 0.5.1`;
+this is a **dev/reference** version duplication, not a duplicate
+production Perfect crate identity or new runtime dependency.
+
+Tests cover 1,152 forward/reverse wide signed comparisons, 48
+common-numerator/denominator and ordered-boundary cases, and four
+long shared continued-fraction-prefix adversarial cases. Existing
+Rational public APIs and source graph pins were not modified.
+Exact Windows MSRV Rust 1.99.0, locked offline no-default and
+all-feature integration suites: **14/14 PASS per configuration**.
+All-target all-feature Clippy with warnings denied and formatting
+checks: **PASS**. Production-only `cargo tree --edges normal -d`
+reports no duplicated package identities.
+
+This is Qualification-owned, repeatable evidence for Rational
+**main**, not proof that unmerged Rational PR #7 passes on the
+candidate SHA. Candidate-specific independent verification remains
+uncompleted; no repinning of Float/Decimal to that candidate, no
+gate advancement or R7A readiness claim. Linux/ARM64 native
+runtime, exact-head mutation, resource/performance breadth and
+registry package proof remain BLOCKED/OPEN.
