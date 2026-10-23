@@ -96,3 +96,46 @@ New execution on authorized Windows MSVC source-exact revisions in the source gr
 - Existing pinned `qualification/perfect-arithmetic`: Rust 1.99.0 offline locked no-default and all-feature suites **9/9 PASS each**, warning-denied Clippy **PASS**.
 - Existing five-foundation integration: added `tests/phase1_quantize_oracle.rs`, a separate bounded primitive integer division/remainder oracle for signed Decimal quantization. Independent expected coefficient and rounding direction are computed without Decimal conversion/reference helpers: **31,605 cases** across five rounding modes, seven source exponents, seven destination exponents and signed coefficients -64..64. An additional test verifies signed-zero preservation across source/target quanta. Rust 1.99.0 offline locked no-default/all-feature integration suites **10/10 PASS each**, warning-denied all-target Clippy and formatting **PASS**.
 - This is new Windows source-exact Q1/Q5 evidence; **Q0–Q6 and R7A remain BLOCKED** by the broader unresolved release gates listed above. No source revision, production crate, license, package publication, readiness percentage or release approval changed.
+## Rational exact-order candidate PR #7 (not selected into release graph)
+
+Separate **draft** branch `perf/phase1-rational-bounded-prefix-20261023`,
+exact SHA `4fbe3977a53e3f3bceb6329c0804c2c3b0e9a506`, based on
+Rational `main` `21a7fba5f22ab7f5db12b480a1c910edd1797d77`.
+Public `Rational::cmp` API and exact semantics unchanged. A provably
+disjoint leading-product interval may certify ordering without wide
+cross-products; overlapping intervals retain exact fallback.
+
+Rust **1.99.0** Windows MSVC no-default/all-features full source tests,
+160,000 bounded internal primitive comparisons, 1,152 external
+independent large-fraction comparisons, Fibonacci-prefix tests,
+Clippy/rustdoc warnings denied, and fmt: **PASS**.
+No-default warning-denied compile-only checks on `wasm32v1-none`,
+`thumbv7em-none-eabihf`, `riscv64imac-unknown-none-elf`: **3/3 PASS**.
+
+The existing seven-sample quick release harness, two separate sequential
+source campaigns, measured 2,048-bit balanced comparison
+`1,979/1,983 ns` baseline vs `31.57/24.05 ns` candidate, and
+16,384-bit `4,192/4,221 ns` vs `12.58/15.77 ns`.
+Selected candidate comparison cases allocated **zero** counted bytes,
+vs baseline 1,040 B (2,048-bit) and 61,456 B (16,384-bit).
+Five adversarial Fibonacci-prefix comparisons measured
+`1.015/1.075/1.020/1.024/1.026` candidate/baseline latency ratios
+for 512/2,048/4,096/8,192/16,384-bit inputs. Initial 16-bit variant
+regressed adversarial cases more severely and was rejected in favor of
+8-bit interval bounds with a 1,024-bit admission threshold.
+
+**Limitations:** baseline/candidate process sequences are not ABBA
+interleaved, other operations show host noise, resource and linked-code
+size matrices remain incomplete, and Linux/native ARM64, full mutation
+and downstream exact-source qualification have not passed. Candidate
+**NOT MERGED**, all source graph pins remain on current `main`.
+M5, Q0-Q6 and R7A **NOT READY**.
+
+| Candidate raw CSV | SHA-256 |
+| --- | --- |
+| phase1-rational-prefix8-candidate-20261023-run1.csv | 86c5eab82574161eeaf5ce5861f860e3d9fb9e89324ea0f83b345b89dcc259ba |
+| phase1-rational-prefix8-candidate-20261023-run2.csv | 063eb582189a54c2896f0bf3b39a17c583a837602fc040526f70f30bf20daae6 |
+| phase1-rational-prefix8-pathological-20261023.csv | a9353f22b57f473e20a39507c5108ffb39723fb10d859b0e9254aeb124eeaf47 |
+| phase1-rational-prefix8-allocations-20261023.csv | 48b0a62c63fed7532bf835f3813376e0270a440edc94690c2334b088671a91e9 |
+
+The allocation CSV was normalized losslessly from PowerShell UTF-16 redirected text to UTF-8 with LF line endings for review; numeric values and rows are unchanged.
