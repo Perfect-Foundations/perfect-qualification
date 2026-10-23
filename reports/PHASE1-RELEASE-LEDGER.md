@@ -175,3 +175,7 @@ uncompleted; no repinning of Float/Decimal to that candidate, no
 gate advancement or R7A readiness claim. Linux/ARM64 native
 runtime, exact-head mutation, resource/performance breadth and
 registry package proof remain BLOCKED/OPEN.
+
+## Bounded Float binary rounding reference
+
+Rust 1.99.0 Windows Qualification adds 18,800 integer-oracle rounding observations across five modes and four precisions in tests/phase1_float_rounding_oracle.rs. MSRV no-default and all-feature integration pass 15/15 in each mode, Clippy -D warnings and fmt pass. Expected dyadic values use Float exact conversion and therefore do not form a fully independent MPFR oracle. Q0-Q6 and R7A remain NOT READY.
