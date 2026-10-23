@@ -67,3 +67,22 @@ WSL2 cannot authenticate to private Arithmetic Git. An attempted authorized sour
 | phase1-rational-allocation-main-20261023.csv | 2b365a3f9a8672cdece050f938e1d2aefd5b1f6b362221a0a8d4b1e2a6c4905b |
 | phase1-rational-competitor-main-20261023-run1.csv | facffe328beb12b1cefe90fa2032a22ca5c548360f5dab1df30c9a194eebfe2d |
 | phase1-rational-competitor-main-20261023-run2.csv | 4b42794dde511f555d1d0c0b152428a6f3cacc0cb36fe84ba97f72915cfc37b4 |
+
+## Float rounded multiplication current-source recheck
+
+The existing `benchmarks/phase64-rounded-multiplication` consumer could not run with `--locked` on Float main `e46b68ed` because its lockfile pinned Rational `9d6ac480` instead of the production-required `21a7fba5`. This was fixed separately as draft Float PR #4 at `7b22c936ebd147bf2b1a68c4e22fad5c7e3bcc84` (only Cargo.lock changed). The source-exact locked/offline benchmark then ran successfully twice with its original code and Astro Float Num 0.3.7.
+
+| Precision | Perfect Float latency / Astro latency: run 1 / run 2 |
+| --- | --- |
+| 64 bits | 0.268x / 0.271x |
+| 128 bits | 0.986x / 0.999x |
+| 256 bits | 1.629x / 1.644x |
+| 1,024 bits | 1.292x / 1.311x |
+| 4,096 bits | 1.992x / 1.948x |
+
+Numbers are seven-round median multiplication latency for the harness's exact input patterns, not a comprehensive correctly-rounded MPFR oracle or general Float performance qualification. No production Float change is justified by these two sequential campaigns alone. Raw CSVs use byte-preserving `.gitattributes` and their Git blob SHA-256 digests follow.
+
+| Raw Float CSV | SHA-256 |
+| --- | --- |
+| phase1-float-astro-main-20261023-run1.csv | f8ccee98a31d2b12fd1cc30649c18069b521bb51830e2805119e50b50f022984 |
+| phase1-float-astro-main-20261023-run2.csv | 0713d861033b0d08add02682250a1be561ca4b5e05f4e312deacef95aaa6a5cc |
