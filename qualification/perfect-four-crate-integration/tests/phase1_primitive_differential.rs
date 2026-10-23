@@ -104,3 +104,89 @@ fn all_five_crates_preserve_value_and_direction_for_signed_dyadics() {
     }
     assert_eq!(cases, 3800);
 }
+
+#[test]
+fn rounded_decimal_division_matches_independent_integer_oracle() {
+    use perfect_decimal::{DecimalContext, DecimalPrecision};
+    let limits = DecimalLimits::new(40).unwrap();
+    let modes = [
+        RoundingMode::NearestTiesToEven,
+        RoundingMode::NearestTiesAway,
+        RoundingMode::TowardNegative,
+        RoundingMode::TowardPositive,
+        RoundingMode::TowardZero,
+    ];
+    let mut cases = 0_u64;
+    for a in -30_i128..=30 {
+        for b in (-30_i128..=30).filter(|b| *b != 0) {
+            for precision in [1_u32, 2, 3, 5] {
+                for mode in modes {
+                    let ctx = DecimalContext::new(
+                        DecimalPrecision::new(precision).unwrap(),
+                        mode,
+                        limits,
+                    )
+                    .unwrap();
+                    let actual = decimal(a, 0).div_round(&decimal(b, 0), ctx).unwrap();
+                    if a == 0 {
+                        assert!(actual.value().is_zero());
+                        assert_eq!(actual.ordering(), Ordering::Equal);
+                        cases += 1;
+                        continue;
+                    }
+                    let negative = (a < 0) != (b < 0);
+                    let mut n = a.abs();
+                    let mut d = b.abs();
+                    let mut exponent = 0_i32;
+                    while n >= 10 * d {
+                        d *= 10;
+                        exponent += 1;
+                    }
+                    while n < d {
+                        n *= 10;
+                        exponent -= 1;
+                    }
+                    let digits = 10_i128.pow(precision - 1);
+                    let q = n * digits / d;
+                    let rem = n * digits % d;
+                    let up = rem != 0
+                        && match mode {
+                            RoundingMode::TowardZero => false,
+                            RoundingMode::TowardPositive => !negative,
+                            RoundingMode::TowardNegative => negative,
+                            RoundingMode::NearestTiesAway => 2 * rem >= d,
+                            RoundingMode::NearestTiesToEven => {
+                                2 * rem > d || (2 * rem == d && q % 2 == 1)
+                            }
+                        };
+                    let coefficient = (q + i128::from(up)) * if negative { -1 } else { 1 };
+                    let power = exponent - (precision as i32 - 1);
+                    let oracle = if power >= 0 {
+                        expected(coefficient * 10_i128.pow(power as u32), 1)
+                    } else {
+                        expected(coefficient, 10_i128.pow((-power) as u32))
+                    };
+                    let ordering = if rem == 0 {
+                        Ordering::Equal
+                    } else if up != negative {
+                        Ordering::Greater
+                    } else {
+                        Ordering::Less
+                    };
+                    assert_eq!(
+                        actual.value().to_rational(limits).unwrap(),
+                        oracle,
+                        "a={a} b={b} precision={precision} mode={mode:?}"
+                    );
+                    assert_eq!(
+                        actual.ordering(),
+                        ordering,
+                        "direction a={a} b={b} precision={precision} mode={mode:?}"
+                    );
+                    cases += 1;
+                }
+            }
+        }
+    }
+    assert_eq!(cases, 73_200);
+}

@@ -1,6 +1,6 @@
 # Perfect Arithmetic qualification configuration
 
-Target revision: `9ec660f9abfd7fe93e441e77dbb1158c371603f5`
+Target revision: `95e8499f458d9cb681ce0d452cade1cd17c9f6ad`
 
 Required Perfect Numeric revision: `19b6747cd852a47a694a020b97ba70b6b3ef259b`
 
@@ -44,3 +44,22 @@ has prerelease/release gates that must be handled explicitly, including the
 bottom-up registry sequence required before its final `cargo package` and
 packaged-offline-build evidence can exist. Q0-Q5 success must not be inflated
 into Q6 or public-release readiness.
+
+
+## Source-exact local requalification (2026-10-23)
+
+Consumer pin: Arithmetic `95e8499f458d9cb681ce0d452cade1cd17c9f6ad`
+with its existing Numeric `19b6747cd852a47a694a020b97ba70b6b3ef259b` dependency.
+The new qualification-owned `tests/phase1_current_bit.rs` checks 528,384
+independent bounded-u16 bit observations plus sparse, multilimb and huge-index
+behavior through the public `Natural::bit` API.
+
+Executed locally on Zen Windows x86_64, Cargo 1.99.1, exact pinned Git graph:
+- Offline locked no-default, default, and all-feature suites: 9/9 tests per mode.
+- All-feature warning-denied all-target Clippy and rustfmt: PASS.
+- Python independent Natural/Integer/GCD oracles: 72/72 PASS.
+
+Native Linux runtime, physical ARM64, mutation/fuzz replay for this exact
+candidate, prerelease API review and Q6 package/registry proof remain
+BLOCKED or NOT RUN, not PASS. Historic evidence above belongs to its
+recorded revisions and is not inherited by this source.
