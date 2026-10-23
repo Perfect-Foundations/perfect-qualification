@@ -29,3 +29,11 @@ It does not replace fuzz/mutation, MPFR/competitor benchmarks,
 memory/size, Linux or ARM64 native runtime, independent validators,
 packaging, licensing, or publication gates. Historical qualification
 evidence is not automatically transferred to the new Git graph.
+
+## Additional primitive differential matrix (2026-10-23)
+
+The existing test-only five-crate consumer now includes tests/phase1_primitive_differential.rs. An independent bounded-i128 fractional oracle supplies 6,627 expected signed Decimal add/subtract/multiply results across mixed base-10 exponents. Another 3,800 signed Decimal/Rational/Float consistency cases use all five common rounding modes. The latter are cross-crate invariants, not an independent MPFR correctly-rounded Float proof.
+
+Windows Rust 1.99.1 exact-source locked/offline full no-default and all-features test suites, warning-denied Clippy in both configurations, Rustfmt and offline no-default documentation passed. Earlier cross-target checks were compile-only. A fresh WSL2 source-exact Qualification checkout could not fetch the private Arithmetic source because GitHub authentication was unavailable to Cargo there; no Linux test result was obtained.
+
+This is additional integration evidence only. It does not advance Rational M5, Float M4, Decimal M1, Arithmetic Q6, Q0-Q6 family qualification, or the private R7A/public R7B release gates.
