@@ -228,3 +228,23 @@ qualification. Linux native and physical ARM64 runtime, mutation/fuzz
 replay, comprehensive reference/benchmark qualification, registry package
 proof and Q0–Q6 / private R7A remain OPEN or BLOCKED. No publication,
 paid hosted CI, merge or PerfectPi change was performed.
+## Post-correction no_std class-B compile checks — 2026-10-24
+
+Using the authorized Zen Windows target, exact Rust 1.99.0 with
+CARGO_NET_OFFLINE=true and RUSTFLAGS=-D warnings, run Cargo check
+--no-default-features independently for each of the following exact
+candidate revisions:
+
+- Rational PR #7: 0f8ccd07b1f3c29b1d725ef79fb6dfa48274f9b2
+- Float PR #4: 9e8d7c608ec0c5faadb46c427a82d1df84185a01
+
+Targets wasm32v1-none, thumbv7em-none-eabihf and
+riscv64imac-unknown-none-elf: all six checks PASS.
+This is compile-only evidence; no WASM/Thumb/RISC-V program ran.
+Windows source suites and Qualification exact-candidate oracle results
+are documented above. Native Linux remains BLOCKED because WSL2 lacks
+credentials for private Arithmetic Git (the target process is usable).
+Hosted CI was not run; GitHub workflow lookup shows no new runs for
+these skip-ci candidate commits. Physical ARM64, full mutation/fuzz,
+downstream Rational-candidate integration, performance gaps and
+Q0-Q6/R7A release gates remain OPEN or BLOCKED.
