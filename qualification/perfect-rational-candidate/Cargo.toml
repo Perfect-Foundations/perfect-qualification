@@ -1,0 +1,19 @@
+[package]
+name = "perfect-rational-candidate-qualification"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+
+# Isolated candidate consumer. Must not mix with Float/Decimal on Rational main.
+[features]
+default = ["std"]
+std = ["perfect-rational/std", "perfect-arithmetic/std"]
+
+[dependencies]
+perfect-rational = { git = "https://github.com/Perfect-Foundations/perfect-rational.git", rev = "0f8ccd07b1f3c29b1d725ef79fb6dfa48274f9b2", version = "=0.1.0", default-features = false }
+perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "95e8499f458d9cb681ce0d452cade1cd17c9f6ad", version = "=0.1.0", default-features = false }
+
+[dev-dependencies]
+num-bigint = "=0.4.8"
+num-rational = "=0.4.2"
