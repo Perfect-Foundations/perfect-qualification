@@ -323,3 +323,91 @@ private R7A readiness. No public release, merge, paid hosted CI or
 PerfectPi modification occurred. Source-specific Linux/ARM64 runtime,
 mutation/fuzz, full MPFR mathematical oracles, competitive performance,
 supply-chain and package release gates remain OPEN/BLOCKED.
+
+## Mutation-derived Rational candidate repin and verified downstream Q5 ? 2026-10-24
+
+**Exact production-candidate Git graph; the five-main release graph is unchanged.**
+- Numeric `19b6747cd852a47a694a020b97ba70b6b3ef259b`
+- Arithmetic `95e8499f458d9cb681ce0d452cade1cd17c9f6ad`
+- Rational PR #7 `857c55beee5aeb381c674d739630b8c3407fa7f8`
+- Float draft PR #5 `194887d5fa2959ce758160de3354376b1a4baaee`
+- Decimal draft PR #3 `f75df906f3ab83aa5ddb8eb94328c146a96a11f6`
+
+### Confirmed mutation-derived regression
+
+Before the added Rational regression, the exact `compare_prefix_products::top_eight`
+selection returned 2 **missed** mutants under `cargo-mutants 27.1.0` in an isolated
+Windows run (`--lib --locked --offline`). The existing primitive correctness
+test permitted inconclusive fallback without requiring interval certification.
+A new deterministic internal regression demands certified ordering for
+disjoint equal-bit-length product intervals at multiple operand widths, both
+operand orders, and inconclusive fallback for equal products.
+
+The Rust 1.99.0 source suite, no-default/all-features tests, warning-denied
+Clippy and formatting pass on the revised Rational candidate SHA above.
+After that regression, a bounded `cargo mutants --file src/rational.rs --re
+'replace compare_prefix_products -> Option|compare_prefix_products::top_eight
+-> u64 with' --jobs 1 --baseline skip --copy-target false --timeout 140
+-- --locked --offline --lib` produced 4 mutants: **3 caught, 1 unviable,
+0 missed**. The two previously missed extractor mutants were both caught.
+The unviable mutant does not earn a caught classification. A skip-baseline
+mutation selection is a limited Q4 regression check, *not* comprehensive
+source mutation qualification.
+
+Preserved exact mutation records (SHA-256):
+- `reports/phase1-raw/phase1-rational-top8-pre-regression-mutants-20261024.json`
+  SHA-256 `b3236443880d62633b90e96914f0ebcf076084360009506571f72f9a1032d059`
+- `reports/phase1-raw/phase1-rational-top8-post-regression-mutants-20261024.json`
+  SHA-256 `7032b01b65ce8f01a60c612c5b4b8f94d6e8f4a38cf843018b444fd6a06afe0c`
+
+### Repinned candidate graph and independent Qualification
+
+Float and Decimal draft downstream branches were repinned to the new
+Rational SHA and their Cargo locks regenerated. On Windows Rust 1.99.0
+both downstream source crates pass `cargo test --locked --offline
+--no-default-features --all-targets`, the all-features variant,
+warning-denied Clippy, formatting and normal dependency-duplicate checks.
+
+The existing `qualification/perfect-rational-candidate` consumer was
+repinned to the exact five-SHA graph above; Cargo regenerated its lock.
+`cargo tree --locked --offline -e normal -d` reports no duplicate normal
+production source identities. Recovered *new* Windows Rust 1.99.0 run results
+from this final candidate graph:
+- `cargo test --locked --offline --no-default-features --all-targets`:
+  **PASS 12/12** (9 independent cross-family + 3 Rational external oracle)
+- `cargo test --locked --offline --all-features --all-targets`:
+  **PASS 12/12**
+- `cargo test --release --locked --offline --all-features --all-targets`:
+  **PASS 12/12**
+- `cargo clippy --locked --offline --all-features --all-targets --
+  -D warnings`: **PASS**
+- `cargo fmt --all -- --check`: **PASS**
+
+The prior timed-out process session was not used as qualification evidence;
+these outcomes are from successfully completed reruns against the exact
+new graph. The prior cross-target compile results apply to the earlier
+source pins; they are **not automatically inherited** by this revised graph.
+
+**Outstanding:** native Linux private Git/DNS access, actual ARM64 and
+other target runtime verification, full mutation/fuzz, comprehensive MPFR
+reference, competitive performance/resource qualification, package
+reproducibility and remaining Q0?Q6/private R7A requirements.
+All candidate PRs remain draft and unmerged. **NOT READY**.
+No paid CI, release, license change or PerfectPi modification.
+
+### Final candidate cross-target compile and rustdoc rerun ? 2026-10-24
+
+Against **Float `194887d5fa2959ce758160de3354376b1a4baaee`** and
+**Decimal `f75df906f3ab83aa5ddb8eb94328c146a96a11f6`**, with
+Rational `857c55beee5aeb381c674d739630b8c3407fa7f8`, Windows
+Rust 1.99.0 ran `cargo check --locked --offline --no-default-features
+--target TARGET` under `RUSTFLAGS=-D warnings`. **6/6 PASS** over
+`wasm32v1-none`, `thumbv7em-none-eabihf`, and
+`riscv64imac-unknown-none-elf` for the two downstream crates.
+These are cross-compilation results only, **not runtime evidence**.
+
+Both downstream candidates also pass `cargo +1.99.0 doc --locked
+--offline --all-features --no-deps` with
+`RUSTDOCFLAGS=-D warnings`; **2/2 PASS**. This is current-SHA
+verification, not inherited from the old graph. Private R7A
+and complete Q0?Q6 remain **NOT READY**.

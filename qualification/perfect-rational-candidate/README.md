@@ -1,7 +1,7 @@
 # Independent Rational candidate qualification
 
 This isolated test-only Cargo package qualifies Rational PR #7 at Git
-0f8ccd07b1f3c29b1d725ef79fb6dfa48274f9b2 against the same independent
+857c55beee5aeb381c674d739630b8c3407fa7f8 against the same independent
 external-reference test in the five-foundation integration consumer.
 Arithmetic is pinned to 95e8499f458d9cb681ce0d452cade1cd17c9f6ad.
 
@@ -18,10 +18,10 @@ qualification, Q0-Q6 completion, or private R7A readiness.
 ## Exact downstream candidate graph (2026-10-24)
 
 This same test-only consumer now also resolves source-exact Float candidate
-`798ef3bd88d3effc916f6cb4a7ba2bb03e884764`, derived from Float PR #4,
-and Decimal candidate `eee4322047c07fba45c0f6644f5835d04448d4d9`,
+`194887d5fa2959ce758160de3354376b1a4baaee`, derived from Float PR #4,
+and Decimal candidate `f75df906f3ab83aa5ddb8eb94328c146a96a11f6`,
 derived from Decimal main. Both pin Rational candidate
-`0f8ccd07b1f3c29b1d725ef79fb6dfa48274f9b2`; Numeric and
+`857c55beee5aeb381c674d739630b8c3407fa7f8`; Numeric and
 Arithmetic keep their established exact revisions.
 
 The tests reuse, by source path and without copying fixture implementations,
@@ -37,3 +37,14 @@ locked offline no-default and all-features suites 12/12 each, plus
 warning-denied Clippy and rustfmt PASS. Cargo's normal-edge dependency graph
 shows no duplicate Perfect crate identities. These results are limited to
 the tested Windows configuration and the exact candidate Git SHAs above.
+
+
+## Mutation-derived exact revision update
+
+Earlier candidate source `0f8ccd07b1f3c29b1d725ef79fb6dfa48274f9b2`
+allowed two extractor mutations to survive its primitive-only test.
+Rational PR #7 now includes a deterministic certified-progress regression
+at `857c55beee5aeb381c674d739630b8c3407fa7f8`.
+Corresponding downstream Float/Decimal pins were updated and retested.
+The old results are preserved as historical evidence only, not transferred
+automatically to the newer source graph.

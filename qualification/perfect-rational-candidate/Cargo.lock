@@ -70,7 +70,7 @@ dependencies = [
 [[package]]
 name = "perfect-decimal"
 version = "0.1.0"
-source = "git+https://github.com/Perfect-Foundations/perfect-decimal.git?rev=eee4322047c07fba45c0f6644f5835d04448d4d9#eee4322047c07fba45c0f6644f5835d04448d4d9"
+source = "git+https://github.com/Perfect-Foundations/perfect-decimal.git?rev=f75df906f3ab83aa5ddb8eb94328c146a96a11f6#f75df906f3ab83aa5ddb8eb94328c146a96a11f6"
 dependencies = [
  "perfect-arithmetic",
  "perfect-numeric",
@@ -80,7 +80,7 @@ dependencies = [
 [[package]]
 name = "perfect-float"
 version = "0.1.0"
-source = "git+https://github.com/Perfect-Foundations/perfect-float.git?rev=798ef3bd88d3effc916f6cb4a7ba2bb03e884764#798ef3bd88d3effc916f6cb4a7ba2bb03e884764"
+source = "git+https://github.com/Perfect-Foundations/perfect-float.git?rev=194887d5fa2959ce758160de3354376b1a4baaee#194887d5fa2959ce758160de3354376b1a4baaee"
 dependencies = [
  "perfect-arithmetic",
  "perfect-numeric",
@@ -95,7 +95,7 @@ source = "git+https://github.com/Perfect-Foundations/perfect-numeric.git?rev=19b
 [[package]]
 name = "perfect-rational"
 version = "0.1.0"
-source = "git+https://github.com/Perfect-Foundations/perfect-rational.git?rev=0f8ccd07b1f3c29b1d725ef79fb6dfa48274f9b2#0f8ccd07b1f3c29b1d725ef79fb6dfa48274f9b2"
+source = "git+https://github.com/Perfect-Foundations/perfect-rational.git?rev=857c55beee5aeb381c674d739630b8c3407fa7f8#857c55beee5aeb381c674d739630b8c3407fa7f8"
 dependencies = [
  "perfect-arithmetic",
 ]
