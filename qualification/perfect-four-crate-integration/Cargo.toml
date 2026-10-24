@@ -15,3 +15,8 @@ perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-ari
 perfect-rational = { git = "https://github.com/Perfect-Foundations/perfect-rational.git", rev = "21a7fba5f22ab7f5db12b480a1c910edd1797d77", version = "=0.1.0", default-features = false }
 perfect-float = { git = "https://github.com/Perfect-Foundations/perfect-float.git", rev = "e46b68ed20ec232be08e6c9f968ab2bc85db0736", version = "=0.1.0", default-features = false }
 perfect-decimal = { git = "https://github.com/Perfect-Foundations/perfect-decimal.git", rev = "0b4766a015706bcb77c1c54d2ed3a552e3e8f933", version = "=0.1.0", default-features = false }
+
+[dev-dependencies]
+# Independent exact mathematical oracle; never a production dependency.
+num-bigint = "=0.4.8"
+num-rational = "=0.4.2"
