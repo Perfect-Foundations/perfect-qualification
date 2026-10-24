@@ -288,3 +288,38 @@ qualification, packaging and private R7A remain OPEN / NOT READY.
 All downstream branches and PRs must remain unmerged until requirements
 and affected-consumer qualification are satisfied. No paid CI, publication,
 license selection, or PerfectPi write was performed.
+
+## Rational candidate downstream post-qualification verification (2026-10-24)
+
+Candidate branch PRs are separately preserved and remain draft/unmerged:
+- Float <https://github.com/Perfect-Foundations/perfect-float/pull/5>,
+  SHA `798ef3bd88d3effc916f6cb4a7ba2bb03e884764`,
+  based on Float infrastructure PR #4 at `9e8d7c608ec0c5faadb46c427a82d1df84185a01`.
+- Decimal <https://github.com/Perfect-Foundations/perfect-decimal/pull/3>,
+  SHA `eee4322047c07fba45c0f6644f5835d04448d4d9`,
+  based on Decimal main `0b4766a015706bcb77c1c54d2ed3a552e3e8f933`.
+- Rational candidate <https://github.com/Perfect-Foundations/perfect-rational/pull/7>,
+  SHA `0f8ccd07b1f3c29b1d725ef79fb6dfa48274f9b2`.
+
+**Zen Windows x86-64, Rust 1.99.0, exact candidates, offline locked:**
+
+| Check | Float | Decimal | Independent Qualification candidate |
+| --- | --- | --- | --- |
+| `cargo test --locked --offline --no-default-features --all-targets` | PASS | PASS | PASS 12/12 |
+| `cargo test --locked --offline --all-features --all-targets` | PASS (one performance probe ignored) | PASS | PASS 12/12 |
+| `cargo test --release --locked --offline --all-features --all-targets` | NOT RUN | NOT RUN | PASS 12/12 |
+| `cargo clippy --locked --offline --all-features --all-targets -- -D warnings` | PASS | PASS | PASS |
+| `cargo fmt --all -- --check` | PASS | PASS | PASS |
+| `cargo doc --locked --offline --all-features --no-deps` with `RUSTDOCFLAGS=-D warnings` | PASS | PASS | NOT RUN |
+| `cargo check --locked --offline --no-default-features --target TARGET` with `RUSTFLAGS=-D warnings` | 3/3 PASS | 3/3 PASS | NOT RUN |
+
+TARGET above denotes `wasm32v1-none`, `thumbv7em-none-eabihf`,
+and `riscv64imac-unknown-none-elf`. Cross-target results establish
+compilation only. All source tests and independent Qualification tests
+were conducted on Windows native, not on Linux or physical ARM64.
+These results apply only to the pinned candidate dependency graph and
+**do not** upgrade production main, qualification completeness or
+private R7A readiness. No public release, merge, paid hosted CI or
+PerfectPi modification occurred. Source-specific Linux/ARM64 runtime,
+mutation/fuzz, full MPFR mathematical oracles, competitive performance,
+supply-chain and package release gates remain OPEN/BLOCKED.
