@@ -248,3 +248,43 @@ Hosted CI was not run; GitHub workflow lookup shows no new runs for
 these skip-ci candidate commits. Physical ARM64, full mutation/fuzz,
 downstream Rational-candidate integration, performance gaps and
 Q0-Q6/R7A release gates remain OPEN or BLOCKED.
+## Rational candidate downstream five-foundation graph (2026-10-24)
+
+The existing test-only `qualification/perfect-rational-candidate`
+consumer was extended *in place* with direct exact Git pins for Float
+and Decimal candidate branches and path references to the already-owned
+five-foundation independent test oracles. No new benchmark framework,
+production runtime dependency, or duplicate fixture source was added.
+
+- Numeric: `19b6747cd852a47a694a020b97ba70b6b3ef259b`
+- Arithmetic: `95e8499f458d9cb681ce0d452cade1cd17c9f6ad`
+- Rational PR #7: `0f8ccd07b1f3c29b1d725ef79fb6dfa48274f9b2`
+- Float downstream branch: `798ef3bd88d3effc916f6cb4a7ba2bb03e884764`
+- Decimal downstream branch: `eee4322047c07fba45c0f6644f5835d04448d4d9`
+
+The Float branch is derived from draft Float PR #4 and changes only the
+selected Rational revision in CI/source/reference manifests and locks;
+the Decimal branch derives from Decimal main and changes only Rational's
+revision in source manifest and Cargo lock. Cargo generated all lockfiles.
+Both downstream source branches passed Windows Rust 1.99.0 locked offline
+no-default and all-features source tests, warning-denied Clippy, rustfmt,
+and normal-edge Cargo duplicate-package checks.
+
+**Candidate Qualification evidence, Zen Windows x86-64 Rust 1.99.0:**
+Cargo-generated exact Git lock resolution **PASS**. Normal-edge Cargo
+tree contains exactly one source identity for each of the five Perfect
+production crates; `cargo tree --locked --offline -e normal -d` reports
+no duplicates. Both `cargo test --locked --offline --no-default-features
+--all-targets` and `--all-features --all-targets` pass **12/12** tests
+each (9 reused cross-family tests plus 3 independent Rational external
+reference tests). Warning-denied all-feature Clippy and rustfmt check
+**PASS**. An earlier trial using a `[patch]` to the same Git repository
+was rejected by Cargo and removed before this coherent graph was made.
+
+This evidence is **candidate-specific** and does not advance the five-main
+release graph. Linux Git access remains blocked, and source-exact native
+ARM64, mutation/fuzz, comprehensive MPFR and resource/performance
+qualification, packaging and private R7A remain OPEN / NOT READY.
+All downstream branches and PRs must remain unmerged until requirements
+and affected-consumer qualification are satisfied. No paid CI, publication,
+license selection, or PerfectPi write was performed.

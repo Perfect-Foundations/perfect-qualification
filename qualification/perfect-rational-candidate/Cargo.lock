@@ -68,6 +68,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "perfect-decimal"
+version = "0.1.0"
+source = "git+https://github.com/Perfect-Foundations/perfect-decimal.git?rev=eee4322047c07fba45c0f6644f5835d04448d4d9#eee4322047c07fba45c0f6644f5835d04448d4d9"
+dependencies = [
+ "perfect-arithmetic",
+ "perfect-numeric",
+ "perfect-rational",
+]
+
+[[package]]
+name = "perfect-float"
+version = "0.1.0"
+source = "git+https://github.com/Perfect-Foundations/perfect-float.git?rev=798ef3bd88d3effc916f6cb4a7ba2bb03e884764#798ef3bd88d3effc916f6cb4a7ba2bb03e884764"
+dependencies = [
+ "perfect-arithmetic",
+ "perfect-numeric",
+ "perfect-rational",
+]
+
+[[package]]
 name = "perfect-numeric"
 version = "0.1.0"
 source = "git+https://github.com/Perfect-Foundations/perfect-numeric.git?rev=19b6747cd852a47a694a020b97ba70b6b3ef259b#19b6747cd852a47a694a020b97ba70b6b3ef259b"
@@ -87,5 +107,8 @@ dependencies = [
  "num-bigint 0.4.8",
  "num-rational",
  "perfect-arithmetic",
+ "perfect-decimal",
+ "perfect-float",
+ "perfect-numeric",
  "perfect-rational",
 ]
