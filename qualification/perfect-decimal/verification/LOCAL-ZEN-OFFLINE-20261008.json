@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "observed_date": "2026-10-08",
+  "subject": {
+    "qualification_sha": "e8afabd1ec1e5629e489a0201aa64a08c273f5b2",
+    "decimal_sha": "85f4408838131007146fff14b1c9c1d760c585a8",
+    "numeric_sha": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "arithmetic_sha": "1a54d3c7cbbae4e73325cc70fd2777a2427b1504",
+    "rational_sha": "97cce0ae8ff7ef206929d273e1d4a5774f6a2a34"
+  },
+  "executor": "Zen, Ubuntu WSL2 x86_64, Rust 1.99.0, offline Cargo",
+  "test_entrypoint": "qualification/perfect-decimal/scripts/run-local.sh",
+  "logs_on_authorized_device": "/home/ubuntu/pf-verify/decimal-qualification.2GSlBLgc",
+  "verification": {
+    "exact_pins": "PASS; cloned four separate Git objects at exact pinned SHAs",
+    "independent_rounding_vectors": "440/440 PASS",
+    "independent_representation_vectors": "21/21 PASS",
+    "representation_fingerprint": "a0e4476440bf4082",
+    "materialization": "PASS",
+    "offline_graph": "PASS",
+    "format": "PASS",
+    "tests_all_features": "7/7 PASS",
+    "tests_no_default_features": "7/7 PASS",
+    "clippy_all": "PASS, -D warnings",
+    "clippy_no_default": "PASS, -D warnings",
+    "rustdoc": "PASS, -D warnings",
+    "no_std_targets": [
+      "wasm32v1-none PASS",
+      "thumbv7em-none-eabihf PASS",
+      "riscv64imac-unknown-none-elf PASS"
+    ],
+    "development_lock_sha256": "adef3658db298b4421dde53d6147c8dc9f17fbabc6ae4552bcc05a71f07510c4",
+    "exit_code": 0
+  },
+  "boundaries": [
+    "This record uses the test harness content of qualification SHA e8af... plus a newly staged offline execution entry point, verified byte-for-byte before later PR commit.",
+    "This local WSL2 x86_64 run does not replace GitHub-hosted Q0-Q5 or native Linux ARM64 evidence.",
+    "No public registry identity, paid runner, release or M1 gate is claimed.",
+    "Perfectπ remains read-only."
+  ],
+  "user_cost": "No GitHub Actions minutes used, no new paid services"
+}
