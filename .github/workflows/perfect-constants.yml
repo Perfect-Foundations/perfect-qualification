@@ -1,0 +1,109 @@
+name: Qualify Perfect Constants M1
+on:
+  workflow_call:
+    inputs:
+      source_repository:
+        type: string
+        required: true
+      source_ref:
+        type: string
+        required: true
+      qualification_ref:
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Perfect-Foundations/perfect-constants
+          ref: d88d8055f45fb075c905f1fe9e82a623029faf41
+          path: .qualified-source
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          persist-credentials: false
+      - name: Exact source and independent checks
+        shell: bash
+        env:
+          ASKED_REPOSITORY: ${{ inputs.source_repository }}
+          ASKED_REF: ${{ inputs.source_ref }}
+          QUALIFICATION_REF: ${{ inputs.qualification_ref }}
+        run: |
+          set -euo pipefail
+          test "$ASKED_REPOSITORY" = "Perfect-Foundations/perfect-constants"
+          test "$ASKED_REF" = "d88d8055f45fb075c905f1fe9e82a623029faf41"
+          test "$(git -C .qualified-source rev-parse HEAD)" = "d88d8055f45fb075c905f1fe9e82a623029faf41"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "$QUALIFICATION_REF"
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
+          export CONSTANTS_CARGO_PATH="$GITHUB_WORKSPACE/.qualified-source"
+          manifest="$GITHUB_WORKSPACE/.qualification-suite/qualification/perfect-constants/Cargo.toml"
+          suite="$(dirname "$manifest")"
+          python3 "$suite/scripts/verify_oracle.py"
+          python3 "$suite/scripts/materialize_private.py"
+          cargo +1.99.0 generate-lockfile --offline --manifest-path "$manifest"
+          lock_before="$(sha256sum "$suite/Cargo.lock" | cut -d' ' -f1)"
+          cargo +1.99.0 metadata --offline --locked --manifest-path "$manifest" --format-version 1 >/dev/null
+          cargo +1.99.0 fmt --manifest-path "$manifest" --all -- --check
+          cargo +1.99.0 test --offline --locked --manifest-path "$manifest" --all-features
+          cargo +1.99.0 test --offline --locked --manifest-path "$manifest" --no-default-features
+          cargo +1.99.0 clippy --offline --locked --manifest-path "$manifest" --all-targets --all-features -- -D warnings
+          cargo +1.99.0 clippy --offline --locked --manifest-path "$manifest" --all-targets --no-default-features -- -D warnings
+          RUSTDOCFLAGS="-D warnings" cargo +1.99.0 doc --offline --locked --manifest-path "$manifest" --no-deps --all-features
+          cargo +1.99.0 run --offline --locked --manifest-path "$manifest" --example alloc_probe
+          test "$lock_before" = "$(sha256sum "$suite/Cargo.lock" | cut -d' ' -f1)"
+          echo "NATIVE_QUALIFICATION_SUBSET_PASS"
+
+  class-b:
+    name: Q1 / no_std / ${{ matrix.target }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [wasm32v1-none, thumbv7em-none-eabihf, riscv64imac-unknown-none-elf]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Perfect-Foundations/perfect-constants
+          ref: d88d8055f45fb075c905f1fe9e82a623029faf41
+          path: .qualified-source
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: Perfect-Foundations/perfect-qualification
+          ref: ${{ inputs.qualification_ref }}
+          path: .qualification-suite
+          persist-credentials: false
+      - name: Exact identity and no_std target compile
+        shell: bash
+        env:
+          ASKED_REPOSITORY: ${{ inputs.source_repository }}
+          ASKED_REF: ${{ inputs.source_ref }}
+          QUALIFICATION_REF: ${{ inputs.qualification_ref }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          test "$ASKED_REPOSITORY" = "Perfect-Foundations/perfect-constants"
+          test "$ASKED_REF" = "d88d8055f45fb075c905f1fe9e82a623029faf41"
+          test "$(git -C .qualified-source rev-parse HEAD)" = "d88d8055f45fb075c905f1fe9e82a623029faf41"
+          test "$(git -C .qualification-suite rev-parse HEAD)" = "$QUALIFICATION_REF"
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup target add "$TARGET" --toolchain 1.99.0
+          export CONSTANTS_CARGO_PATH="$GITHUB_WORKSPACE/.qualified-source"
+          manifest="$GITHUB_WORKSPACE/.qualification-suite/qualification/perfect-constants/Cargo.toml"
+          suite="$(dirname "$manifest")"
+          python3 "$suite/scripts/verify_oracle.py"
+          python3 "$suite/scripts/materialize_private.py"
+          cargo +1.99.0 generate-lockfile --offline --manifest-path "$manifest"
+          cargo +1.99.0 check --offline --locked --manifest-path "$manifest" --lib --no-default-features --target "$TARGET"
+          echo "CONSTANTS_QUAL_CLASS_B_COMPILE_ONLY_PASS"
