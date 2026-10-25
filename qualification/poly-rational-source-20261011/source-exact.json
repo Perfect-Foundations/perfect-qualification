@@ -1,0 +1,36 @@
+{
+  "schema": "perfect-foundations.qual-poly-rational-20261011.v1",
+  "packages": {
+    "perfect-arithmetic": "65d8f55641739d5d6a11c17fe7d68c8898d984d7",
+    "perfect-numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "perfect-rational": "812d66757ce145a7a70fc33818c7b3059ecd3401",
+    "perfect-polynomial": "ae45f4d386dff6d525424b70e3115074dc7f8f51"
+  },
+  "cargo_lock_sha256": "baf4f6ccf7f71ecbfa42bdc4a273001ed0234ac14e7089bc0b0db04df58da44b",
+  "imported_test_sha256": {
+    "independent_math.rs": "1faf1c921f7a3418e2a48cf0ceea38a01c5e3507cf8d6107075f33de3b2c09de",
+    "m2_content_derivative_independent.rs": "2410c252613e40a704d7e02a105593a6d1d0651d319152b25bcbea9c9f120380",
+    "m2_exhaustive_zq_gcd_sympy.rs": "57ce9198413e5a1f71a482adc1ca233afb430ffb599d537ba7a589f7e8ab2ddb",
+    "m2_mixed_guard_and_sign_qualification.rs": "02526eef8452bad850730b95799574f10a528a47fbef1b29ae4941ec71e42cdd",
+    "m2_multistage_euclid_integrated.rs": "d013e0fb1084a529bbeaeb6ceebd691e8a26407009d8abbe4aa8305f97a33212",
+    "m2_quotient_free_and_fallback_integration.rs": "110fca61317575f4740c18ae4c8bcfe8332b5d811c43c051c8742328291b33ad",
+    "m2_runtime_fallback.rs": "91f666e492fb7cabc6e0728d523fe52fe002208eabf61b33239d9c8551b2e8d3",
+    "m2_signed_cross_operation.rs": "a91d42f9858020b3394b54f0c3c66a693ae61169f5699ffbbefff7773804a59a",
+    "m2_sparse_nonunit_content.rs": "a63a51722ea6f5ec33966389928bb949881dc2f5148c40ab5e1fd4811d60e1d8",
+    "prs_boundary_exact.rs": "2d8bcc3bb093998ea01fefc4dc8b1f6556b70d2884ab0cacd5a304f2c1a0acc7"
+  },
+  "sympy_oracle_sha256": "622490f8c3c72bcffbd4889ba8d572043cf35ac7ef393801a79fa194bce256f6",
+  "source_parent_qualification": "603e24f5c20c3c10abc75caff5c057c58116112e",
+  "verification_boundary": "experimental; current source tested on native Windows and WSL2 x86-64 with both feature configurations, plus compile-only no_std checks; historical QEMU evidence stays historical; formal approval/release pending",
+  "cross_operation_test_sha256": "8ded6799dff8f2d6e6ff48f8ffaf60c0d29037a827e29d7929d70b52f3ea0ca4",
+  "constant_gcd_benchmark_sha256": "b36e6f776ad8eb3a2a4da03cb73a6c956bbb33eb6b283c88714c4cbbf6a7b5d3",
+  "prs_degree48_benchmark_sha256": "a627938e9a569ef8d9a00a057db38d789e722a5f22dda50fb2eee52a6594580a",
+  "prs_degree64_benchmark_sha256": "04efee1a006d497fa48deda4feafa696f045d3bb6cd607aa30dcb6f3a554fa86",
+  "prs_degree64_measurements_sha256": "c777b587a0db95523914c7d1864c2c6b4766b1d661e6f31d68b35b27daeabf5c",
+  "prs_degree96_benchmark_sha256": "6bbb1b9b38f0be100c0f1bbded2172f35c720611e0045693d6f1d0057860a554",
+  "prs_degree96_measurements_sha256": "a415f81368a19c73a2b334513663a641198e5d24b8d756a4bdbd82387545213c",
+  "sign_equivalent_benchmark_sha256": "c330724c734abfd6e9db48be9cb149d92db344db675c4cdad61ceb2495e2103b",
+  "sign_equivalent_measurements_sha256": "484ad4dd2462bd5cb55d5180f3e1dec44029d3541f594b9f27f195148b8e5791",
+  "monic_general_benchmark_sha256": "e3a60775a080b5a1c2a121a90d0a3a9eab5a1528185ebcae717c141422293766",
+  "monic_general_measurements_sha256": "9f4d51d74bef3c756c1087a9619ff9977016de3c7e1ed64b165432bc09f77e38"
+}

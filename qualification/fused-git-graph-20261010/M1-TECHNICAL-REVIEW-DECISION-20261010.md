@@ -1,0 +1,41 @@
+# Independent decision preparation — Polynomial M1 source-exact candidate
+
+**Candidate source:** Polynomial `59fa967bdf2c20dbde7a93acb22979c8625441af`.
+**Dependency graph:** Arithmetic `d99aef2a9ef230eb725adaef664b0cc0214dc4bd`, Rational `b45de7e7ad63b0850e1d3bbc67e38163b3c8fa7c`, Numeric `19b6747cd852a47a694a020b97ba70b6b3ef259b`.
+**Approval boundary:** this is implementing-engineer evidence and a **review request**, not an independent review, milestone acceptance, or release. `perfect-polynomial/project-status.toml` remains M1 / 20% overall and all 17 normative requirements remain Approved.
+
+## M1 requirements: implemented versus still awaiting approval
+
+| Approved requirement | Technical implementation and executed source-exact evidence | Still requiring adjudication |
+|---|---|---|
+| `REQ-CORE-0001` | `src/dense.rs`: low-to-high canonical dense Z/Q, trailing-zero removal, unique zero/no degree; `tests/core.rs`; canonical V1/V2 | Independent public invariant/API approval |
+| `REQ-CORE-0003` | Exact add/sub/mul/Horner/derivative, Z exact quotient, Q Euclidean quotient/remainder, Z content GCD, Q monic GCD; 94 full source tests per mode on Windows x86-64, WSL2 x86-64 and **QEMU AArch64** | Formal M1/M2 approval, broader path review |
+| `REQ-SEM-0001/0002` | No floating approximation; signed big Z/Q exact operations and zero/content/monic rules; independent Python Fraction, SymPy and Qualification 1,369-pair exhaustive bounded-degree GCD vectors | Independent mathematical contract signoff |
+| `REQ-ERR-0001` | `src/error.rs`; zero divisor, nonexact remainder, nonintegral quotient and lower-layer error; monomial precedence; 15,625 integer division grid and wide reference cases | Formal error/resource/panic audit |
+| `REQ-DEP-0001` | Git-pinned four-crate graph, `verify_graph.py` exit 0; one Arithmetic identity; `cargo tree -d --locked --offline` exit 0/no duplicate | Dependency license/advisory review; publication policy |
+| `REQ-PORT-0001` | Rust 1.99.0; safe `no_std + alloc` core; Windows x86-64 and WSL2 x86-64 native modes; **94/94 full Polynomial source suite and 25/25 Qualification tests per mode under QEMU AArch64**, plus older three Class-B embedded compile-only targets | **Physical native Linux ARM64** Class-A runtime still unverified; final target matrix acceptance |
+| `REQ-SEC-0001` | `#![forbid(unsafe_code)]`, no source `build.rs`, no mandatory native FFI, runtime network path or unsafe block found by bounded source inspection; warning-denied Clippy | Independent supply-chain/source-security approval, not self-certified |
+| `REQ-DET-0001` (M2) | Canonical V1 37×7,225 bytes and V2 27×4,165 bytes fully byte-identical on four original x86-64 host/feature executions **and all four QEMU AArch64 executions**; same pinned SHA and complete independent oracles | Physical ARM64 deterministic parity and formal M2 acceptance |
+| `REQ-VER-0001` (M2) | Cross-crate 25/25 tests per mode in Windows/WSL2/QEMU; new SymPy 1,369 Z/Q pair oracle with full coefficients and divisibility | External source/path-wise acceptance |
+| `REQ-CORE-0002/INT-0001/INT-0002/VER-0002` | Higher-order integration/factorization/certified roots are explicitly **not** implemented by M1 and remain later milestones | Do not misclassify as missing M1 |
+| `REQ-PERF-0001` (M3) | Source-specific selected zero-GCD/monomial/allocation benchmarks in prior source evidence; no new unmeasured production optimization claimed here | Representative acceptance-platform benchmarking later |
+| `REQ-PKG-0001/DOC-0001` (M4+) | Cargo manifest, rustdoc and `cargo package --list --allow-dirty --offline` successfully enumerate package contents; no missing build-script dependency | Owner license and distribution/publish authorization |
+
+### Source audit details and remaining questions
+
+1. **Arithmetic public APIs.** At pinned Arithmetic `src/integer.rs`, `sub_mul_assign` computes signed `self -= left*right`, fast handling ±1 and zero; `scale_sub_mul_assign` computes `old_self*factor-left*right` via exact arbitrary-precision dispatch, with exact 0/±1 branches; `unsigned_bit_length` returns unsigned **magnitude** bit width including 0→0, independent of sign. `div_rem_trunc` returns typed zero-divisor error and a truncating signed quotient/remainder. Rust borrowing forbids concurrent mutable aliasing of the same owner. Existing independent consumer arithmetic/path tests passed. This inspection found **no demonstrated counterexample**; request an independent public API semantics/compatibility decision rather than self-approval.
+2. **Polynomial resource semantics.** Public exact algorithms do not pretend to be memory-bounded. Private PRS eligibility limits degree 32, relevant LCM 512 bits, retained coefficients 4096 bits; they decline to an exact field/Euclidean continuation instead of returning inaccurate results. Fraction-free Q division has separate step/degree and intermediate bounds. Review retained-versus-transient width and worst-case resource amplification; allocator OOM remains explicitly outside a recoverable guarantee. No unsupported public degree limit was added.
+3. **Packaging checks actually run.** Source `cargo package --list --allow-dirty --offline` succeeded and showed **a missing license/license-file warning**; `Cargo.toml` still sets `publish=false`. No license was selected, crate published or visibility changed. `cargo tree --locked --offline -d` printed no duplicate packages; `verify_graph.py` returned 0. Full registry-ready package verification cannot be claimed while Git-sourced private dependencies and license policy remain unresolved.
+4. **Hosted Actions blocker.** For Polynomial [run 37890139347](https://github.com/Perfect-Foundations/perfect-polynomial/actions/runs/37890139347), GitHub reports job `synchronize / synchronize` with **empty runner name and zero executed steps**; the reusable `live-status.yml` is triggered by `project-status.toml` changes, not by Polynomial source candidate tests. The Qualification repo has workflows for upstream Numeric/Arithmetic but **no currently executed hosted source-exact Polynomial matrix**. Thus neither an assigned runner nor successful source tests exist for these candidate heads. Do not blindly rerun zero-step failures; owner/platform CI access and independently approved workflow/private dependency credentials need resolution before hosted CI acceptance. No runner purchase, protection weakening or fabricated CI conclusion occurred.
+5. **Review-specific decision prompts.** Approve/reject Z[x] GCD positive-leading original content, Q[x] monic normalization, precedence `DivisionByZero` / `NonExactDivision` / `NonIntegralQuotient`; Arithmetic public fused methods and magnitude width; PRS/fraction-free exact fallback; dependency/API SemVer, supply-chain and license policy; and Class-A native physical ARM64 acceptance separately from emulator evidence.
+
+## Reproduce evidence
+
+- Mathematical consumer: `qualification/fused-git-graph-20261010/Cargo.toml`, `Cargo.lock`, `source-exact.json`, `verify_graph.py`.
+- Existing complete mathematical/architecture packet: `M1-M2-CURRENT-REVIEW-20261010.md`.
+- New ARM64 suite, raw canonical files and runner: `M1-M2-ARM64-SOURCE-AND-DETERMINISM-20261010.md`, `determinism-evidence/arm64-qemu-59fa967/`, `references/verify_arm64_emulated_determinism.py`.
+- New independent GCD oracle: `references/gen_m2_degree2_gcd_sympy.py`, `references/m2_degree2_zq_gcd_sympy_v1.tsv`, `tests/m2_exhaustive_zq_gcd_sympy.rs`.
+- `cargo test --locked --offline --no-default-features`, `cargo test --locked --offline --all-features`, warning-denied all-target Clippy, `cargo fmt -- --check` at the pinned Qualification consumer.
+- Review must inspect the **exact source** `src/lib.rs`, `src/dense.rs`, `src/domain.rs`, `src/division.rs`, `src/primitive_prs.rs`, `src/error.rs` and lower-layer `perfect-arithmetic/src/integer.rs`.
+
+**Disposition:** Technical exact M1 candidate is sufficiently evidenced for a **genuine independent decision** on reviewed contracts; it is **not** self-accepted. No production defects or source modifications were justified by the executed expanded bounded tests. External reviewers, physical ARM64 execution, hosted CI, full security/supply-chain review, owner license/publication gates and milestone acceptance remain pending.

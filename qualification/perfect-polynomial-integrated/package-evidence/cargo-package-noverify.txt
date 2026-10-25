@@ -1,0 +1,12 @@
+warning: manifest has no license, license-file, documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+   Packaging perfect-polynomial v0.1.0 (C:\Dev\PerfectFoundations\_poly_full_integration_20261009)
+error: failed to prepare local package for uploading
+System.Management.Automation.RemoteException
+Caused by:
+  no matching package named `perfect-arithmetic` found
+  location searched: crates.io index
+  required by package `perfect-polynomial v0.1.0 (C:\Dev\PerfectFoundations\_poly_full_integration_20261009)`
+  note: offline mode (via `--offline`) can sometimes cause surprising resolution failures
+  help: if this error is too confusing you may wish to retry without `--offline`

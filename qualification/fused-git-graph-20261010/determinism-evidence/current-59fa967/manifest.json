@@ -1,0 +1,41 @@
+{
+  "schema": "perfect-foundations.current-source-determinism.v1",
+  "source_polynomial_sha": "59fa967bdf2c20dbde7a93acb22979c8625441af",
+  "rust_version": "1.99.0",
+  "hosts": [
+    "windows-x86_64",
+    "ubuntu-wsl2-x86_64"
+  ],
+  "feature_modes": [
+    "all",
+    "no-default"
+  ],
+  "encoding": "UTF-8 ASCII subset; LF; low-to-high comma-delimited exact decimal coefficients, canonical rational numerator/denominator; no timestamps or paths",
+  "generators": [
+    "examples/canonical_workload.rs",
+    "examples/canonical_boundary_v2.rs"
+  ],
+  "corpora": [
+    {
+      "version": "v1",
+      "records": 37,
+      "bytes": 7225,
+      "sha256": "4bd81775891439f48cee151c08a4a58293b4d1bd1e9d3c1a28d4e9b4da4c388d"
+    },
+    {
+      "version": "v2",
+      "records": 27,
+      "bytes": 4165,
+      "sha256": "87c8a080eeedca85482b486e47c03226a7266a3d3898efeb6ac5fcc3fd27b3fc"
+    }
+  ],
+  "independent_oracles": [
+    "references/verify_canonical_workload.py",
+    "references/verify_canonical_boundary_v2.py"
+  ],
+  "limitations": [
+    "Windows/WSL2 x86-64 byte identity only, not physical ARM64",
+    "V1/V2 corpus examples reused without reinterpreting earlier source execution as current",
+    "SymPy 1.14.0 executed on Windows over current bytes; SymPy missing on WSL Linux"
+  ]
+}

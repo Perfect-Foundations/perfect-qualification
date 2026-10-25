@@ -1,0 +1,13 @@
+case,len_a,len_b,input_bits,elapsed_ns,allocs,reallocs,total_requested_bytes,peak_incremental_live_bytes,net_live_delta
+div_q_monic_b4_q4,9,5,0,8700,2,0,784,784,0
+div_q_nonmonic_b16_q16,33,17,0,18100,5,0,3992,3992,0
+div_q_monic_b32_q32,65,33,0,98700,912,62,24328,9016,0
+div_q_nonmonic_b32_q32,65,33,0,106600,1208,115,36096,9192,0
+div_q_monic_b64_q64,129,65,0,338300,4098,284,109600,17840,0
+div_q_nonmonic_b64_q64,129,65,0,388200,4526,504,161144,19472,0
+div_q_nonmonic_b128_q128,257,129,0,1428100,18275,1446,1019312,44640,0
+div_q_monic_b256_q64,321,257,0,8240000,2,0,21616,21616,0
+div_q_wide_b32_q32,65,33,0,1265400,15016,669,946984,10480,0
+div_q_nonexact_b32_q32,65,33,0,117900,1224,152,37672,9224,0
+unit_one,129,1,0,1000,1,0,7224,7224,0
+unit_negative,129,1,0,900,1,0,7224,7224,0

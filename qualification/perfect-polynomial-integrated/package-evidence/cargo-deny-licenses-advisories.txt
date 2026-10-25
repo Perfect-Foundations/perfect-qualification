@@ -1,0 +1,161 @@
+2026-10-10 02:27:18 [WARN] unable to find a config path, falling back to default config
+error[rejected]: failed to satisfy license requirements
+   ΓöîΓöÇ C:\Users\Johnston Wallace\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\autocfg-1.5.1\Cargo.toml:33:12
+   Γöé
+33 Γöé license = "Apache-2.0 OR MIT"
+   Γöé            ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöüΓöüΓöü
+   Γöé            Γöé             Γöé
+   Γöé            Γöé             rejected: license is not explicitly allowed
+   Γöé            rejected: license is not explicitly allowed
+   Γöé
+   Γö£ Apache-2.0 - Apache License 2.0:
+   Γö£   - OSI approved
+   Γö£   - FSF Free/Libre
+   Γö£ MIT - MIT License:
+   Γö£   - OSI approved
+   Γö£   - FSF Free/Libre
+   Γö£ autocfg v1.5.1
+     ΓööΓöÇΓöÇ (build) num-traits v0.2.19
+         Γö£ΓöÇΓöÇ num-bigint v0.5.1
+         Γöé   ΓööΓöÇΓöÇ perfect-arithmetic v0.1.0
+         Γöé       Γö£ΓöÇΓöÇ perfect-polynomial v0.1.0
+         Γöé       ΓööΓöÇΓöÇ perfect-rational v0.1.0
+         Γöé           ΓööΓöÇΓöÇ perfect-polynomial v0.1.0 (*)
+         ΓööΓöÇΓöÇ num-integer v0.1.47
+             Γö£ΓöÇΓöÇ num-bigint v0.5.1 (*)
+             ΓööΓöÇΓöÇ perfect-arithmetic v0.1.0 (*)
+System.Management.Automation.RemoteException
+error[rejected]: failed to satisfy license requirements
+   ΓöîΓöÇ C:\Users\Johnston Wallace\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\num-bigint-0.5.1\Cargo.toml:41:12
+   Γöé
+41 Γöé license = "MIT OR Apache-2.0"
+   Γöé            ΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+   Γöé            Γöé      Γöé
+   Γöé            Γöé      rejected: license is not explicitly allowed
+   Γöé            rejected: license is not explicitly allowed
+   Γöé
+   Γö£ MIT - MIT License:
+   Γö£   - OSI approved
+   Γö£   - FSF Free/Libre
+   Γö£ Apache-2.0 - Apache License 2.0:
+   Γö£   - OSI approved
+   Γö£   - FSF Free/Libre
+   Γö£ num-bigint v0.5.1
+     ΓööΓöÇΓöÇ perfect-arithmetic v0.1.0
+         Γö£ΓöÇΓöÇ perfect-polynomial v0.1.0
+         ΓööΓöÇΓöÇ perfect-rational v0.1.0
+             ΓööΓöÇΓöÇ perfect-polynomial v0.1.0 (*)
+System.Management.Automation.RemoteException
+error[rejected]: failed to satisfy license requirements
+   ΓöîΓöÇ C:\Users\Johnston Wallace\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\num-integer-0.1.47\Cargo.toml:41:12
+   Γöé
+41 Γöé license = "MIT OR Apache-2.0"
+   Γöé            ΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+   Γöé            Γöé      Γöé
+   Γöé            Γöé      rejected: license is not explicitly allowed
+   Γöé            rejected: license is not explicitly allowed
+   Γöé
+   Γö£ MIT - MIT License:
+   Γö£   - OSI approved
+   Γö£   - FSF Free/Libre
+   Γö£ Apache-2.0 - Apache License 2.0:
+   Γö£   - OSI approved
+   Γö£   - FSF Free/Libre
+   Γö£ num-integer v0.1.47
+     Γö£ΓöÇΓöÇ num-bigint v0.5.1
+     Γöé   ΓööΓöÇΓöÇ perfect-arithmetic v0.1.0
+     Γöé       Γö£ΓöÇΓöÇ perfect-polynomial v0.1.0
+     Γöé       ΓööΓöÇΓöÇ perfect-rational v0.1.0
+     Γöé           ΓööΓöÇΓöÇ perfect-polynomial v0.1.0 (*)
+     ΓööΓöÇΓöÇ perfect-arithmetic v0.1.0 (*)
+System.Management.Automation.RemoteException
+error[rejected]: failed to satisfy license requirements
+   ΓöîΓöÇ C:\Users\Johnston Wallace\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\num-traits-0.2.19\Cargo.toml:36:12
+   Γöé
+36 Γöé license = "MIT OR Apache-2.0"
+   Γöé            ΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+   Γöé            Γöé      Γöé
+   Γöé            Γöé      rejected: license is not explicitly allowed
+   Γöé            rejected: license is not explicitly allowed
+   Γöé
+   Γö£ MIT - MIT License:
+   Γö£   - OSI approved
+   Γö£   - FSF Free/Libre
+   Γö£ Apache-2.0 - Apache License 2.0:
+   Γö£   - OSI approved
+   Γö£   - FSF Free/Libre
+   Γö£ num-traits v0.2.19
+     Γö£ΓöÇΓöÇ num-bigint v0.5.1
+     Γöé   ΓööΓöÇΓöÇ perfect-arithmetic v0.1.0
+     Γöé       Γö£ΓöÇΓöÇ perfect-polynomial v0.1.0
+     Γöé       ΓööΓöÇΓöÇ perfect-rational v0.1.0
+     Γöé           ΓööΓöÇΓöÇ perfect-polynomial v0.1.0 (*)
+     ΓööΓöÇΓöÇ num-integer v0.1.47
+         Γö£ΓöÇΓöÇ num-bigint v0.5.1 (*)
+         ΓööΓöÇΓöÇ perfect-arithmetic v0.1.0 (*)
+System.Management.Automation.RemoteException
+warning[no-license-field]: license expression was not specified in manifest for crate 'perfect-arithmetic = 0.1.0'
+ Γö£ perfect-arithmetic v0.1.0
+   Γö£ΓöÇΓöÇ perfect-polynomial v0.1.0
+   ΓööΓöÇΓöÇ perfect-rational v0.1.0
+       ΓööΓöÇΓöÇ perfect-polynomial v0.1.0 (*)
+System.Management.Automation.RemoteException
+warning[unlicensed]: a valid license expression could not be retrieved for the crate
+  ΓöîΓöÇ git+https://github.com/Perfect-Foundations/perfect-arithmetic.git?rev=1a54d3c7cbbae4e73325cc70fd2777a2427b1504#perfect-arithmetic@0.1.0-synthesized.toml:2:9
+  Γöé
+2 Γöé name = "perfect-arithmetic"
+  Γöé         ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+  Γöé
+  Γö£ perfect-arithmetic v0.1.0 (*)
+System.Management.Automation.RemoteException
+error[unlicensed]: perfect-arithmetic = 0.1.0 is unlicensed
+ Γö£ perfect-arithmetic v0.1.0 (*)
+System.Management.Automation.RemoteException
+warning[no-license-field]: license expression was not specified in manifest for crate 'perfect-numeric = 0.1.0'
+ Γö£ perfect-numeric v0.1.0
+   ΓööΓöÇΓöÇ perfect-arithmetic v0.1.0
+       Γö£ΓöÇΓöÇ perfect-polynomial v0.1.0
+       ΓööΓöÇΓöÇ perfect-rational v0.1.0
+           ΓööΓöÇΓöÇ perfect-polynomial v0.1.0 (*)
+System.Management.Automation.RemoteException
+warning[unlicensed]: a valid license expression could not be retrieved for the crate
+  ΓöîΓöÇ git+https://github.com/Perfect-Foundations/perfect-numeric.git?rev=19b6747cd852a47a694a020b97ba70b6b3ef259b#perfect-numeric@0.1.0-synthesized.toml:2:9
+  Γöé
+2 Γöé name = "perfect-numeric"
+  Γöé         ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+  Γöé
+  Γö£ perfect-numeric v0.1.0 (*)
+System.Management.Automation.RemoteException
+error[unlicensed]: perfect-numeric = 0.1.0 is unlicensed
+ Γö£ perfect-numeric v0.1.0 (*)
+System.Management.Automation.RemoteException
+warning[no-license-field]: license expression was not specified in manifest for crate 'perfect-polynomial = 0.1.0'
+ Γö£ perfect-polynomial v0.1.0
+System.Management.Automation.RemoteException
+warning[unlicensed]: a valid license expression could not be retrieved for the crate
+  ΓöîΓöÇ path+file:///C:/Dev/PerfectFoundations/_poly_m1_acceptance_20261009#perfect-polynomial@0.1.0-synthesized.toml:2:9
+  Γöé
+2 Γöé name = "perfect-polynomial"
+  Γöé         ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+  Γöé
+  Γö£ perfect-polynomial v0.1.0 (*)
+System.Management.Automation.RemoteException
+error[unlicensed]: perfect-polynomial = 0.1.0 is unlicensed
+ Γö£ perfect-polynomial v0.1.0 (*)
+System.Management.Automation.RemoteException
+warning[no-license-field]: license expression was not specified in manifest for crate 'perfect-rational = 0.1.0'
+ Γö£ perfect-rational v0.1.0
+   ΓööΓöÇΓöÇ perfect-polynomial v0.1.0
+System.Management.Automation.RemoteException
+warning[unlicensed]: a valid license expression could not be retrieved for the crate
+  ΓöîΓöÇ git+https://github.com/Perfect-Foundations/perfect-rational.git?rev=35a8e9cc629ee578fe7b624e2134929ce7eeff8a#perfect-rational@0.1.0-synthesized.toml:2:9
+  Γöé
+2 Γöé name = "perfect-rational"
+  Γöé         ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü
+  Γöé
+  Γö£ perfect-rational v0.1.0 (*)
+System.Management.Automation.RemoteException
+error[unlicensed]: perfect-rational = 0.1.0 is unlicensed
+ Γö£ perfect-rational v0.1.0 (*)
+System.Management.Automation.RemoteException
+advisories ok, licenses FAILED
