@@ -1,0 +1,259 @@
+{
+  "sources": {
+    "C:\\Dev\\PerfectFoundations\\_arith_qual_windows_0e61": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+    "C:\\Dev\\PerfectFoundations\\_numeric_qual_windows_19b": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "C:\\Dev\\PerfectFoundations\\_qual_windows_f802": "f802308fd9efff7103244851be8ca7d0fbe3f95a"
+  },
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "commands": [
+    {
+      "label": "Q0-resolved-metadata",
+      "argv": [
+        "cargo",
+        "metadata",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--format-version",
+        "1"
+      ]
+    },
+    {
+      "label": "Q5-Python-oracle",
+      "argv": [
+        "C:\\Users\\Johnston Wallace\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\scripts\\verify_oracle.py"
+      ]
+    },
+    {
+      "label": "Q1-fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--",
+        "--check"
+      ]
+    },
+    {
+      "label": "Q1-all-features-check",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--all-targets",
+        "--all-features"
+      ]
+    },
+    {
+      "label": "Q1-no-default-check",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--no-default-features"
+      ]
+    },
+    {
+      "label": "Q2-all-features-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--all-features"
+      ]
+    },
+    {
+      "label": "Q2-no-default-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--no-default-features"
+      ]
+    },
+    {
+      "label": "Q1-all-features-Clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ]
+    },
+    {
+      "label": "Q1-no-default-Clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--all-targets",
+        "--no-default-features",
+        "--",
+        "-D",
+        "warnings"
+      ]
+    },
+    {
+      "label": "Q1-rustdoc",
+      "argv": [
+        "cargo",
+        "doc",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--no-deps",
+        "--all-features"
+      ]
+    },
+    {
+      "label": "Q3-fingerprint-default",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "--release",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--example",
+        "fingerprint"
+      ]
+    },
+    {
+      "label": "Q3-fingerprint-all",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "--release",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--all-features",
+        "--example",
+        "fingerprint"
+      ]
+    },
+    {
+      "label": "Q3-fingerprint-no-default",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "--release",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--no-default-features",
+        "--example",
+        "fingerprint"
+      ]
+    }
+  ],
+  "results": {
+    "Q0-resolved-metadata": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q0-resolved-metadata.log",
+      "duration_seconds": 0.27
+    },
+    "Q5-Python-oracle": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q5-Python-oracle.log",
+      "duration_seconds": 0.66
+    },
+    "Q1-fmt": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q1-fmt.log",
+      "duration_seconds": 2.66
+    },
+    "Q1-all-features-check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q1-all-features-check.log",
+      "duration_seconds": 3.67
+    },
+    "Q1-no-default-check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q1-no-default-check.log",
+      "duration_seconds": 1.41
+    },
+    "Q2-all-features-tests": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q2-all-features-tests.log",
+      "duration_seconds": 2.87
+    },
+    "Q2-no-default-tests": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q2-no-default-tests.log",
+      "duration_seconds": 1.97
+    },
+    "Q1-all-features-Clippy": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q1-all-features-Clippy.log",
+      "duration_seconds": 0.36
+    },
+    "Q1-no-default-Clippy": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q1-no-default-Clippy.log",
+      "duration_seconds": 0.28
+    },
+    "Q1-rustdoc": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q1-rustdoc.log",
+      "duration_seconds": 0.29
+    },
+    "Q3-fingerprint-default": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q3-fingerprint-default.log",
+      "duration_seconds": 2.78
+    },
+    "Q3-fingerprint-all": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q3-fingerprint-all.log",
+      "duration_seconds": 3.89
+    },
+    "Q3-fingerprint-no-default": {
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "C:\\Dev\\PerfectFoundations\\_verification_results\\q0q5_windows_0e61_20261008\\Q3-fingerprint-no-default.log",
+      "duration_seconds": 2.46
+    }
+  },
+  "generated_lock_sha256": "d2e3864adb8b637f581d4b44690d2d1cea6ba22348a6067b6a81331411a9b556"
+}

@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "scope": "Local Windows x86-64 cross-compilation of qualification-owned Perfect Arithmetic Q0–Q5 independent consumer to declared Class-B no_std targets. Not runtime execution or Q0–Q5/Q6 qualification.",
+  "execution_date": "2026-10-08",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "source_sha": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+  "qualification_harness_sha": "f802308fd9efff7103244851be8ca7d0fbe3f95a",
+  "numeric_sha": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+  "dependency_binding": "Private exact-revision source copies materialized to local paths for qualification only; final registry package/offline lock not generated.",
+  "local_development_lock_sha256_before": "d2e3864adb8b637f581d4b44690d2d1cea6ba22348a6067b6a81331411a9b556",
+  "local_development_lock_sha256_after": "d2e3864adb8b637f581d4b44690d2d1cea6ba22348a6067b6a81331411a9b556",
+  "results": [
+    {
+      "target": "wasm32v1-none",
+      "configuration": "no-default-features",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--no-default-features",
+        "--target",
+        "wasm32v1-none"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "evidence_log": "%TEMP%\\q0q5_wasm32v1-none_default-fallback.log"
+    },
+    {
+      "target": "wasm32v1-none",
+      "configuration": "no-default-features+high-throughput",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--no-default-features",
+        "--target",
+        "wasm32v1-none",
+        "--features",
+        "high-throughput"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "evidence_log": "%TEMP%\\q0q5_wasm32v1-none_opt-in-high-throughput.log"
+    },
+    {
+      "target": "thumbv7em-none-eabihf",
+      "configuration": "no-default-features",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--no-default-features",
+        "--target",
+        "thumbv7em-none-eabihf"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "evidence_log": "%TEMP%\\q0q5_thumbv7em-none-eabihf_default-fallback.log"
+    },
+    {
+      "target": "thumbv7em-none-eabihf",
+      "configuration": "no-default-features+high-throughput",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--no-default-features",
+        "--target",
+        "thumbv7em-none-eabihf",
+        "--features",
+        "high-throughput"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "evidence_log": "%TEMP%\\q0q5_thumbv7em-none-eabihf_opt-in-high-throughput.log"
+    },
+    {
+      "target": "riscv64imac-unknown-none-elf",
+      "configuration": "no-default-features",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--no-default-features",
+        "--target",
+        "riscv64imac-unknown-none-elf"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "evidence_log": "%TEMP%\\q0q5_riscv64imac-unknown-none-elf_default-fallback.log"
+    },
+    {
+      "target": "riscv64imac-unknown-none-elf",
+      "configuration": "no-default-features+high-throughput",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "C:\\Dev\\PerfectFoundations\\_qual_windows_f802\\qualification\\perfect-arithmetic\\Cargo.toml",
+        "--no-default-features",
+        "--target",
+        "riscv64imac-unknown-none-elf",
+        "--features",
+        "high-throughput"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "evidence_log": "%TEMP%\\q0q5_riscv64imac-unknown-none-elf_opt-in-high-throughput.log"
+    }
+  ],
+  "remaining": "Other Class-A hosts (notably Linux ARM64/macOS), executed target-hardware semantics, full official qualification and Q6 registry-source gate remain NOT RUN/BLOCKED as applicable."
+}

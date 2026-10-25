@@ -22,7 +22,8 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: "1"
-  PERFECT_ARITHMETIC_REV: 9ec660f9abfd7fe93e441e77dbb1158c371603f5
+  PERFECT_ARITHMETIC_REV: ${{ inputs.source_ref }}
+  PERFECT_ARITHMETIC_TEMPLATE_REV: 9ec660f9abfd7fe93e441e77dbb1158c371603f5
   PERFECT_NUMERIC_REV: 19b6747cd852a47a694a020b97ba70b6b3ef259b
   QUAL_ROOT: .qualification-suite/qualification/perfect-arithmetic
   QUAL_MANIFEST: .qualification-suite/qualification/perfect-arithmetic/Cargo.toml
@@ -34,7 +35,9 @@ jobs:
     steps:
       - name: Validate requested qualified revision
         shell: bash
-        run: test "${{ inputs.source_ref }}" = "$PERFECT_ARITHMETIC_REV"
+        run: |
+          set -euo pipefail
+          [[ "$PERFECT_ARITHMETIC_REV" =~ ^[0-9a-f]{40}$ ]]
 
       - name: Checkout exact Perfect Arithmetic source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -80,9 +83,9 @@ jobs:
           sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
           rm "$arithmetic_path/Cargo.toml.bak"
 
-          qual_arithmetic='perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "'"$PERFECT_ARITHMETIC_REV"'", version = "=0.1.0", default-features = false }'
+          qual_arithmetic='perfect-arithmetic = { git = "https://github.com/Perfect-Foundations/perfect-arithmetic.git", rev = "'"$PERFECT_ARITHMETIC_TEMPLATE_REV"'", version = "=0.1.0", default-features = false }'
           grep -F -- "$qual_arithmetic" "$QUAL_MANIFEST" >/dev/null
-          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
+          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_TEMPLATE_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
 
       - name: Install MSRV and stable
@@ -171,7 +174,9 @@ jobs:
     steps:
       - name: Validate requested qualified revision
         shell: bash
-        run: test "${{ inputs.source_ref }}" = "$PERFECT_ARITHMETIC_REV"
+        run: |
+          set -euo pipefail
+          [[ "$PERFECT_ARITHMETIC_REV" =~ ^[0-9a-f]{40}$ ]]
 
       - name: Checkout exact Perfect Arithmetic source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -217,7 +222,7 @@ jobs:
           sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_shell/Cargo.toml"
           rm "$arithmetic_shell/Cargo.toml.bak"
 
-          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_cargo\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
+          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_TEMPLATE_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_cargo\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
 
       - name: Install Rust 1.99.0
@@ -262,7 +267,9 @@ jobs:
     steps:
       - name: Validate requested qualified revision
         shell: bash
-        run: test "${{ inputs.source_ref }}" = "$PERFECT_ARITHMETIC_REV"
+        run: |
+          set -euo pipefail
+          [[ "$PERFECT_ARITHMETIC_REV" =~ ^[0-9a-f]{40}$ ]]
 
       - name: Checkout exact Perfect Arithmetic source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -301,7 +308,7 @@ jobs:
           test -f "$numeric_shell/Cargo.toml"
           sed -i.bak             "s|perfect-numeric = { git = \"https://github.com/Perfect-Foundations/perfect-numeric.git\", rev = \"$PERFECT_NUMERIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-numeric = { path = \"$numeric_cargo\", version = \"=0.1.0\", default-features = false }|"             "$arithmetic_path/Cargo.toml"
           rm "$arithmetic_path/Cargo.toml.bak"
-          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
+          sed -i.bak             "s|perfect-arithmetic = { git = \"https://github.com/Perfect-Foundations/perfect-arithmetic.git\", rev = \"$PERFECT_ARITHMETIC_TEMPLATE_REV\", version = \"=0.1.0\", default-features = false }|perfect-arithmetic = { path = \"$arithmetic_path\", version = \"=0.1.0\", default-features = false }|"             "$QUAL_MANIFEST"
           rm "$QUAL_MANIFEST.bak"
 
       - name: Install Rust 1.99.0 and target
