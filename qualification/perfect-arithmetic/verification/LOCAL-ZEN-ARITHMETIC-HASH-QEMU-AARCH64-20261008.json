@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "repository": "Perfect-Foundations/perfect-qualification",
+  "exact_source": {
+    "qualification_consumer": "29b5d92739620c6a309acd73ab88bcea38e38a2c",
+    "arithmetic": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+    "numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "production_unchanged": true
+  },
+  "host": {
+    "device": "Zen",
+    "physical_isa": "x86_64",
+    "host_os": "Ubuntu x86_64 WSL2 under Windows",
+    "target": "aarch64-unknown-linux-gnu",
+    "runner": "QEMU user-mode aarch64 8.2.2 + GNU/Linux syscall translation on x86_64, NOT native aarch64 hardware",
+    "linker": "aarch64-linux-gnu-gcc",
+    "rust": "1.99.0",
+    "elf": "ELF 64-bit LSB pie, ARM aarch64, dynamically linked interpreter /lib/ld-linux-aarch64.so.1"
+  },
+  "execution": {
+    "test_all": {
+      "pass": 8,
+      "fail": 0,
+      "exit": 0
+    },
+    "test_no_default": {
+      "pass": 8,
+      "fail": 0,
+      "exit": 0
+    },
+    "high_throughput_hash": {
+      "pass": 1,
+      "fail": 0,
+      "exit": 0
+    },
+    "python_natural_integer_gcd_vectors": "72/72 PASS",
+    "python_new_hash_vectors": "25/25 PASS",
+    "public_fingerprint_default": {
+      "observed": "f20333624f980b77",
+      "exit": 0
+    },
+    "public_fingerprint_all": {
+      "observed": "f20333624f980b77",
+      "exit": 0
+    },
+    "public_fingerprint_no_default": {
+      "observed": "f20333624f980b77",
+      "exit": 0
+    },
+    "process_exit": 0,
+    "offline_lock_sha256": "709e15a8bb8854fae5e6ee62653fd16a6b78c22cab62c30b02216b3cee6e784b",
+    "logs": "/home/ubuntu/pf-verify/arithmetic-arm64-qual-20261008/logs/"
+  },
+  "limits": {
+    "cpu": 2,
+    "memory": "3 GiB",
+    "pids": 256,
+    "network": "none",
+    "docker_capabilities": "all dropped",
+    "no_new_privileges": true,
+    "individual_timeouts_seconds": 240,
+    "cargo_registry_cache": "read-only Zen existing cache",
+    "source_mount": "disposable exact-source scratch clones only"
+  },
+  "integrity": {
+    "native_windows_lock_match": true,
+    "linux_local_lock_match": true,
+    "retained_expected_fingerprint_not_regenerated": true,
+    "source_git_revisions_checked": true
+  },
+  "gates": {
+    "aarch64_user_mode_emulation": "PASS",
+    "native_linux_arm64": "NOT-RUN",
+    "hosted_q0_q5": "NOT-RUN/BLOCKED",
+    "q6_registry_release": "BLOCKED",
+    "status_lifecycle_changed": false,
+    "perfect_pi_changed": false,
+    "any_cost_increase": false
+  }
+}

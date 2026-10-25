@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-09",
+  "status": "PASS_LOCAL_CLASS_B_CROSS_COMPILATION_ONLY",
+  "source": {
+    "arithmetic": "0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6",
+    "numeric": "19b6747cd852a47a694a020b97ba70b6b3ef259b",
+    "qualification": "1cd469b96e758ffb874c3d9866da484f4a5d0cdc"
+  },
+  "execution": {
+    "host": "Zen WSL2 Linux x86_64",
+    "isolation": "Docker unprivileged UID 10001, cap-drop ALL, no-new-privileges, pids 128, memory 4GiB, CPUs 3",
+    "toolchain": "Rust 1.99.0",
+    "cargo": "offline locked",
+    "dependency_source": "original exact Git revisions validated against scratch manifests; temporary local paths carried from pinned earlier verification",
+    "cargo_lock_sha256": "709e15a8bb8854fae5e6ee62653fd16a6b78c22cab62c30b02216b3cee6e784b",
+    "target_components": "rustup installed from official toolchain with network; no crate dependency network",
+    "local_script": "C:\\Temp\\pf-arithmetic-classb-local.sh",
+    "local_logs": "/home/ubuntu/pf-verify/arithmetic-q0q5-local-20261008/logs-classb",
+    "exit_code": 0
+  },
+  "targets": {
+    "wasm32v1-none": {
+      "install": 0,
+      "no_default_features": 0,
+      "no_default_plus_high_throughput": 0,
+      "result": "PASS_CROSS_COMPILE"
+    },
+    "thumbv7em-none-eabihf": {
+      "install": 0,
+      "no_default_features": 0,
+      "no_default_plus_high_throughput": 0,
+      "result": "PASS_CROSS_COMPILE"
+    },
+    "riscv64imac-unknown-none-elf": {
+      "install": 0,
+      "no_default_features": 0,
+      "no_default_plus_high_throughput": 0,
+      "result": "PASS_CROSS_COMPILE"
+    }
+  },
+  "github_actions": {
+    "separate_workflow_commit": "ace631bb8ed8aaf60b7496a7309fad748987231f",
+    "queued_run_id": 37872930664,
+    "interpretation": "NO_EXECUTION; unable to start ephemeral runner; cancellation requested, not counted as PASS",
+    "previous_linux_x86_64_successful_run_id": 37872674909
+  },
+  "scope": {
+    "target_runtime": "NOT_EXECUTED",
+    "native_arm64": "NOT_EXECUTED",
+    "official_multihost_Q0_Q5": "NOT_COMPLETE",
+    "q6_registry": "BLOCKED",
+    "milestone_status": "UNCHANGED",
+    "perfect_pi": "UNCHANGED"
+  }
+}

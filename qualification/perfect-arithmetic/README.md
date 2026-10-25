@@ -1,6 +1,6 @@
 # Perfect Arithmetic qualification configuration
 
-Target revision: `9ec660f9abfd7fe93e441e77dbb1158c371603f5`
+Target revision: `0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6`
 
 Required Perfect Numeric revision: `19b6747cd852a47a694a020b97ba70b6b3ef259b`
 
@@ -44,3 +44,27 @@ has prerelease/release gates that must be handled explicitly, including the
 bottom-up registry sequence required before its final `cargo package` and
 packaged-offline-build evidence can exist. Q0-Q5 success must not be inflated
 into Q6 or public-release readiness.
+
+## Canonical Natural/Integer Hash extension — 2026-10-08
+
+The exact Arithmetic M6 candidate `0e61fb6854a6c9b5052d4c1deca71b606f1ba7b6` adds qualification of the
+versioned public `Hash` write-stream contract, without reading internal
+big-integer representation or production implementation details.
+
+`scripts/verify_hash_oracle.py` independently regenerates 25 fixed expected
+streams using Python's arbitrary-precision integer operations. They are stored
+in `vectors/canonical_hash.tsv`; `tests/hash_contract.rs` captures the output
+of public `Natural::hash` and `Integer::hash` and compares each byte. Cases
+include canonical zero, positive/negative values, limb boundaries, and 1024/2048-bit
+magnitudes. The existing 72 Numeric/Integer/GCD independent vectors and the
+previous semantic fingerprint remain separate regression oracles.
+
+Exact-snapshot **local Ubuntu WSL2 x86-64, Rust 1.99.0** evidence is in
+`verification/LOCAL-ZEN-ARITHMETIC-HASH-20261008.json`: 25 Python cases PASS;
+8/8 independent consumer tests in both feature modes, Clippy `-D warnings`
+in both modes, rustdoc, formatting, and opt-in `high-throughput` Hash contract
+PASS. The source and dependency graph used for this result are recorded exactly.
+
+Hosted three-Class-A Q0–Q5 matrix and real native ARM64 remain **NOT RUN/BLOCKED**
+at this revision. These local checks neither qualify Q6 nor establish published
+registry dependencies. The verification consumer is not a production dependency.
