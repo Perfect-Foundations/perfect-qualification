@@ -1,0 +1,11 @@
+# Source-exact pivoted PSD independent qualification — 2026-10-11
+
+Production source `Perfect-Foundations/perfect-uncertainty@dafe6a28a0dd69042e2b5fcc36ea254f8e16ac60`; exact Git revision and `libm=0.2.15` in tracked lock. Previous source `1450a418...` demonstrably rejected an exactly PSD 18x18 sign-Gram correlation at declared 1e-12 Schur tolerance, emitting pivot 16 value `-1.2182754804968e-12`. Permanent production test was run and FAILED before patch; it PASSED after deterministic symmetric largest-diagonal pivoting.
+
+Independent source-free Python oracle `scripts/pivot_gram_reference.py` derives 90 sign-Gram matrices (30 each at dimensions 18, 24 and 32) from seeded integer row masks and the previously failing fixed 18x16 reproducer. Construction `R=S*S^T/16` proves exact positive semidefiniteness and diagonal=1. Python exact Fraction matrix form computes exact variance of the actual binary64 contribution values, rounded only once when freezing the expected binary64 bits. Rust public consumer `tests/pivot_gram.rs` validates these 90 pairs in original and reversed coordinate orders, using explicit 1e-10 relative variance tolerance. The corpus generator refuses overwriting previously frozen bytes.
+
+Frozen 90-row `pivot_gram_v1.tsv`, SHA256 `4b49ae1139b51ed0bf73701bce6b2a69f92d07dde2cf3bb900dd6500904c43b3`. Prior six corpora (2,998 mathematical rows) unchanged. **3,088 independent mathematical reference rows** in seven frozen corpora; 180 additional original/reversed source-exact checks for new rows. The prior arbitrary Gram and indefinite counterexamples remain in the same test suite.
+
+Windows native x86-64 and WSL2 Linux x86-64 Rust 1.99: all independent tests and all-target Clippy `-D warnings` passed in both no-default/all-features modes. 13 Rust test functions per host/feature configuration = **52/52 executed independently**. Root exact source/lock and all seven SHA verifications passed on both hosts. WSL consumed the exact Git object from the Windows trusted Cargo Git cache, no path override.
+
+Still requires a pristine detached-checkout replay for this exact future Qualification commit. No general matrix accuracy guarantee, formal M1/Q6 promotion, ARM64 hardware run, or hosted CI claimed. Perfectπ remained unchanged.

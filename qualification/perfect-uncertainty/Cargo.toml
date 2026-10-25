@@ -1,0 +1,13 @@
+[package]
+name = "qualify-perfect-uncertainty"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+
+[features]
+default = ["std"]
+std = ["perfect-uncertainty/std"]
+
+[dependencies]
+perfect-uncertainty = { git = "https://github.com/Perfect-Foundations/perfect-uncertainty.git", rev = "dafe6a28a0dd69042e2b5fcc36ea254f8e16ac60", version = "=0.1.0", default-features = false }
