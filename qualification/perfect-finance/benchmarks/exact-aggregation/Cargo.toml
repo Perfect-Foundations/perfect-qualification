@@ -1,0 +1,10 @@
+[package]
+name = "finance-exact-aggregation-comparison"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+
+[dependencies]
+baseline = { package = "perfect-finance", git = "https://github.com/Perfect-Foundations/perfect-finance.git", rev = "90be47248298b49089d49f954866ed916bc57ed5" }
+corrected = { package = "perfect-finance", git = "https://github.com/Perfect-Foundations/perfect-finance.git", rev = "f716cb02c34dc79d51cef3540d7f0c0cc2ba930f" }

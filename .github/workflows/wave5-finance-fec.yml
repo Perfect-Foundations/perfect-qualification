@@ -1,0 +1,50 @@
+name: Wave 5 Finance and FEC Qualification
+on:
+  push:
+    branches: [qualify-wave3-fec-finance-20261011]
+    paths: ['.github/workflows/wave5-finance-fec.yml']
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'qualification/perfect-finance/**'
+      - 'qualification/perfect-error-correction/**'
+      - 'verification-wave3-graphs.py'
+      - '.github/workflows/wave5-finance-fec.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-qualification:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact candidate source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install project MSRV toolchain
+        run: rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
+      - name: Locked Rust source-exact consumer matrices
+        shell: bash
+        run: |
+          set -euo pipefail
+          for consumer in perfect-finance perfect-error-correction; do
+            manifest="qualification/$consumer/Cargo.toml"
+            cargo +1.99.0 fmt --manifest-path "$manifest" --all -- --check
+            for mode in --no-default-features --all-features; do
+              cargo +1.99.0 test --manifest-path "$manifest" --locked "$mode"
+              cargo +1.99.0 clippy --manifest-path "$manifest" --locked --all-targets "$mode" -- -D warnings
+            done
+          done
+      - name: Independent mathematical references and source graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/perfect-error-correction/scripts/reference.py
+          python3 qualification/perfect-finance/scripts/reference.py
+          python3 qualification/perfect-finance/scripts/cashflow_reference.py
+          python3 qualification/perfect-finance/scripts/multioperand_reference.py
+          python3 verification-wave3-graphs.py
